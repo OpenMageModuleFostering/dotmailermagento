@@ -41,7 +41,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Quoteproducts extends Dotdigitalgr
         Mage::helper('ddg')->log('DYNAMIC QUOTE PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($quoteItems as $item) {
-            $i = 1;
+            $i = 0;
             $productId = $item->getProductId();
             //parent product
             $productModel = Mage::getModel('catalog/product')->load($productId);

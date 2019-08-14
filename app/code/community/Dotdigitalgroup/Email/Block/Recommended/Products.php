@@ -47,7 +47,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Dotdigitalgroup_E
 		Mage::helper('ddg')->log('DYNAMIC PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($orderItems as $item) {
-	        $i = 1;
+	        $i = 0;
             $productId = $item->getProductId();
             //parent product
             $productModel = Mage::getModel('catalog/product')->load($productId);

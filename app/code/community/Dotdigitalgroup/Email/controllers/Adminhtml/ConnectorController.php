@@ -435,4 +435,9 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 
         $this->_redirectReferer();
     }
+
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('system/config/connector_developer_settings');
+    }
 }

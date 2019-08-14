@@ -69,7 +69,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigita
         Mage::helper('ddg')->log('DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($items as $item) {
-            $i = 1;
+            $i = 0;
             //parent product
             $product = $item->getProduct();
             //check for product exists
