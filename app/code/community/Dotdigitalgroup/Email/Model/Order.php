@@ -68,11 +68,12 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
         return $this;
 
     }
-    public function getOrdersToImport($storeIds, $limit)
+    public function getOrdersToImport($storeIds, $limit, $orderStatuses)
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('email_imported', array('null' => true))
-            ->addFieldToFilter('store_id', array('in' => $storeIds));
+            ->addFieldToFilter('store_id', array('in' => $storeIds))
+            ->addFieldToFilter('order_status', array('in' => $orderStatuses));
 
         $collection->getSelect()->limit($limit);
         return $collection->load();

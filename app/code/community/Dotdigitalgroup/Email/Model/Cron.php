@@ -53,10 +53,14 @@ class Dotdigitalgroup_Email_Model_Cron
         return $this;
     }
 
+    public function createEmailsToCampaigns()
+    {
+        Mage::getModel('email_connector/create')->createEmailsToCampaigns();
+    }
+
     /**
      * CLEAN ARHIVED FOLDERS
      */
-
     public function cleaning()
     {
         $helper = Mage::helper('connector/file');

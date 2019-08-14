@@ -59,7 +59,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             $customerIds[] = $contact->getCustomerId();
         }
         //customer collection
-        $customerCollection = $this->getCollection($customerIds);
+        $customerCollection = $this->getCollection($customerIds, $website);
 
         /**
          * HEADERS.
@@ -89,7 +89,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
              * DATA.
              */
             $connectorCustomer =  Mage::getModel('email_connector/apiconnector_customer', $mappedHash);
-            $connectorCustomer->setCustomerData($customer);
+            $connectorCustomer->setCustomerData($customer, $website);
             //count number of customers
             $customers[] = $connectorCustomer;
             foreach ($customAttributes as $data) {
@@ -249,7 +249,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
              * DATA.
              */
             $connectorCustomer =  Mage::getModel('email_connector/apiconnector_customer', $mappedHash);
-            $connectorCustomer->setCustomerData($customer);
+            $connectorCustomer->setCustomerData($customer, $website);
             //count number of customers
             $customers[] = $connectorCustomer;
             foreach ($customAttributes as $data) {
@@ -310,10 +310,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
     /**
      * get customer collection
      * @param $customerIds
+     * @param $website null
      * @return Mage_Eav_Model_Entity_Collection_Abstract
      * @throws Mage_Core_Exception
      */
-    public function getCollection($customerIds)
+    public function getCollection($customerIds, $website = null)
     {
         $customerCollection = Mage::getResourceModel('customer/customer_collection')
             ->addNameToSelect()

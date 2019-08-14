@@ -50,6 +50,8 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS      = 'connector_data_mapping/customer_data/custom_attributes';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME     = 'connector_data_mapping/customer_data/store_name';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_TOTALREFUND   = 'connector_data_mapping/customer_data/total_refund';
+    const XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE      = 'connector_data_mapping/sweet_tooth/active';
+
     // Dynamic
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
 
@@ -62,8 +64,17 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_advanced_settings/sync_limits/orders';
     const XML_PATH_CONNECTOR_TRANSACTIONAL_STYLING          = 'connector_advanced_settings/admin/inline_styling';
     const XML_PATH_CONNECTOR_RECOMMENDED_STYLING            = 'connector_advanced_settings/admin/recommended_inline';
+    const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS              = 'connector_advanced_settings/sync_limits/order_statuses';
 
-    /**
+	/**
+	 * Automation studio.
+	 */
+	const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER    = 'connector_automation_studio/automation/subscriber_automation';
+	const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER      = 'connector_automation_studio/automation/customer_automation';
+
+
+
+	/**
      * ROI SECTION.
      */
     const XML_PATH_CONNECTOR_ROI_TRACKING_ENABLED           = 'connector_roi_tracking/roi_tracking/enabled';
@@ -76,6 +87,5 @@ class Dotdigitalgroup_Email_Helper_Config
     const API_CONNECTOR_URL_AUTHORISE                       = 'https://my.dotmailer.com/OAuth2/authorise.aspx?';
     const API_CONNECTOR_URL_TOKEN                           = 'https://my.dotmailer.com/OAuth2/Tokens.ashx';
     const API_CONNECTOR_URL_LOG_USER                        = 'https://my.dotmailer.com/?oauthtoken=';
-
 
 }

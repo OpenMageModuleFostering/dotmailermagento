@@ -20,51 +20,65 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
         $jquery = '<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>';
 
         $html .=$jquery;
+        $javaScript = "<script type=\"text/javascript\"> var show_warning = 0;";
 
-        $javaScript =
-            "<script type=\"text/javascript\">
+        if(!Mage::helper('connector')->isSweetToothEnabled()){
+            $javaScript .= "show_warning = 1;";
+        }
 
-                jQuery.noConflict();
+        $javaScript .=
+            "jQuery.noConflict();
 
-                jQuery(document).ready(function() {
-                    // Handler for .ready() called.
+            jQuery(document).ready(function() {
+                // Handler for .ready() called.
 
-                    // Hide our validation block
-                    jQuery('#row_connector_data_mapping_customer_data_validator').hide();
+                //Show sweet tooth notice
+                if(show_warning == 1) jQuery('#sweet-tooth-warning').show();
 
-                    // Add listener for changing select box
+                // Hide our validation block
+                jQuery('#row_connector_data_mapping_customer_data_validator').hide();
 
-                    jQuery('#connector_data_mapping_customer_data select').on('change', function() {
+                // Add listener for changing select box
 
-                        var currentSelection = jQuery(this).val();
-                        var currentDropdownId = jQuery(this).attr('id');
-
-                        // foreach of the select fields on our mapping page:
-                        jQuery('select').each(function(){
-                            var thisId = jQuery(this).attr('id');
-                            if (thisId != currentDropdownId) {
-
-                                var currentLabel = jQuery('label[for=\\'' + thisId + '\\']').text();
-                                var thisVal = jQuery(this).val();
-
-                                switch (thisVal) {
-                                    case '0':
-                                        // ignore DO NOT MAP fields
-                                        break;
-                                    case currentSelection:
-                                        // warning, that field is already mapped somewhere else - reset that value to 'Do not map''
-                                        alert('Warning! You have overwritten: '+currentLabel);
-                                        jQuery(this).val(0);
-                                        break;
-                                    default:
-                                        break;
-                                break;
-                                }
-                            }
-                        });
-                    });
+                jQuery('#connector_data_mapping_customer_data select').on('change', function() {
+                    var currentSelection = jQuery(this).val();
+                    var currentDropdownId = jQuery(this).attr('id');
+                    check(currentSelection, currentDropdownId);
                 });
-            </script>";
+
+                jQuery('#connector_data_mapping_sweet_tooth select').on('change', function() {
+                    var currentSelection = jQuery(this).val();
+                    var currentDropdownId = jQuery(this).attr('id');
+                    check(currentSelection, currentDropdownId);
+                });
+
+                function check(currentSelection, currentDropdownId){
+                    // foreach of the select fields on our mapping page:
+                    jQuery('select').each(function(){
+                        var thisId = jQuery(this).attr('id');
+                        if (thisId != currentDropdownId) {
+
+                            var currentLabel = jQuery('label[for=\\'' + thisId + '\\']').text();
+                            var thisVal = jQuery(this).val();
+
+                            switch (thisVal) {
+                                case '0':
+                                    // ignore DO NOT MAP fields
+                                    break;
+                                case currentSelection:
+                                    // warning, that field is already mapped somewhere else - reset that value to 'Do not map''
+                                    alert('Warning! You have overwritten: '+currentLabel);
+                                    jQuery(this).val(0);
+                                    break;
+                                default:
+                                    break;
+                            break;
+                            }
+                        }
+                    });
+                }
+            });
+        </script>";
 
         $html .= $javaScript;
         return $html;

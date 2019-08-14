@@ -44,12 +44,12 @@ class Dotdigitalgroup_Email_Model_Sms_Campaign
 	 */
 	public function __construct($order)
     {
-        $this->_storeId = $order->getStoreId();
-        Mage::app()->setCurrentStore($this->_storeId);
-        $billingAddress = $order->getBillingAddress();
-        $this->_customerTelephone = $billingAddress->getTelephone();
-        $this->_customerFirstName = $order->getCustomerFirstname();
-        $this->_incrementId = $order->getIncrementId();
+        $this->_storeId             = $order->getStoreId();
+	    $billingAddress             = $order->getBillingAddress();
+	    $this->_customerFirstName   = $order->getCustomerFirstname();
+	    $this->_incrementId         = $order->getIncrementId();
+		$this->_customerTelephone   = $billingAddress->getTelephone();
+	    Mage::app()->setCurrentStore($this->_storeId);
     }
     /**
      * @return mixed
@@ -73,6 +73,7 @@ class Dotdigitalgroup_Email_Model_Sms_Campaign
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
         //all available sms in config
         foreach ($this->_allsms as $num) {
+
             $enabled = (bool)Mage::getStoreConfig(constant('Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SMS_ENABLED_' . $num));
             if ($enabled) {
                 $status = Mage::getStoreConfig(constant('Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SMS_STATUS_' . $num));

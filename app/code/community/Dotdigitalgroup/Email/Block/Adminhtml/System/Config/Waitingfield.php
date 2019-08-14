@@ -44,14 +44,16 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Waitingfield extends M
                 jQuery("#row_connector_sync_settings_sync_customer_schedule_validator").hide();
                 var loadingmask = jQuery("#loadingmask");
                 loadingmask.hide();
-                loadingmask.css({top : "50\%", left: "50\%"})
-                jQuery("button").click(function(){
-                    jQuery("body").css({"background-color": "black", "opacity": "0.4"});
-                    jQuery("#row_connector_api_settings_api_credentials_validator").show();
-                    jQuery("#row_connector_sync_settings_sync_customer_schedule_validator").show();
-                    loadingmask.show();
-                    loadingmask.css({"display": "block", "opacity" : "1"});
-                })
+                loadingmask.css({top : "50\%", left: "50\%"});
+                //var thisButton = jQuery("button");
+                //console.log(thisButton);
+                //jQuery("button").click(function(){
+                //    jQuery("body").css({"background-color": "black", "opacity": "0.4"});
+                //    jQuery("#row_connector_api_settings_api_credentials_validator").show();
+                //    jQuery("#row_connector_sync_settings_sync_customer_schedule_validator").show();
+                //    loadingmask.show();
+                //    loadingmask.css({"display": "block", "opacity" : "1"});
+                //})
             });
             </script>';
 

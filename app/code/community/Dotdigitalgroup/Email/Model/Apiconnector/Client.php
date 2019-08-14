@@ -18,6 +18,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     const REST_DATA_FIELDS_CAMPAIGNS            = 'https://apiconnector.com/v2/campaigns';
     const REST_SMS_MESSAGE_SEND_TO              = 'https://apiconnector.com/v2/sms-messages/send-to/';
     const REST_CONTACTS_RESUBSCRIBE             = 'https://apiconnector.com/v2/contacts/resubscribe';
+    const REST_CAMPAIGN_FROM_ADDRESS_LIST       = 'https://apiconnector.com/v2/custom-from-addresses';
+    const REST_CREATE_CAMPAIGN                  = 'https://apiconnector.com/v2/campaigns';
+	const REST_PROGRAM                          = 'https://api.dotmailer.com/v2/programs/';
+	const REST_PROGRAM_ENROLMENTS               = 'https://apiconnector.com/v2/programs/enrolments';
+
     //rest error responces
     const REST_CONTACT_NOT_FOUND                = 'Error: ERROR_CONTACT_NOT_FOUND';
     const REST_SEND_MULTI_TRANSACTIONAL_DATA    = 'Error: ERROR_FEATURENOTACTIVE';
@@ -248,11 +253,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         $url = self::REST_DATA_FIELDS_CAMPAIGNS;
         $this->setUrl($url)
             ->setVerb('GET');
-
+        
         $response = $this->execute();
 
         if (isset($response->message))
-            Mage::helper('connector')->log('GET CAMPAINGS ' . $response->message . ' api user : '  . $this->getApiUsername());
+            Mage::helper('connector')->log('GET CAMPAIGNS ' . $response->message . ' api user : '  . $this->getApiUsername());
 
         return $response;
     }
@@ -688,4 +693,95 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             Mage::helper('connector')->log($data);
         }
     }
+
+    public function getCampaignFromAddressList()
+    {
+        $url = self::REST_CAMPAIGN_FROM_ADDRESS_LIST;
+        $this->setUrl($url)
+            ->setVerb('GET');
+
+        $response = $this->execute();
+
+        if (isset($response->message))
+            Mage::helper('connector')->log('GET CampaignFromAddressList ' . $response->message . ' api user : '  . $this->getApiUsername());
+
+        return $response;
+    }
+
+    public function postCampaign($data)
+    {
+        $url = self::REST_CREATE_CAMPAIGN;
+        $this->setURl($url)
+            ->setVerb('POST')
+            ->buildPostBody($data);
+
+        $result = $this->execute();
+
+        if (isset($result->message)) {
+            Mage::helper('connector')->log(' CREATE CAMPAIGN ' . $result->message);
+        }
+
+        return $result;
+    }
+
+	/**
+	 * Gets all programs.
+	 * https://api.dotmailer.com/v2/programs?select={select}&skip={skip}
+	 */
+	public function GetPrograms()
+	{
+		$url = 'https://api.dotmailer.com/v2/programs';
+
+		$this->setUrl($url)
+		     ->setVerb('GET');
+
+		$response = $this->execute();
+
+		if (isset($response->message)) {
+			Mage::helper( 'connector' )->log( 'Get programmes : ' . $response->message );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Creates an enrolment.
+	 * @param $data
+	 *
+	 * @return null
+	 * @throws Exception
+	 */
+	public function PostProgramsEnrolments($data)
+	{
+		$url = self::REST_PROGRAM_ENROLMENTS;
+		$this->setUrl($url)
+		     ->setVerb('POST')
+		     ->buildPostBody($data);
+		$response = $this->execute();
+
+		if (isset($response->message)) {
+			Mage::helper( 'connector' )->log( 'Post programs enrolments : ' . $response->message );
+			Mage::helper( 'connector' )->log( $data );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Gets a program by id.
+	 */
+	public function GetProgramById( $id ) {
+
+		$url =  self::REST_PROGRAM . $id;
+		$this->setUrl($url)
+		     ->setVerb('GET');
+		$response = $this->execute();
+
+		if(isset($response->messge)){
+			Mage::helper( 'connector' )->log( 'Get progrma by id ; '  . $id );
+		}
+
+		return $response;
+
+	}
 }

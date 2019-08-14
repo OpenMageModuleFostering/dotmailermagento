@@ -30,7 +30,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml
         $this->addColumn('id', array(
             'header'        => Mage::helper('connector')->__('Campaign ID'),
             'width'         => '20px',
-            'index'         => 'id',
+            'index'         => 'campaign_id',
             'type'          => 'number',
             'truncate'      => 50,
             'escape'        => true,

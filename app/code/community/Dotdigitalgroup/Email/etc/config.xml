@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Dotdigitalgroup_Email>
-            <version>3.0.3</version>
+            <version>3.1.0</version>
         </Dotdigitalgroup_Email>
     </modules>
     <frontend>
@@ -49,12 +49,14 @@
                     <campaign>
                         <table>email_campaign</table>
                     </campaign>
+                    <create>
+                        <table>email_create</table>
+                    </create>
                 </entities>
             </email_connector_resource>
             <core>
                 <rewrite>
                     <email_template>Dotdigitalgroup_Email_Model_Email_Template</email_template>
-                    <email_template_mailer>Dotdigitalgroup_Email_Model_Email_Template_Mailer</email_template_mailer>
                 </rewrite>
             </core>
         </models>
@@ -109,12 +111,21 @@
                     </connector_customer_save_after>
                 </observers>
             </customer_save_after>
+            <customer_register_success>
+                <observers>
+                    <connector_customer_register_success>
+                        <type>singleton</type>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>handleCustomerRegiterSuccess</method>
+                    </connector_customer_register_success>
+                </observers>
+            </customer_register_success>
             <newsletter_subscriber_save_before>
                 <observers>
-                    <connector_newsletter_subscriber_save_after>
+                    <connector_newsletter_subscriber_save_before>
                         <class>Dotdigitalgroup_Email_Model_Newsletter_Observer</class>
                         <method>handleNewsletterSubscriberSave</method>
-                    </connector_newsletter_subscriber_save_after>
+                    </connector_newsletter_subscriber_save_before>
                 </observers>
             </newsletter_subscriber_save_before>
             <sales_order_place_after>
@@ -158,6 +169,22 @@
                     </connector_sales_order_cancel>
                 </observers>
             </order_cancel_after>
+            <rewards_points_indexer_update>
+                <observers>
+                    <connector_rewards_points_indexer_update>
+                        <class>Dotdigitalgroup_Email_Model_Sweettooth_Observer</class>
+                        <method>ConnectorRewardsPointsIndexerUpdate</method>
+                    </connector_rewards_points_indexer_update>
+                </observers>
+            </rewards_points_indexer_update>
+            <review_save_after>
+                <observers>
+                    <connector_review_save_after>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>reviewSaveAfter</method>
+                    </connector_review_save_after>
+                </observers>
+            </review_save_after>
         </events>
     </global>
     <adminhtml>
@@ -209,6 +236,14 @@
                     <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
             </connector_email_lostbaskets>
+            <connector_email_create>
+                <run>
+                    <model>email_connector/cron::createEmailsToCampaigns</model>
+                </run>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+            </connector_email_create>
             <connector_email_campaign>
                 <run>
                     <model>email_connector/cron::sendMappedEmails</model>
@@ -409,24 +444,14 @@
                 <api_username></api_username>
                 <api_password></api_password>
             </credentials>
+            <email_settings>
+                <unsubscribe_link>1</unsubscribe_link>
+                <reply_action>Webmail</reply_action>
+                <reply_address></reply_address>
+            </email_settings>
             <email_mapping>
-                <sales_email_order_template></sales_email_order_template>
-                <sales_email_order_guest_template></sales_email_order_guest_template>
-                <sales_email_order_comment_template></sales_email_order_comment_template>
-                <sales_email_order_comment_guest_template></sales_email_order_comment_guest_template>
-                <sales_email_invoice_template></sales_email_invoice_template>
-                <sales_email_invoice_guest_template></sales_email_invoice_guest_template>
-                <sales_email_invoice_comment_template></sales_email_invoice_comment_template>
-                <sales_email_invoice_comment_guest_template></sales_email_invoice_comment_guest_template>
-                <sales_email_creditmemo_template></sales_email_creditmemo_template>
-                <sales_email_creditmemo_guest_template></sales_email_creditmemo_guest_template>
-                <sales_email_creditmemo_comment_template></sales_email_creditmemo_comment_template>
-                <sales_email_creditmemo_comment_guest_template></sales_email_creditmemo_comment_guest_template>
-                <sales_email_shipment_template></sales_email_shipment_template>
-                <sales_email_shipment_guest_template></sales_email_shipment_guest_template>
-                <sales_email_shipment_comment_template></sales_email_shipment_comment_template>
-                <sales_email_shipment_comment_guest_template></sales_email_shipment_comment_guest_template>
-                <customer_create_account_email_template></customer_create_account_email_template>
+                <default_email_templates></default_email_templates>
+                <custom_email_templates></custom_email_templates>
             </email_mapping>
         </connector_transactional_emails>
         <connector_advanced_settings>
@@ -441,7 +466,7 @@
                 <suppressed_contacts></suppressed_contacts>
                 <memory_limit>0</memory_limit>
                 <batch_size>10000</batch_size>
-                <debug_enabled></debug_enabled>
+                <debug_enabled>1</debug_enabled>
                 <inline_styling><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></inline_styling>
                 <recommended_inline><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></recommended_inline>
             </admin>

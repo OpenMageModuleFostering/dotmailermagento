@@ -31,9 +31,15 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
     public function logAction()
     {
         //file name param
-        $file = $this->getRequest()->getParam('file');
-        $fileName = $file . '.log';
-        $filePath = Mage::getBaseDir('log') . DIRECTORY_SEPARATOR . $fileName;
+	    $fileName = $filePath = '';
+        $file = $this->getRequest()->getParam('file', false);
+	    if ($file) {
+		    $fileName = $file . '.log';
+		    $filePath = Mage::getBaseDir( 'log' ) . DIRECTORY_SEPARATOR . $fileName;
+	    } elseif ($csv = $this->getRequest()->getParam('archive', false)){
+		    $fileName = $csv . '.csv';
+		    $filePath = Mage::getBaseDir('export') . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive' . DIRECTORY_SEPARATOR . $fileName;
+	    }
 
         $this->_prepareDownloadResponse($fileName, array(
             'type'  => 'filename',
@@ -41,6 +47,29 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         ));
         exit();
     }
+
+	public function showAction() {
+		$list = array();
+
+		if ($handle = opendir(Mage::getBaseDir('base') . '/var/export/email/archive')) {
+
+			while (false !== ($entry = readdir($handle))) {
+
+				if ($entry != "." && $entry != "..") {
+
+					$list[] = $entry;
+				}
+			}
+
+			closedir($handle);
+		}
+
+		foreach ( $list as $one ) {
+
+			echo $one . '</br>';
+		}
+		return;
+	}
 
     public function callbackAction()
     {

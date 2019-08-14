@@ -25,23 +25,34 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     public function handleSalesOrderSaveAfter(Varien_Event_Observer $observer)
     {
         try{
-            $order = $observer->getEvent()->getOrder();
+	        $currentStoreId = Mage::app()->getStore()->getId();
+	        $order = $observer->getEvent()->getOrder();
             $status  = $order->getStatus();
             $storeId = $order->getStoreId();
             $emailOrder = Mage::getModel('email_connector/order')->loadByOrderId($order->getEntityId(), $order->getQuoteId());
             //reimport email order
             $emailOrder->setUpdatedAt($order->getUpdatedAt())
-                ->setEmailImported(null)
                 ->setStoreId($storeId)
-                ->save();
+                ->setOrderStatus($status);
+            if($emailOrder->getEmailImported() != Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED) {
+                $emailOrder->setEmailImported(null);
+            }
+
             // check for order status change
             $statusBefore = Mage::registry('sales_order_status_before');
-            Mage::helper('connector')->log('Order status : '. $status . ', before : '. $statusBefore);
             if ( $status!= $statusBefore) {
+                //If order status has changed and order is already imported then set imported to null
+                if($emailOrder->getEmailImported() == Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED) {
+                    $emailOrder->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_NOT_IMPORTED);
+                }
                 $smsCampaign = Mage::getModel('email_connector/sms_campaign', $order);
                 $smsCampaign->setStatus($status);
                 $smsCampaign->sendSms();
+	            // set back the current store
+	            Mage::app()->setCurrentStore($currentStoreId);
             }
+            $emailOrder->save();
+
             //admin oder when editing the first one is canceled
             Mage::unregister('sales_order_status_before');
         }catch(Exception $e){

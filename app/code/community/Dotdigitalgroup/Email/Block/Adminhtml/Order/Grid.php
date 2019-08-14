@@ -48,6 +48,14 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Order_Grid extends Mage_Adminhtml_Bl
             'index'         => 'order_id',
             'type'          => 'number',
             'escape'        => true
+        ))->addColumn('order_status', array(
+            'header'        => Mage::helper('connector')->__('Order Status'),
+            'align'         => 'right',
+            'width'         => '50px',
+            'index'         => 'order_status',
+            'type'          => 'options',
+            'escape'        => true,
+            'options' => Mage::getSingleton('sales/order_config')->getStatuses(),
         ))->addColumn('store_id', array(
             'header'        => Mage::helper('connector')->__('Store ID'),
             'width'         => '50px',

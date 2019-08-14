@@ -8,8 +8,10 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
     public function setupdatafieldsAction()
     {
         $result = array('errors' => false, 'message' => '');
-        $apiModel = Mage::getModel('email_connector/apiconnector_client');
-        $redirectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit', array('section' => 'connector_data_mapping'));
+	    $websiteParam = $this->getRequest()->getParam('website', 0);
+	    $website = Mage::app()->getWebsite($websiteParam);
+	    $apiModel = Mage::helper('connector')->getWebsiteApiClient($website->getId());
+	    $redirectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit', array('section' => 'connector_data_mapping'));
 
         // get all possible datatifileds
         $datafields = Mage::getModel('email_connector/connector_datafield')->getContactDatafields();
@@ -21,10 +23,9 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
                 $result['errors'] = true;
                 $result['message'] .=  ' Datafield ' . $datafield['name'] . ' - '. $response->message . '</br>';
             } else {
-                $website = $this->getRequest()->getParam('website', false);
-                if ($website) {
-                    $scope = 'website';
-                    $scopeId = Mage::app()->getWebsite($website)->getId();
+	            if ($websiteParam) {
+                    $scope = 'websites';
+                    $scopeId = $website->getId();
                 } else {
                     $scope = 'default';
                     $scopeId = '0';
@@ -33,7 +34,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
                  * map the succesful created datafield
                  */
                 $config = new Mage_Core_Model_Config();
-                $config->saveConfig('connector_data_mapping/customer_data/' . $key, strtoupper($datafield['name']), $scope, $scopeId);
+	            $config->saveConfig('connector_data_mapping/customer_data/' . $key, strtoupper($datafield['name']), $scope, $scopeId);
                 Mage::helper('connector')->log('successfully connected : ' . $datafield['name']);
             }
         }
@@ -106,9 +107,10 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
     {
         $params = $this->getRequest()->getParams();
         $apiUsername     = $params['api_username'];
-        $apiPassword     = $params['api_password'];
-        $message = Mage::getModel('email_connector/apiconnector_test')->ajaxvalidate($apiUsername, $apiPassword);
+	    // use javascript btoa function to encode the password
 
+	    $apiPassword     = base64_decode($params['api_password']);
+	    $message = Mage::getModel('email_connector/apiconnector_test')->ajaxvalidate($apiUsername, $apiPassword);
         $this->getResponse()->setBody(Mage::helper('core')->jsonEncode($message));
     }
 

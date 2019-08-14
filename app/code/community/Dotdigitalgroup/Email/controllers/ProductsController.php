@@ -13,11 +13,9 @@ class Dotdigitalgroup_Email_ProductsController extends Mage_Core_Controller_Fron
                     Mage::app()->setCurrentStore($order->getStoreId());
                 } else {
                     Mage::helper('connector')->log('Dynamic : order not found: ' . $orderId);
-                    exit;
                 }
             } else {
                 Mage::helper('connector')->log('Dynamic : order_id missing :' . $orderId);
-                exit;
             }
         }
 

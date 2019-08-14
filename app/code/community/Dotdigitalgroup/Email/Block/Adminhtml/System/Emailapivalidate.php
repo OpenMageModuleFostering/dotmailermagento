@@ -18,12 +18,11 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Emailapivalidate extends Mage
                 function apiValidation(form, element) {
                     var api_user       = $('connector_transactional_emails_credentials_api_username');
                     var api_password   = $('connector_transactional_emails_credentials_api_password');
-
                     var reloadurl  = '{$url}';
-
+                    var encoded = btoa(api_password.value);
                     new Ajax.Request(reloadurl, {
                         method: 'post',
-                        parameters: {'api_username' : api_user.value, 'api_password' : api_password.value},
+                        parameters: {'api_username' : api_user.value, 'api_password' : encoded},
                         onComplete: function(transport) {
                             Element.hide('loadingmask');
                             if(transport.responseText == '\"Credentials Valid.\"'){

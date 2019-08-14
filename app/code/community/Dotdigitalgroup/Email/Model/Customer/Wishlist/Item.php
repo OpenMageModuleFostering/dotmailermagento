@@ -73,7 +73,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
         $this->price = $product->getFinalPrice();
         $total = $this->price * $this->qty;
 
-        $this->total_value_of_product = number_format($total, 2);
+        $this->total_value_of_product = number_format($total, 2, '.', ',');
         return $this;
     }
 

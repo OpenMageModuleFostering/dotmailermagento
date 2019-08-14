@@ -115,6 +115,10 @@ $table->addColumn('email_order_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, arr
         'unsigned' => true,
         'nullable' => false,
     ), 'Order ID')
+    ->addColumn('order_status', Varien_Db_Ddl_Table::TYPE_TEXT, null, array(
+        'unsigned' => true,
+        'nullable' => false,
+    ), 'Order Status')
     ->addColumn('quote_id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
         'unsigned'  => true,
         'nullable'  => false,
@@ -224,6 +228,7 @@ $table->addColumn('id', Varien_Db_Ddl_Table::TYPE_INTEGER, null, array(
     ->setComment('Connector Campaigns');
 $installer->getConnection()->createTable($table);
 
+
 /**
  * Admin notification message
  */
@@ -275,13 +280,28 @@ $installer->getConnection()->query($sqlQuery);
 $select = $installer->getConnection()->select()
     ->from(
         $this->getTable('sales/order'),
-        array('order_id' => 'entity_id', 'quote_id', 'store_id', 'created_at', 'updated_at')
+        array('order_id' => 'entity_id', 'quote_id', 'store_id', 'created_at', 'updated_at', 'order_status' => 'status' )
     );
 $insertArray =
-         array('order_id', 'quote_id', 'store_id', 'created_at', 'updated_at');
+    array('order_id', 'quote_id', 'store_id', 'created_at', 'updated_at', 'order_status');
 
 $sqlQuery = $select->insertFromSelect($orderTable, $insertArray, false);
 $installer->getConnection()->query($sqlQuery);
 
+//Save all order statuses as string
+$source = Mage::getModel('adminhtml/system_config_source_order_status');
+$statuses = $source->toOptionArray();
+
+if(count($statuses) > 0 && $statuses[0]['value'] == '')
+    array_shift($statuses);
+
+$options = array();
+foreach($statuses as $status) {
+    $options[] = $status['value'];
+}
+$statusString = implode(',',$options);
+
+$configModel = Mage::getModel('core/config');
+$configModel->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS,$statusString);
 
 $installer->endSetup();

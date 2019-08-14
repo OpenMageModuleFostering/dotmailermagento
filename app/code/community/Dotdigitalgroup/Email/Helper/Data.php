@@ -235,4 +235,49 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
 
         return $url;
     }
+
+    /**
+     * order status config value
+     * @param int $website
+     * @return mixed order status
+     */
+    public function getConfigSelectedStatus($website = 0)
+    {
+        $status = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS, $website);
+        if($status)
+            return explode(',',$status);
+        else
+            return false;
+    }
+
+    /**
+     * check sweet tooth installed/active status
+     * @return boolean
+     */
+    public function isSweetToothEnabled()
+    {
+        return (bool)Mage::getConfig()->getModuleConfig('TBT_Rewards')->is('active', 'true');
+    }
+
+    /**
+     * check sweet tooth installed/active status and active status
+     * @param Mage_Core_Model_Website $website
+     * @return boolean
+     */
+    public function isSweetToothToGo($website)
+    {
+        $stMappingStatus = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE, $website->getData('website_id'));
+        if($stMappingStatus && $this->isSweetToothEnabled()) return true;
+        return false;
+    }
+
+    public function setConnectorContactToReImport($customerId)
+    {
+        $contactModel = Mage::getModel('email_connector/contact');
+        $contactModel
+            ->loadByCustomerId($customerId)
+            ->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_NOT_IMPORTED)
+            ->save();
+    }
+
 }

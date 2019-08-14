@@ -2,7 +2,7 @@
     $order = Mage::getModel('sales/order')->loadByIncrementId($this->getOrderId());
     $orderId = $this->getOrderId();
     $items = $order->getAllItems();
-    $total = number_format($order->getBaseGrandTotal(), 2);
+    $total = number_format($order->getBaseGrandTotal(), 2, '.', ',');
 ?>
 <script type="text/javascript">
     document.observe('dom:loaded', function() {

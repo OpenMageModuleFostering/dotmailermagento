@@ -15,7 +15,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Automation_Connect extends Ma
         $disabled = false;
         if (!$ssl) {
             $disabled = true;
-            Mage::getSingleton('adminhtml/session')->addNotice('Cannot Use the Authorization For Non SSL Server!');
+            //Mage::getSingleton('adminhtml/session')->addNotice('Cannot Use the Authorization For Non SSL Server!');
 
         }
 
@@ -36,7 +36,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Automation_Connect extends Ma
     {
         $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
         if (!preg_match('/https/',$baseUrl)) {
-            Mage::helper('connector')->log('Not an ssl');
             return false;
         }
         return $this;

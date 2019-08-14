@@ -197,6 +197,21 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
             'name' => 'LAST_ORDER_ID',
             'type' => 'numeric',
             'visibility' => 'private',
+        ),
+        'total_refund' => array(
+	        'name' => 'TOTAL_REFUND',
+	        'type' => 'numeric',
+	        'visibility' => 'private',
+        ),
+        'review_count' => array(
+            'name' => 'REVIEW_COUNT',
+            'type' => 'numeric',
+            'visibility' => 'private',
+        ),
+        'last_review_date' => array(
+            'name' => 'LAST_REVIEW_DATE',
+            'type' => 'date',
+            'visibility' => 'private',
         )
     );
 

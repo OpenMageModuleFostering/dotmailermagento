@@ -5,8 +5,18 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     const XML_PATH_TRANSACTIONAL_API_ENABLED                    = 'connector_transactional_emails/credentials/enabled';
     const XML_PATH_TRANSACTIONAL_API_USERNAME                   = 'connector_transactional_emails/credentials/api_username';
     const XML_PATH_TRANSACTIONAL_API_PASSWORD                   = 'connector_transactional_emails/credentials/api_password';
-    const XML_PATH_TRANSACTIONAL_MAPPING                        = 'connector_transactional_emails/email_mapping/';
 
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_FROM_ADDRESS         = 'connector_transactional_emails/email_settings/from_address';
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_REPLY_ACTION         = 'connector_transactional_emails/email_settings/reply_action';
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_REPLY_ADDRESS        = 'connector_transactional_emails/email_settings/reply_address';
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_SEND_COPY            = 'connector_transactional_emails/email_settings/send_copy';
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_UNSUBSCRIBE_LINK     = 'connector_transactional_emails/email_settings/unsubscribe_link';
+
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_DEFAULT        = 'connector_transactional_emails/email_mapping/default_email_templates';
+    const XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_CUSTOM         = 'connector_transactional_emails/email_mapping/custom_email_templates';
+
+    const MAP_COLUMN_KEY_DATAFIELD                              = 'datafield';
+    const MAP_COLUMN_KEY_SENDTYPE                               = 'sendtype';
 
     /**
 	 * Get the api enabled.
@@ -63,28 +73,119 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     }
 
     /**
-     * Check if the template is mapped
-     * @param $templateId
-     * @return bool
+     * Find template lable by id.
+     * @param mixed $templateId
+     *
+     * @return string
      */
-    public function isMapped($templateId)
+    public function getTemplateLabelById($templateId)
     {
-        $path = self::XML_PATH_TRANSACTIONAL_MAPPING . $templateId;
+        $default = Mage::getModel('email_connector/adminhtml_source_transactional_defaultselect')->toOptionArray();
+        $custom = Mage::getModel('email_connector/adminhtml_source_transactional_customselect')->toOptionArray();
+        $all = array_merge($default,$custom);
 
-        return Mage::getStoreConfig($path);
+        $label = "";
+        foreach($all as $one){
+            if($one['value'] == $templateId) {
+                $label = $one['label'];
+                break;
+            }
+        }
+        return $label;
     }
 
     /**
-     * transactional mapped campaign id
+     * get all templates mapping
+     * @param $storeId
+     * @return array
+     */
+    public function getAllTemplateMapping($storeId){
+        $allTemplateMapping = array();
+
+        $defaultTemplateMapping = $this->getDefaultEmailTemplates($storeId);
+        $customTemplateMapping = $this->getCustomEmailTemplates($storeId);
+
+        if(is_array($defaultTemplateMapping) && is_array($customTemplateMapping))
+        {
+            $allTemplateMapping = array_merge($defaultTemplateMapping, $customTemplateMapping);
+        }
+        elseif(is_array($defaultTemplateMapping))
+        {
+            $allTemplateMapping = $defaultTemplateMapping;
+        }
+        elseif(is_array($customTemplateMapping))
+        {
+            $allTemplateMapping = $customTemplateMapping;
+        }
+
+        return $allTemplateMapping;
+    }
+
+    /**
+     * Check if the template is mapped
      * @param $templateId
-     * @param int $storeId
+     * @param $key
+     * @param $storeId
+     *
      * @return mixed
      */
-    public function getTransactionalCampaignId($templateId, $storeId = 0)
+    public function getMapping($templateId, $key ,$storeId = null)
     {
-        $path = self::XML_PATH_TRANSACTIONAL_MAPPING . $templateId;
+        $allTemplateMapping = $this->getAllTemplateMapping($storeId);
+        $isMapped = false;
 
-        return Mage::getStoreConfig($path, $storeId);
+        foreach($allTemplateMapping as $templateMapping)
+        {
+            if($isMapped = $this->findTemplateIdInArray($templateId, $templateMapping))
+                break;
+        }
+
+        if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_DATAFIELD)
+            return $isMapped[self::MAP_COLUMN_KEY_DATAFIELD];
+
+        if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_SENDTYPE)
+            return $isMapped[self::MAP_COLUMN_KEY_SENDTYPE];
+
+        return $isMapped;
+    }
+
+    /*
+     *  find template id in array
+     * @param mixed $id
+     * @param array $data
+     *
+     * @return mixed
+     */
+    public function findTemplateIdInArray($id, $data)
+    {
+        $result = false;
+        foreach($data as $key => $value){
+            if($key == 'template' && $value == $id) {
+                $result = $data;
+                break;
+            }
+        }
+        return $result;
+    }
+
+    /*
+     * get un-serialised config value for all default email templates for all modules
+     *
+     * @return array
+     */
+    public function getDefaultEmailTemplates($storeId = null)
+    {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_DEFAULT, $storeId));
+    }
+
+    /*
+     * get un-serialised config value for custom templates
+     *
+     * @return array
+     */
+    public function getCustomEmailTemplates($storeId = null)
+    {
+        return unserialize(Mage::getStoreConfig(self::XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_CUSTOM, $storeId));
     }
 
     /**
@@ -153,4 +254,28 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
         return $client;
     }
 
+    public function getEmailSettings($path, $websiteId)
+    {
+        $helper = Mage::helper('connector');
+        return $helper->getWebsiteConfig($path, $websiteId);
+    }
+
+    public function getFromAddress($websiteId){
+        return $this->getEmailSettings(self::XML_PATH_CONNECTOR_TRANSACTIONAL_FROM_ADDRESS, $websiteId);
+    }
+
+    public function getReplyAction($websiteId){
+        return $this->getEmailSettings(self::XML_PATH_CONNECTOR_TRANSACTIONAL_REPLY_ACTION, $websiteId);
+    }
+
+    public function getReplyAddress($websiteId){
+        return $this->getEmailSettings(self::XML_PATH_CONNECTOR_TRANSACTIONAL_REPLY_ADDRESS, $websiteId);
+    }
+
+    public function getSendCopy($websiteId){
+        return $this->getEmailSettings(self::XML_PATH_CONNECTOR_TRANSACTIONAL_SEND_COPY, $websiteId);
+    }
+    public function getUnsubscribeLink($websiteId){
+        return $this->getEmailSettings(self::XML_PATH_CONNECTOR_TRANSACTIONAL_UNSUBSCRIBE_LINK, $websiteId);
+    }
 }

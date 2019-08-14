@@ -27,6 +27,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Campaigns
             $campaigns = $savedCampaigns;
         } else {
             $campaigns = $client->getCampaigns();
+            Mage::unregister('savedcampigns');
             Mage::register('savedcampigns', $campaigns);
         }
 
@@ -34,7 +35,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Campaigns
 
         foreach ($campaigns as $one) {
             if(isset($one->id))
-                $fields[] = array('value' => $one->id, 'label' => Mage::helper('connector')->__($one->name));
+                $fields[] = array('value' => $one->id, 'label' => Mage::helper('connector')->__(addslashes($one->name)));
         }
 
         return $fields;

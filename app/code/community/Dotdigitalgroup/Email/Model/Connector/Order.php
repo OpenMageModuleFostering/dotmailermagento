@@ -128,35 +128,44 @@ class Dotdigitalgroup_Email_Model_Connector_Order
          * Order items.
          */
         foreach ($orderData->getAllItems() as $productItem) {
-            $product = $productItem->getProduct();
-            if ($product) {
-                // category names
-                $categoryCollection = $product->getCategoryCollection()
-                    ->addAttributeToSelect('name');
+	        Mage::helper( 'connector' )->log( 'order is : ' . $this->id . ', email: '.  $this->email );
+	        $product = $productItem->getProduct();
+	        if ($product) {
+		        // category names
+		        $categoryCollection = $product->getCategoryCollection()
+		                                      ->addAttributeToSelect( 'name' );
 
-                foreach ($categoryCollection as $cat) {
-                    $categories = array();
-                    $categories[] = $cat->getName();
-                    $this->categories[]['Name'] = substr(implode(', ', $categories), 0, 244);
-                }
-            }
+		        foreach ( $categoryCollection as $cat ) {
+			        $categories                 = array();
+			        $categories[]               = $cat->getName();
+			        $this->categories[]['Name'] = substr( implode( ', ', $categories ), 0, 244 );
+		        }
 
-            $attributeSetModel = Mage::getModel("eav/entity_attribute_set");
-            $attributeSetModel->load($product->getAttributeSetId());
-            $attributeSetName  = $attributeSetModel->getAttributeSetName();
-            $this->products[] = array(
-                'name' => $productItem->getName(),
-                'sku' => $productItem->getSku(),
-                'qty' => (int)number_format($productItem->getData('qty_ordered'), 2),
-                'price' => (float)number_format($productItem->getPrice(), 2),
-                'attribute-set' => $attributeSetName
-            );
+		        $attributeSetModel = Mage::getModel( "eav/entity_attribute_set" );
+		        $attributeSetModel->load( $product->getAttributeSetId() );
+		        $attributeSetName = $attributeSetModel->getAttributeSetName();
+		        $this->products[] = array(
+			        'name'          => $productItem->getName(),
+			        'sku'           => $productItem->getSku(),
+			        'qty'           => (int) number_format( $productItem->getData( 'qty_ordered' ), 2 ),
+			        'price'         => (float) number_format( $productItem->getPrice(), 2, '.', '' ),
+			        'attribute-set' => $attributeSetName
+		        );
+	        } else {
+		        // when no product information is available limit to this data
+		        $this->products[] = array(
+			        'name'          => $productItem->getName(),
+			        'sku'           => $productItem->getSku(),
+			        'qty'           => (int) number_format( $productItem->getData( 'qty_ordered' ), 2 ),
+			        'price'         => (float) number_format( $productItem->getPrice(), 2, '.', '' )
+		        );
+	        }
         }
 
-        $this->order_subtotal   = (float)number_format($orderData->getData('subtotal'), 2);
-        $this->discount_ammount = (float)number_format($orderData->getData('discount_amount'), 2);
+        $this->order_subtotal   = (float)number_format($orderData->getData('subtotal'), 2 , '.', '');
+        $this->discount_ammount = (float)number_format($orderData->getData('discount_amount'), 2 , '.', '');
         $orderTotal = abs($orderData->getData('grand_total') - $orderData->getTotalRefunded());
-        $this->order_total      = (float)number_format($orderTotal, 2);
+        $this->order_total      = (float)number_format($orderTotal, 2 , '.', '');
 
         return true;
     }

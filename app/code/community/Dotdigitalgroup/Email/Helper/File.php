@@ -163,11 +163,27 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
         $store = $website->getDefaultStore();
         $mappedData = Mage::getStoreConfig('connector_data_mapping/customer_data', $store);
         unset($mappedData['custom_attributes']);
+
+        $mappedRewardData = $this->getWebsiteCustomerRewardMappingDatafields($website);
+        if($mappedRewardData) $mappedData = array_merge($mappedData, $mappedRewardData);
+
         foreach ($mappedData as $key => $value) {
             if (! $value)
                 unset($mappedData[$key]);
         }
 
         return $mappedData;
+    }
+
+    public function getWebsiteCustomerRewardMappingDatafields($website)
+    {
+        $helper = Mage::helper('connector');
+        if($helper->isSweetToothToGo($website)) {
+            $store = $website->getDefaultStore();
+            $mappedData = Mage::getStoreConfig('connector_data_mapping/sweet_tooth', $store);
+            unset($mappedData['active']);
+            return $mappedData;
+        }
+        return false;
     }
 }

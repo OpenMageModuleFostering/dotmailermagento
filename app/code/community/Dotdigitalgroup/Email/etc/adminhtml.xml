@@ -120,7 +120,7 @@
                                         <title><![CDATA[Email ROI & Tracking]]></title>
                                     </connector_roi_tracking>
                                     <connector_lost_baskets translate="title">
-                                        <title><![CDATA[Email Lost Baskets]]></title>
+                                        <title><![CDATA[Abandoned Carts]]></title>
                                     </connector_lost_baskets>
                                     <connector_sms translate="title">
                                         <title><![CDATA[Email SMS Section]]></title>
@@ -131,6 +131,9 @@
                                     <connector_transactional_emails translate="title">
                                         <title><![CDATA[Email Transactional Email]]></title>
                                     </connector_transactional_emails>
+                                    <connector_automation_studio translate="title">
+                                        <title><![CDATA[Automation Studio]]></title>
+                                    </connector_automation_studio>
                                     <connector_advanced_settings translate="title">
                                         <title><![CDATA[Email Advanced Settings]]></title>
                                     </connector_advanced_settings>

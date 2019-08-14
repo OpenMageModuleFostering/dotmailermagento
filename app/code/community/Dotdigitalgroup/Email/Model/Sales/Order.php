@@ -24,13 +24,13 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         $client = Mage::getModel('email_connector/apiconnector_client');
         // Initialise a return hash containing results of our sync attempt
         $this->_searchAccounts();
-
-        foreach ($this->accounts as $account) {
+	    Mage::helper( 'connector' )->log( 'search for the accounts, transactional order' );
+	    foreach ($this->accounts as $account) {
             $orders = $account->getOrders();
             if (count($orders)) {
                 $client->setApiUsername($account->getApiUsername())
                     ->setApiPassword($account->getApiPassword());
-                Mage::helper('connector')->log('--------- Order sync ----------');
+                Mage::helper('connector')->log('--------- Order sync ---------- : ' . count($orders));
                 $client->postContactsTransactionalDataImport($orders, 'Orders');
                 Mage::helper('connector')->log('----------end order sync----------');
             }
@@ -49,6 +49,7 @@ class Dotdigitalgroup_Email_Model_Sales_Order
             if ($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, $website)) {
                 $this->_apiUsername = $helper->getApiUsername($website);
                 $this->_apiPassword = $helper->getApiPassword($website);
+
                 // limit for orders included to sync
                 $limit = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT, $website);
                 if (!isset($this->accounts[$this->_apiUsername])) {
@@ -75,7 +76,14 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         $orderModel   = Mage::getModel('email_connector/order');
         if(empty($storeIds))
             return;
-        $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit);
+
+        $orderStatuses = Mage::helper('connector')->getConfigSelectedStatus($website);
+
+        if($orderStatuses)
+            $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
+        else
+            return;
+
         foreach ($orderCollection as $order) {
             try {
                 $salesOrder = Mage::getModel('sales/order')->load($order->getOrderId());

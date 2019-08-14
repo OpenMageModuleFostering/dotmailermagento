@@ -4,7 +4,13 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
 {
 
     public $customer;
-    public $customerData ;
+    public $customerData;
+    public $reviewCollection;
+
+    public $rewardCustomer;
+    public $rewardLastSpent = "";
+    public $rewardLastEarned = "";
+    public $rewardExpiry = "";
 
     protected $_mapping_hash;
 
@@ -34,9 +40,15 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
 	 *
 	 * @param Mage_Customer_Model_Customer $customer
 	 */
-    public function setCustomerData(Mage_Customer_Model_Customer $customer)
+    public function setCustomerData(Mage_Customer_Model_Customer $customer, $website = null)
     {
+        $helper = Mage::helper('connector');
+
         $this->customer = $customer;
+        $this->setReviewCollection();
+
+        if($website && $helper->isSweetToothToGo($website))
+            $this->setRewardCustomer($customer);
 
         foreach ($this->getMappingHash() as $key => $field) {
 
@@ -57,7 +69,66 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
         }
     }
 
-	/**
+    public function setReviewCollection()
+    {
+        $customer_id = $this->customer->getId();
+        $collection = Mage::getModel('review/review')->getCollection();
+        $collection
+            ->addCustomerFilter($customer_id)
+            ->setOrder('review_id','DESC');
+        $this->reviewCollection = $collection;
+    }
+
+    public function getReviewCount()
+    {
+        return count($this->reviewCollection);
+    }
+
+    public function getLastReviewDate(){
+        if(count($this->reviewCollection))
+            return $this->reviewCollection->getFirstItem()->getCreatedAt();
+        return '';
+    }
+
+    /**
+     * Set reward customer
+     *
+     * @param Mage_Customer_Model_Customer $customer
+     */
+    public function setRewardCustomer(Mage_Customer_Model_Customer $customer)
+    {
+        $tbt_reward = Mage::getModel('rewards/customer')->getRewardsCustomer($customer);
+        $this->rewardCustomer = $tbt_reward;
+
+        $lastTransfers = $tbt_reward->getTransfers()
+            ->selectOnlyActive()
+            ->addOrder('last_update_ts', Varien_Data_Collection::SORT_ORDER_DESC);
+
+        $spent = $earn = null;
+
+        if($lastTransfers->getSize()) {
+            foreach($lastTransfers as $transfer) {
+                if(is_null($earn) && $transfer->getQuantity() > 0){
+                    $earn  = $transfer->getEffectiveStart();
+                }else if(is_null($spent) && $transfer->getQuantity() < 0) {
+                    $spent = $transfer->getEffectiveStart();
+                }
+                if(!is_null($spent) && !is_null($earn)) {
+                    break;
+                }
+            }
+        }
+
+        if($earn) $this->rewardLastEarned = $earn;
+        if($spent) $this->rewardLastSpent = $spent;
+
+        $tbt_expiry = Mage::getSingleton('rewards/expiry')
+            ->getExpiryDate($tbt_reward);
+
+        if($tbt_expiry) $this->rewardExpiry = $tbt_expiry;
+    }
+
+    /**
 	 * get customer id.
 	 *
 	 * @return mixed
@@ -498,4 +569,53 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
         return $this;
     }
 
+    public function getRewardPointBalance()
+    {
+        return $this->cleanString($this->rewardCustomer->getPointsSummary());
+    }
+
+    public function getRewardPointPending()
+    {
+        return $this->cleanString($this->rewardCustomer->getPendingPointsSummary());
+    }
+
+    public function getRewardPointPendingTime()
+    {
+        return $this->cleanString($this->rewardCustomer->getPendingTimePointsSummary());
+    }
+
+    public function getRewardPointOnHold()
+    {
+        return $this->cleanString($this->rewardCustomer->getOnHoldPointsSummary());
+    }
+
+    public function getRewardPointExpiration()
+    {
+        if($this->rewardExpiry != "")
+            return date_format(date_create($this->makeUSDate($this->rewardExpiry)), 'Y-m-d H:i:s');
+        return $this->rewardExpiry;
+    }
+
+    public function getRewardPointLastSpent()
+    {
+        return $this->rewardLastSpent;
+    }
+
+    public function getRewardPointLastEarn()
+    {
+        return $this->rewardLastEarned;
+    }
+
+    public function makeUSDate($uk_date, $separator_input = '/', $sepatator_output = '/')
+    {
+        list($day, $month, $year) = explode($separator_input, $uk_date);
+        return $month.$sepatator_output.$day.$sepatator_output.$year;
+    }
+
+    public function cleanString($string)
+    {
+        $cleanedString = preg_replace("/[^0-9]/","",$string);
+        if($cleanedString != "") return (int) number_format($cleanedString, 0, '.', '');
+        return (int) 0;
+    }
 }
