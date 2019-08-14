@@ -32,10 +32,11 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
             ->setOrder('updated_at', 'DESC')
             ->setPageSize(1);
 
-        $quoteModel = $quoteModel->getFirstItem();
+	    $quoteModel = $quoteModel->getFirstItem();
+
 
 	    //check for any quote for this email, don't want to render further
-	    if ($quoteModel->getId()) {
+	    if (! $quoteModel->getId()) {
 		    Mage::helper('connector')->log('no quote found for email : ' . $email);
 		    exit();
 	    }
