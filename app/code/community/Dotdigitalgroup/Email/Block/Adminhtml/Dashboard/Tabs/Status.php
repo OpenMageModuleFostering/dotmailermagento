@@ -372,7 +372,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 			foreach ( $subdir as $path ) {
 				$file = $pathToCheck[0] . DS . str_replace( '#', DS, $path );
 
-				if ( !is_file( $file ) ) {
+				if ( !file_exists( $file ) ) {
 					$resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED )
 						->setMessage('')
 						->setHowto('File not found : ' . $file );
