@@ -60,7 +60,9 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
                 } else {
                     Mage::helper('connector')->log('CONTACT ID IS EMPTY : ' . $contactId . ' email : ' . $email);
                 }
-                $contactEmail->setIsSubscriber(null);
+                $contactEmail->setIsSubscriber(null)
+	                ->setSubscriberStatus(Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED);
+
             }
 
             $contactEmail->setStoreId($storeId)

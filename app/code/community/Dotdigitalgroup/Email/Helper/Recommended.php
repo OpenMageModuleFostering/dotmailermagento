@@ -19,7 +19,7 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
     const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/recently_viewed_items_to_display';
 
     const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS    = 'connector_dynamic_content/manual_product_search/items_to_display';
-    const XML_PATH_BESTSELLER_TIME_PERIOD       = 'connector_dynamic_content/products/best_time_period';
+    const XML_PATH_BESTSELLER_TIME_PERIOD       = 'connector_dynamic_content/products/bestsellers_time_period';
     const XML_PATH_MOSTVIEWED_TIME_PERIOD       = 'connector_dynamic_content/products/most_viewed_time_period';
     const XML_PATH_PRODUCTPUSH_ITEMS            = 'connector_dynamic_content/manual_product_search/products_push_items';
     const XML_PATH_FALLBACK_PRODUCTS_ITEMS      = 'connector_dynamic_content/fallback_products/product_list';
@@ -145,27 +145,15 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
     public function getTimeFromConfig($config)
     {
         $now = new Zend_Date();
-        $period = '';
+        $period = Zend_Date::YEAR;
         if ($config == 'mostviewed')
             $period = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
         elseif($config == 'bestsellers')
             $period = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_TIME_PERIOD);
-        elseif($config == 'recentlyviewed')
-            $period = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
 
-        if ($period == 'week') {
-            $sub = Zend_Date::WEEK;
-        } elseif ($period == 'month') {
-            $sub = Zend_Date::MONTH;
-        } elseif ($period == 'year') {
-            $sub = Zend_Date::YEAR;
-        }
+	    $period = $now->sub(1, $period);
 
-        if (isset($sub)) {
-            $period = $now->sub(1, $sub);
-
-            return $period->tostring(Zend_Date::ISO_8601);
-        }
+		return $period->tostring(Zend_Date::ISO_8601);
     }
 
     public function getProductPushIds()

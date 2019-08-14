@@ -51,9 +51,10 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
 	public function showAction() {
 		$list = array();
 
-		if ($handle = opendir(Mage::getBaseDir('base') . '/var/export/email/archive')) {
+		if ($handle = opendir(Mage::getBaseDir('export') . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive')) {
 
-			while (false !== ($entry = readdir($handle))) {
+
+				while (false !== ($entry = readdir($handle))) {
 
 				if ($entry != "." && $entry != "..") {
 

@@ -246,11 +246,9 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     public function getWebsiteApiClient($website = 0)
     {
         $client = Mage::getModel('email_connector/apiconnector_client');
-        $website = Mage::app()->getWebsite($website);
-        if ($website) {
-            $client->setApiUsername($this->getApiUsername($website))
-                ->setApiPassword($this->getApiPassword($website));
-        }
+        $client->setApiUsername($this->getApiUsername($website))
+               ->setApiPassword($this->getApiPassword($website));
+
         return $client;
     }
 

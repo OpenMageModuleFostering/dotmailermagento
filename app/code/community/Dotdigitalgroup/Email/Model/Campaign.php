@@ -209,10 +209,9 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
                             ->save();
                     }
                 }else{
-                    $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
-                    $contactId = Mage::helper('connector')->getContactId($campaign->getEmail(), $websiteId);
+                    $contactId = Mage::helper('connector/transactional')->getContactId($campaign->getEmail(), $websiteId);
                     Mage::helper('connector')->log($contactId);
-                    $response = $client->postCampaignsSend($campaignId, array($contactId));
+                    $response = $this->transactionalClient->postCampaignsSend($campaignId, array($contactId));
                     if (isset($response->message)) {
                         //update  the failed to send email message
                         $campaign->setMessage($response->message)->setIsSent(1)->save();

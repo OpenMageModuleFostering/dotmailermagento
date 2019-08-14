@@ -60,7 +60,7 @@ class Dotdigitalgroup_Email_Model_Create extends Mage_Core_Model_Abstract
                 }
 
                 if(isset($data)){
-                    $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
+                    $client = Mage::helper('connector/transactional')->getWebsiteApiClient($websiteId);
                     $result = $client->postCampaign($data);
                     if (isset($result->message)) {
                         $email
