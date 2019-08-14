@@ -44,6 +44,11 @@
                             <sort_order>30</sort_order>
                             <action>adminhtml/email_wishlist</action>
                         </email_connector_wishlist>
+                        <email_connector_quote translate="title">
+                            <title>Quote Sync</title>
+                            <sort_order>22</sort_order>
+                            <action>adminhtml/email_quote</action>
+                        </email_connector_quote>
                     </children>
                 </reports>
                 <email_configuration translate="title">
@@ -101,6 +106,9 @@
                                     <email_connector_wishlist translate="title">
                                         <title>Email Connector Wishlist</title>
                                     </email_connector_wishlist>
+                                    <email_connector_quote translate="title">
+                                        <title>Email Connector Quote</title>
+                                    </email_connector_quote>
                                 </children>
                             </reports>
                             <email_configuration translate="title">

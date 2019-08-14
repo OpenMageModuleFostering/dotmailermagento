@@ -48,13 +48,42 @@ class Dotdigitalgroup_Email_Model_Cron
     }
 
     /**
-     * CRON FOR ORDER TRANSACTIONAL DATA
+     * order sync
+     *
+     * @return mixed
      */
     public function orderSync()
     {
         // send order
-        $result = Mage::getModel('email_connector/sales_order')->sync();
-	    return $result;
+        $orderResult = Mage::getModel('email_connector/sales_order')->sync();
+        return $orderResult;
+    }
+
+    /**
+     * quote sync
+     *
+     * @return mixed
+     */
+    public function quoteSync()
+    {
+        //send quote
+        $quoteResult = Mage::getModel('email_connector/quote')->sync();
+
+        return $quoteResult;
+    }
+
+    /**
+     * CRON FOR ORDER & QUOTE TRANSACTIONAL DATA
+     */
+    public function orderAndOrderSync()
+    {
+        // send order
+        $orderResult = $this->orderSync();
+
+        //send quote
+        $quoteResult = $this->quoteSync();
+
+        return $orderResult['message'] . '  ' .$quoteResult['message'];
     }
 
     /**

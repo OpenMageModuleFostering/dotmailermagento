@@ -204,16 +204,12 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
      */
     public function wishlistSaveAfter(Varien_Event_Observer $observer)
     {
-	    //skip the version that has no wishlist observer
-	    if (version_compare(Mage::getVersion(), '1.6.2.0', '<=')) {
-
-		    return;
-	    }
-		$dataObject = $observer->getEvent()->getDataObject();
-
-        if ($dataObject->getCustomerId()) {
-	        //save wishlist info in the table
-	        $this->_registerWishlist( $dataObject );
+        if($observer->getEvent()->getObject() instanceof Mage_Wishlist_Model_Wishlist) {
+            $wishlist = $observer->getEvent()->getObject()->getData();
+            if (is_array($wishlist) && isset($wishlist['customer_id'])) {
+                //save wishlist info in the table
+                $this->_registerWishlist( $wishlist );
+            }
         }
     }
 
@@ -229,10 +225,10 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
             $customer = Mage::getModel('customer/customer');
 
             //if wishlist exist not to save again
-            if(!$emailWishlist->getWishlist($wishlist->getWishlistId())){
-                $customer->load($wishlist->getCustomerId());
-                $emailWishlist->setWishlistId($wishlist->getWishlistId())
-                    ->setCustomerId($wishlist->getCustomerId())
+            if(!$emailWishlist->getWishlist($wishlist['wishlist_id'])){
+                $customer->load($wishlist['customer_id']);
+                $emailWishlist->setWishlistId($wishlist['wishlist_id'])
+                    ->setCustomerId($wishlist['customer_id'])
                     ->setStoreId($customer->getStoreId())
                     ->save();
                 // send customer to automation mapped
@@ -253,11 +249,6 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
      */
     public function wishlistItemSaveAfter(Varien_Event_Observer $observer)
     {
-	    //skip the version that has no wishlist observer
-	    if (version_compare(Mage::getVersion(), '1.6.2.0', '<=')) {
-		    return;
-	    }
-
 	    $object        = $observer->getEvent()->getDataObject();
 	    $wishlist      = Mage::getModel( 'wishlist/wishlist' )->load( $object->getWishlistId() );
 	    $emailWishlist = Mage::getModel( 'email_connector/wishlist' );
@@ -266,7 +257,7 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 			    $itemCount = count( $wishlist->getItemCollection() );
 			    $item      = $emailWishlist->getWishlist( $object->getWishlistId() );
 
-			    if ( $item->getId() ) {
+			    if ( $item && $item->getId() ) {
 				    $preSaveItemCount = $item->getItemCount();
 
 				    if ( $itemCount != $item->getItemCount() ) {

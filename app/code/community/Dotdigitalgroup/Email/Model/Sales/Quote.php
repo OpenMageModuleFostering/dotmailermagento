@@ -51,7 +51,6 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 
 	    foreach (Mage::app()->getStores() as $store) {
             $storeId = $store->getId();
-            $sendModel = Mage::getModel('email_connector/campaign');
 
 		    if ($mode == 'all' || $mode == 'customers') {
 			    /**
@@ -91,10 +90,11 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 						    if ( !$campignFound ) {
 
 							    //save lost basket for sending
-							    $sendModel->loadByQuoteId( $quote->getId(), $storeId )
+							    $sendModel = Mage::getModel('email_connector/campaign')
 								    ->setEmail( $email )
 								    ->setCustomerId( $quote->getCustomerId() )
 								    ->setEventName( 'Lost Basket' )
+								    ->setMessage('Abandoned Cart :' . $num)
 								    ->setCampaignId( $campaignId )
 								    ->setStoreId( $storeId )
 								    ->setWebsiteId($store->getWebsiteId())
@@ -133,10 +133,11 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 						    //no campign found for interval pass
 						    if ( !$campignFound ) {
 							    //save lost basket for sending
-							    $sendModel->loadByQuoteId( $quote->getId(), $storeId )
+							    $sendModel = Mage::getModel('email_connector/campaign')
 								    ->setEmail( $email )
 								    ->setEventName( 'Lost Basket' )
 								    ->setCheckoutMethod( 'Guest' )
+								    ->setMessage('Guest Abandoned Cart : ' . $num)
 								    ->setCampaignId( $guestCampaignId )
 								    ->setStoreId( $storeId )
 								    ->setWebsiteId($store->getWebsiteId())
@@ -206,8 +207,12 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
             ->addFieldToFilter('customer_email', array('neq' => ''))
             ->addFieldToFilter('store_id', $storeId)
             ->addFieldToFilter('updated_at', $updated);
-        if ($guest) {
+        //guests
+	    if ($guest) {
 	        $salesCollection->addFieldToFilter( 'customer_id', array( 'null' => true ) );
+        } else {
+		    //customers
+	        $salesCollection->addFieldToFilter( 'customer_id', array( 'notnull' => true ) );
         }
 
 	    return $salesCollection;

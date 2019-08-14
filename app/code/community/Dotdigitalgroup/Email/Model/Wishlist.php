@@ -175,4 +175,28 @@ class Dotdigitalgroup_Email_Model_Wishlist extends Mage_Core_Model_Abstract
         $collection->getSelect()->limit($limit);
         return $collection->load();
     }
+
+    /**
+     * Reset the email reviews for reimport.
+     *
+     * @return int
+     */
+    public function reset()
+    {
+        /** @var $coreResource Mage_Core_Model_Resource */
+        $coreResource = Mage::getSingleton('core/resource');
+
+        /** @var $conn Varien_Db_Adapter_Pdo_Mysql */
+        $conn = $coreResource->getConnection('core_write');
+        try{
+            $num = $conn->update($coreResource->getTableName('email_connector/wishlist'),
+                array('wishlist_imported' => new Zend_Db_Expr('null')),
+                $conn->quoteInto('wishlist_imported is ?', new Zend_Db_Expr('not null'))
+            );
+        }catch (Exception $e){
+            Mage::logException($e);
+        }
+
+        return $num;
+    }
 }

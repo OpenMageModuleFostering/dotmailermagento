@@ -1,6 +1,7 @@
 <?php
+require_once 'Dotdigitalgroup' . DS . 'Email' . DS . 'controllers' . DS . 'ResponseController.php';
 
-class Dotdigitalgroup_Email_ProductsController extends Mage_Core_Controller_Front_Action
+class Dotdigitalgroup_Email_ProductsController extends Dotdigitalgroup_Email_ResponseController
 {
 	/**
 	 * @return Mage_Core_Controller_Front_Action|void

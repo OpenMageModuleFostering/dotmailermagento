@@ -28,6 +28,9 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		'order_enabled' => 'Order Sync Enabled',
         'custom_order_attributes' => 'Custom Order Attributes',
 		'order_syncing' => 'Orders Syncing',
+        'quote_enabled' => 'Quote Sync Enabled',
+        'custom_quote_attributes' => 'Custom Quote Attributes',
+        'quote_syncing' => 'Quote Syncing',
 		'last_abandoned_cart_sent_day' => 'Last Abandoned Cart Sent Day',
         'review_enabled' => 'Review Sync Enabled',
         'review_syncing' => 'Review Syncing',
@@ -1143,6 +1146,107 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		return $resultContent;
 
 	}
+
+    /**
+     * Quote sync enabled.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function quoteEnabled()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Quote Sync : ')
+            ->setMessage('Enabled.');
+
+        $passed = true;
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $quote = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED))? true :
+                'Disabled!';
+
+            if ($quote !== true){
+
+                $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED', 'website' => $website->getId()));
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setMessage('')
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => $quote . ' <a href="' . $url . '">enable</a>'
+                    ));
+                $passed = false;
+            }
+        }
+        //validation failed
+        if (! $passed) {
+            $resultContent->setHowto(self::FAST_FIX_MESSAGE);
+        }
+
+        return $resultContent;
+    }
+
+    /**
+     * check if any custom quote attribute selected
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function customQuoteAttributes()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Custom Quote Attributes : ')
+            ->setMessage('Selected.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $customQuoteAttribute = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES))? true : false;
+
+            if ($customQuoteAttribute !== true){
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setTitle('Custom quote attribute not selected (ignore if you do not want to import custom quote attributes) :')
+                    ->setMessage('')
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => 'No Custom Quote Attribute Selected'
+                    ));
+            }
+        }
+
+        return $resultContent;
+    }
+
+    /**
+     * Check if any quote are imported.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function quoteSyncing()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Quote Syncing : ')
+            ->setMessage('Looks Great.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $storeIds = $website->getStoreIds();
+
+            //number of quote marked as imported
+            $numQuotes = Mage::getModel('email_connector/quote')->getCollection()
+                ->addFieldToFilter('imported', 1)
+                ->addFieldToFilter('store_id', array('in', $storeIds))->getSize();
+
+            if (! $numQuotes) {
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setTitle('Quote Syncing (ignore if you have reset quote for re-import) :')
+                    ->setMessage('')
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => 'No Imported Quotes Found'
+                    ));
+            }
+        }
+
+        return $resultContent;
+
+    }
 
     /**
      * review sync enabled.

@@ -149,6 +149,60 @@
                         </guests>
                     </fields>
                 </address_book>
+                <address_book_pref>
+                    <label>Customer Address Book Preference</label>
+                    <sort_order>15</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <can_change translate="label" module="connector">
+                            <label>Show Address Books To Customer?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </can_change>
+                        <show_books>
+                            <label>Address Books To Show</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_addressbookspref</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <can_change>1</can_change>
+                            </depends>
+                            <comment><![CDATA[ Choose additional address books to show in addition to the Magento General Subscription list.]]></comment>
+                        </show_books>
+                        <can_show_fields translate="label" module="connector">
+                            <label>Show Data Fields To Customer?</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </can_show_fields>
+                        <fields_to_show>
+                            <label>Data Fields To Show</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_publicdatafields</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends>
+                                <can_show_fields>1</can_show_fields>
+                            </depends>
+                            <comment><![CDATA[Only data fields with visibility public can be shown to customers. You can create more data fields within the Data Mapping section.]]></comment>
+                        </fields_to_show>
+                    </fields>
+                </address_book_pref>
                 <sync translate="label" module="connector">
                     <label>Sync</label>
                     <frontend_type>text</frontend_type>
@@ -209,6 +263,23 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </order_enabled>
+                        <quote_title translate="label" module="connector">
+                            <label>Quote Sync</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>83</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </quote_title>
+                        <quote_enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>86</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </quote_enabled>
                         <wishlist_title translate="label" module="connector">
                             <label>Wishlist Sync</label>
                             <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
@@ -1747,6 +1818,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
+                            <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter best sellers by category]]></comment>
                         </best_sellers_url>
                         <most_viewed_url translate="label" module="connector">
                             <label>Most Viewed URL</label>
@@ -1756,6 +1828,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
+                            <comment><![CDATA[add category_id/@CATEGORY_ID@ at the end of url to filter most viewed by category]]></comment>
                         </most_viewed_url>
                         <product_push_url translate="label" module="connector">
                             <label>Product Push URL</label>
@@ -1906,6 +1979,59 @@
                         </dynamic_url>
                     </fields>
                 </nosto_recommendation>
+                <feefo_feedback_engine translate="label" module="connector">
+                    <label>Feefo Feedback Engine</label>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <logon translate="label" module="connector">
+                            <label>Feefo Logon</label>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[This is what you provided Feefo during account setup and is usually your website domain name.]]></comment>
+                        </logon>
+                        <reviews_per_product>
+                            <label>Reviews Per Product</label>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Number of reviews to display per product.]]></comment>
+                        </reviews_per_product>
+                        <template>
+                            <label>Logo Template (Optional)</label>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Enter name of logo template. ]]></comment>
+                        </template>
+                        <service_score_url traslate="label" module="connector">
+                            <label>Service Score URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_dynamic_feefo_score</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Enter Feefo logon above before using this URL.]]></comment>
+                        </service_score_url>
+                        <product_reviews_url traslate="label" module="connector">
+                            <label>Product Reviews URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_dynamic_feefo_reviews</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Enter Feefo logon above before using this URL.]]></comment>
+                        </product_reviews_url>
+                    </fields>
+                </feefo_feedback_engine>
             </groups>
         </connector_dynamic_content>
         <connector_transactional_emails translate="label" module="connector">
@@ -2184,6 +2310,16 @@
                             <show_in_store>0</show_in_store>
                             <comment><![CDATA[Select custom order attributes that you want to import with your order data. Select multiple by pressing Ctrl button while selecting.]]></comment>
                         </order_custom_attributes>
+                        <quote_custom_attributes>
+                            <label>Quote Custom Attributes</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_advanced_quoteattributes</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Select custom quote attributes that you want to import with your quote data. Select multiple by pressing Ctrl button while selecting.]]></comment>
+                        </quote_custom_attributes>
                     </fields>
                 </transactional_data>
                 <abandoned_carts translate="label" module="connector">
@@ -2216,6 +2352,194 @@
                         </limits>
                     </fields>
                 </abandoned_carts>
+                <dynamic_content_style translate="label comment" module="connector">
+                    <label>Dynamic Content Styling</label>
+                    <sort_order>2500</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <dynamic_syling translate="label" module="connector">
+                            <label>Dynamic Styling</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Styling entered here will apply to all dynamic content areas pulled from Magento. Classes References Used : 'product-table', 'product-name', 'product-price', 'product-url', 'other-text']]></comment>
+                        </dynamic_syling>
+                        <name_title title="label" module="connector">
+                            <label>Product Name</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>35</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </name_title>
+                        <name_color translate="label" module="connector">
+                            <label>Font Color</label>
+                            <frontend_type>select</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_config_colorpicker</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </name_color>
+                        <name_font_size translate="label" module="connector">
+                            <label>Font Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>email_connector/adminhtml_source_fontsize</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </name_font_size>
+                        <name_style translate="label" module="connector">
+                            <label>Style</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_styling</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>connector-config-multiselect</frontend_class>
+                        </name_style>
+                        <price_title title="label" module="connector">
+                            <label>Product Price</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </price_title>
+                        <price_color translate="label" module="connector">
+                            <label>Font Color</label>
+                            <frontend_type>select</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_config_colorpicker</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </price_color>
+                        <price_font_size translate="label" module="connector">
+                            <label>Font Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>email_connector/adminhtml_source_fontsize</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </price_font_size>
+                        <price_style translate="label" module="connector">
+                            <label>Style</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_styling</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>connector-config-multiselect</frontend_class>
+                        </price_style>
+                        <link_title title="label" module="connector">
+                            <label>Product Link</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>110</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </link_title>
+                        <link_color translate="label" module="connector">
+                            <label>Font Color</label>
+                            <frontend_type>select</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_config_colorpicker</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </link_color>
+                        <link_font_size translate="label" module="connector">
+                            <label>Font Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>email_connector/adminhtml_source_fontsize</source_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </link_font_size>
+                        <link_style translate="label" module="connector">
+                            <label>Style</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_styling</source_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>connector-config-multiselect</frontend_class>
+                        </link_style>
+                        <doc_title title="label" module="connector">
+                            <label>Applies To Whole Document</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>150</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </doc_title>
+                        <font_picker translate="label" module="connector">
+                            <label>Font</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>email_connector/adminhtml_source_fontpicker</source_model>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </font_picker>
+                        <doc_color translate="label" module="connector">
+                            <label>Background Color</label>
+                            <frontend_type>select</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_config_colorpicker</frontend_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </doc_color>
+                        <other_title title="label" module="connector">
+                            <label>Other Text (Will Apply To Other Remaining Text)</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </other_title>
+                        <other_color translate="label" module="connector">
+                            <label>Font Color</label>
+                            <frontend_type>select</frontend_type>
+                            <frontend_model>email_connector/adminhtml_system_config_colorpicker</frontend_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </other_color>
+                        <other_font_size translate="label" module="connector">
+                            <label>Font Size</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>email_connector/adminhtml_source_fontsize</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </other_font_size>
+                        <other_style translate="label" module="connector">
+                            <label>Style</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>email_connector/adminhtml_source_styling</source_model>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_class>connector-config-multiselect</frontend_class>
+                        </other_style>
+                    </fields>
+                </dynamic_content_style>
                 <admin translate="label comment" module="connector">
                     <label>Admin</label>
                     <sort_order>3000</sort_order>
@@ -2241,15 +2565,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </disable_customer_success>
-                        <dynamic_syling translate="label" module="connector">
-                            <label>Dynamic Styling</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <comment><![CDATA[Styling entered here will apply to all dynamic content areas pulled from Magento. Classes References Used : 'product-name', 'product-price', 'product-url']]></comment>
-                        </dynamic_syling>
                     </fields>
                 </admin>
             </groups>
@@ -2394,6 +2709,15 @@
                             <show_in_store>0</show_in_store>
                             <comment><![CDATA[Run the review sync manually.]]></comment>
                         </review_sync>
+                        <quote_sync tranlate="label comment" module="connector">
+                            <label>Quote Sync</label>
+                            <frontend_model>email_connector/adminhtml_system_advanced_runquotesync</frontend_model>
+                            <sort_order>57</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Run the quote sync manually.]]></comment>
+                        </quote_sync>
                         <actions_title translate="label" module="connector">
                             <label>Reset Sync Options</label>
                             <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
@@ -2447,6 +2771,33 @@
                             <show_in_store>0</show_in_store>
                             <comment>Refresh Historically Suppressed contacts for 10years period.</comment>
                         </suppressed_contacts>
+                        <reimport_quotes module="connector" translate="label comment">
+                            <label>Refresh Quote Data</label>
+                            <frontend_model>email_connector/adminhtml_system_advanced_reimportquotes</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Mark all quote data to be imported.]]></comment>
+                        </reimport_quotes>
+                        <reimport_reviews module="connector" translate="label comment">
+                            <label>Refresh Review Data</label>
+                            <frontend_model>email_connector/adminhtml_system_advanced_reimportreviews</frontend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Mark all review data to be imported.]]></comment>
+                        </reimport_reviews>
+                        <reimport_wishlist module="connector" translate="label comment">
+                            <label>Refresh Wishlist Data</label>
+                            <frontend_model>email_connector/adminhtml_system_advanced_reimportwishlists</frontend_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Mark all wishlist data to be imported.]]></comment>
+                        </reimport_wishlist>
                     </fields>
                 </sync_settings>
                 <debug translate="label" module="connector">

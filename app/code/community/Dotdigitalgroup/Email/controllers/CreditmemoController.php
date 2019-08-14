@@ -19,6 +19,7 @@ class Dotdigitalgroup_Email_CreditmemoController extends Dotdigitalgroup_Email_D
         ));
         $this->getLayout()->getBlock('connector_creditmemo_new')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -35,9 +36,8 @@ class Dotdigitalgroup_Email_CreditmemoController extends Dotdigitalgroup_Email_D
             'template' => 'connector/creditmemo/items.phtml'
         ));
         $this->getLayout()->getBlock('connector_creditmemo_guest')->append($items);
-
         $this->renderLayout();
-
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -50,8 +50,8 @@ class Dotdigitalgroup_Email_CreditmemoController extends Dotdigitalgroup_Email_D
             'template' => 'connector/creditmemo/update.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
-
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -65,5 +65,6 @@ class Dotdigitalgroup_Email_CreditmemoController extends Dotdigitalgroup_Email_D
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 }

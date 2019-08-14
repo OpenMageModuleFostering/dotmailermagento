@@ -32,6 +32,22 @@ class Dotdigitalgroup_Email_Block_Recommended_Mostviewed extends Mage_Core_Block
             ->addViewsCount($from, $to)
             ->setPageSize($limit);
 
+        //filter collection by category
+        if($cat_id = Mage::app()->getRequest()->getParam('category_id')){
+            $category = Mage::getModel('catalog/category')->load($cat_id);
+            if($category->getId()){
+                $productCollection->getSelect()
+                    ->joinLeft(
+                        array("ccpi" => 'catalog_category_product_index'),
+                        "e.entity_id = ccpi.product_id",
+                        array("category_id")
+                    )
+                    ->where('ccpi.category_id =?',  $cat_id);
+            }else{
+                Mage::helper('connector')->log('Most viewed. Category id '. $cat_id . ' is invalid. It does not exist.');
+            }
+        }
+
         foreach ($productCollection as $_product) {
             $productId = $_product->getId();
             $product = Mage::getModel('catalog/product')->load($productId);

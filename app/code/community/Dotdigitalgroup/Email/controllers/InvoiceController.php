@@ -20,6 +20,7 @@ class Dotdigitalgroup_Email_InvoiceController extends Dotdigitalgroup_Email_Dyna
         ));
         $this->getLayout()->getBlock('connector_invoice_new')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -39,6 +40,7 @@ class Dotdigitalgroup_Email_InvoiceController extends Dotdigitalgroup_Email_Dyna
 	    //set invoice items
         $this->getLayout()->getBlock('connector_invoiceguest_new')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -53,6 +55,7 @@ class Dotdigitalgroup_Email_InvoiceController extends Dotdigitalgroup_Email_Dyna
 	    //set invoice content
         $this->getLayout()->getBlock('content')->append($invoice);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -67,5 +70,6 @@ class Dotdigitalgroup_Email_InvoiceController extends Dotdigitalgroup_Email_Dyna
 	    //set invoice content
         $this->getLayout()->getBlock('content')->append($invoice);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 }

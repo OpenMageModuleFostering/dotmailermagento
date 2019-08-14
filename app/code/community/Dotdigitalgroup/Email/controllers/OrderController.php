@@ -20,6 +20,7 @@ class Dotdigitalgroup_Email_OrderController extends Dotdigitalgroup_Email_Dynami
         ));
         $this->getLayout()->getBlock('connector_order')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -39,6 +40,7 @@ class Dotdigitalgroup_Email_OrderController extends Dotdigitalgroup_Email_Dynami
         ));
         $this->getLayout()->getBlock('connector_order_guest')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -53,6 +55,7 @@ class Dotdigitalgroup_Email_OrderController extends Dotdigitalgroup_Email_Dynami
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -67,5 +70,6 @@ class Dotdigitalgroup_Email_OrderController extends Dotdigitalgroup_Email_Dynami
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 }

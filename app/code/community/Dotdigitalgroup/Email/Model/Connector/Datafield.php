@@ -53,54 +53,57 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
         'customer_id' => array(
             'name' => 'CUSTOMER_ID',
             'type' => 'numeric',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'firstname' => array(
             'name' => 'FIRSTNAME',
-            'type' => 'string'
+            'type' => 'string',
+            'visibility' => 'private',
         ),
         'lastname' => array(
             'name' => 'LASTNAME',
-            'type' => 'string'
+            'type' => 'string',
+            'visibility' => 'private',
         ),
         'gender' => array(
             'name' => 'GENDER',
-            'type' => 'string'
+            'type' => 'string',
+            'visibility' => 'private',
         ),
         'dob' => array(
             'name' => 'DOB',
             'type' => 'date',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'title' => array(
             'name' => 'TITLE',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'website_name' => array(
             'name' => 'WEBSITE_NAME',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'store_name' => array(
             'name' => 'STORE_NAME',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'created_at' => array(
             'name' => 'ACCOUNT_CREATED_DATE',
             'type' => 'date',
-            'visibility' => 'public'
+            'visibility' => 'private',
         ),
         'last_logged_date' => array(
             'name' => 'LAST_LOGGEDIN_DATE',
             'type' => 'date',
-            'visibility' => 'public'
+            'visibility' => 'private',
         ),
         'customer_group' => array(
             'name' => 'CUSTOMER_GROUP',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'billing_address_1' => array(
             'name' => 'BILLING_ADDRESS_1',
@@ -111,87 +114,87 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
         'billing_address_2' => array(
             'name' => 'BILLING_ADDRESS_2',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'billing_state' => array(
             'name' => 'BILLING_STATE',
             'type' => 'string',
-            'visibility' => 'public'
+            'visibility' => 'private',
         ),
         'billing_city' => array(
             'name' => 'BILLING_CITY',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'billing_country' => array(
             'name' => 'BILLING_COUNTRY',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'billing_postcode' => array(
             'name' => 'BILLING_POSTCODE',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'billing_telephone' => array(
             'name' => 'BILLING_TELEPHONE',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'delivery_address_1' => array(
             'name' => 'DELIVERY_ADDRESS_1',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'delivery_address_2' => array(
             'name' => 'DELIVERY_ADDRESS_2',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'delivery_state' => array(
             'name' => 'DELIVERY_STATE',
             'type' => 'string',
-            'visibility' => 'public'
+            'visibility' => 'private',
         ),
         'delivery_city' => array(
             'name' => 'DELIVERY_CITY',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'delivery_country' => array(
             'name' => 'DELIVERY_COUNTRY',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'delivery_postcode' => array(
             'name' => 'DELIVERY_POSTCODE',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'delivery_telephone' => array(
             'name' => 'DELIVERY_TELEPHONE',
             'type' => 'string',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'number_of_orders' => array(
             'name' => 'NUMBER_OF_ORDERS',
             'type' => 'numeric',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'total_spend' => array(
             'name' => 'TOTAL_SPEND',
             'type' => 'numeric',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'average_order_value' => array(
             'name' => 'AVERAGE_ORDER_VALUE',
             'type' => 'numeric',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'last_order_date' => array(
             'name' => 'LAST_ORDER_DATE',
             'type' => 'date',
-            'visibility' => 'public',
+            'visibility' => 'private',
         ),
         'last_order_id' => array(
             'name' => 'LAST_ORDER_ID',
@@ -319,7 +322,7 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
 	 *
 	 * @return array
 	 */
-	public function setDatafield($name, $value, $type = 'string', $visibility = 'public')
+	public function setDatafield($name, $value, $type = 'string', $visibility = 'private')
     {
         $this->datafields[] = array(
             'name' => $name,

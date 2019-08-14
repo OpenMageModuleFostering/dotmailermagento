@@ -16,7 +16,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
         // get all possible datatifileds
         $datafields = Mage::getModel('email_connector/connector_datafield')->getContactDatafields();
         foreach ($datafields as $key => $datafield) {
-            $response = $apiModel->postDataFields($datafield);
+            $response = $apiModel->postDataFields($datafield, 'Private');
 
             //ignore existing datafields message
             if (isset($response->message) && $response->message != Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_API_DATAFILEDS_EXISTS) {
@@ -154,14 +154,14 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 	    $request = $this->getRequest();
 	    $name    = $request->getParam('name', false);
 	    $type    = $request->getParam('type', false);
-	    $default = $request->getParam('default', '');
+	    $default = $request->getParam('default', 0);
 		$access  = $request->getParam('access', false);
 	    $website = $request->getParam('website', 0);
 
 	    //api client for this website
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
 	    //only if all data is available
-        if ($name && $type && $default && $access) {
+        if ($name && $type && $access) {
 	        //create datafield
             $response = $client->postDataFields($name, $type, $access, $default);
 	        //error creating datafield message
@@ -334,6 +334,52 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
         if ($result['message'])
             Mage::getSingleton('adminhtml/session')->addSuccess($result['message']);
 
+        $this->_redirectReferer();
+    }
+
+    /**
+     * Trigger to run the quote sync.
+     */
+    public function runquotesyncAction()
+    {
+
+        $result = Mage::getModel('email_connector/cron')->quoteSync();
+        if ($result['message'])
+            Mage::getSingleton('adminhtml/session')->addSuccess($result['message']);
+
+        $this->_redirectReferer();
+    }
+
+    /**
+     * Reset quote for reimport.
+     */
+    public function resetquotesAction()
+    {
+        $num = Mage::getModel('email_connector/quote')->resetQuotes();
+        Mage::helper('connector')->log('-- Reset Quotes for reimport : ' . $num);
+        Mage::getSingleton('adminhtml/session')->addSuccess('Done.');
+        $this->_redirectReferer();
+    }
+
+    /**
+     * Reset reviews for reimport.
+     */
+    public function resetreviewsAction()
+    {
+        $num = Mage::getModel('email_connector/review')->reset();
+        Mage::helper('connector')->log('-- Reset Reviews for reimport : ' . $num);
+        Mage::getSingleton('adminhtml/session')->addSuccess('Done.');
+        $this->_redirectReferer();
+    }
+
+    /**
+     * Reset wishlist for reimport.
+     */
+    public function resetwishlistsAction()
+    {
+        $num = Mage::getModel('email_connector/wishlist')->reset();
+        Mage::helper('connector')->log('-- Reset Wishlist for reimport : ' . $num);
+        Mage::getSingleton('adminhtml/session')->addSuccess('Done.');
         $this->_redirectReferer();
     }
 }

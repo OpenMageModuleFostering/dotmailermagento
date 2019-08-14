@@ -208,4 +208,62 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
             }
         }
     }
+
+    /**
+     * convert_quote_to_order observer
+     *
+     * @param Varien_Event_Observer $observer
+     * @return $this
+     */
+    public function handleQuoteToOrder(Varien_Event_Observer $observer)
+    {
+        /* @var $order Mage_Sales_Model_Order */
+        $order = $observer->getOrder();
+        $quoteId = $order->getQuoteId();
+        $connectorQuote = Mage::getModel('email_connector/quote')->loadQuote($quoteId);
+        if($connectorQuote)
+            $connectorQuote->setModified(1)->setConvertedToOrder(1)->save();
+
+        return $this;
+    }
+
+    /**
+     * sales_quote_save_after event observer
+     *
+     * @param Varien_Event_Observer $observer
+     * @return $this
+     */
+    public function handleQuoteSaveAfter(Varien_Event_Observer $observer)
+    {
+        /* @var $quote Mage_Sales_Model_Quote */
+        $quote = $observer->getEvent()->getQuote();
+        if($quote->getCustomerId() && $quote->getAllItems() > 0) {
+            $connectorQuote = Mage::getModel('email_connector/quote')->loadQuote($quote->getId());
+            if($connectorQuote){
+                if($connectorQuote->getImported())
+                    $connectorQuote->setModified(1)->setImported(null)->save();
+            }
+            else
+                $this->_registerQuote($quote);
+        }
+        return $this;
+    }
+
+    /**
+     * register quote with connector
+     *
+     * @param Mage_Sales_Model_Quote $quote
+     */
+    private function _registerQuote(Mage_Sales_Model_Quote $quote)
+    {
+        try {
+            $connectorQuote = Mage::getModel('email_connector/quote');
+            $connectorQuote->setQuoteId($quote->getId())
+                ->setCustomerId($quote->getCustomerId())
+                ->setStoreId($quote->getStoreId())
+                ->save();
+        }catch (Exception $e){
+            Mage::logException($e);
+        }
+    }
 }

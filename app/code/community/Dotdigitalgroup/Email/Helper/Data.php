@@ -182,10 +182,21 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
         return implode('</br>', $accounts);
     }
 
+    /**
+     * @param int $website
+     *
+     * @return array|mixed
+     * @throws Mage_Core_Exception
+     */
     public function getCustomAttributes($website = 0)
     {
         $website = Mage::app()->getWebsite($website);
-        return unserialize($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS));
+        $attr = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS);
+
+        if (!$attr)
+            return array();
+
+        return unserialize($attr);
     }
 
     /**
@@ -269,6 +280,15 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     public function getConfigSelectedCustomOrderAttributes($website = 0)
     {
         $customAttributes = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES, $website);
+        if($customAttributes)
+            return explode(',',$customAttributes);
+        else
+            return false;
+    }
+
+    public function getConfigSelectedCustomQuoteAttributes($website = 0)
+    {
+        $customAttributes = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES, $website);
         if($customAttributes)
             return explode(',',$customAttributes);
         else
@@ -499,7 +519,21 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
         $resource = Mage::getSingleton('core/resource');
         $readConnection = $resource->getConnection('core_read');
         $salesTable = $resource->getTableName('sales/order');
+
         return $readConnection->describeTable($salesTable);
+    }
+
+    /**
+     * get sales_flat_quote table description
+     *
+     * @return array
+     */
+    public function getQuoteTableDescription()
+    {
+        $resource = Mage::getSingleton('core/resource');
+        $readConnection = $resource->getConnection('core_read');
+        $table = $resource->getTableName('sales/quote');
+        return $readConnection->describeTable($table);
     }
 
     /**
@@ -508,5 +542,35 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     public function getEasyEmailCapture()
     {
         return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE);
+    }
+
+    /**
+     * get feefo logon config value
+     *
+     * @return mixed
+     */
+    public function getFeefoLogon()
+    {
+        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_FEEFO_LOGON);
+    }
+
+    /**
+     * get feefo reviews limit config value
+     *
+     * @return mixed
+     */
+    public function getFeefoReviewsPerProduct()
+    {
+        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_FEEFO_REVIEWS);
+    }
+
+    /**
+     * get feefo logo template config value
+     *
+     * @return mixed
+     */
+    public function getFeefoLogoTemplate()
+    {
+        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_FEEFO_TEMPLATE);
     }
 }

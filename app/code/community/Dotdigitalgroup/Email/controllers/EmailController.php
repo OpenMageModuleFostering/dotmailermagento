@@ -1,6 +1,7 @@
 <?php
+require_once 'Dotdigitalgroup' . DS . 'Email' . DS . 'controllers' . DS . 'ResponseController.php';
 
-class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_Action
+class Dotdigitalgroup_Email_EmailController extends Dotdigitalgroup_Email_ResponseController
 {
     /**
      * Generate coupon for a coupon code id.
@@ -19,6 +20,7 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         $coupon = $this->getLayout()->createBlock('email_connector/coupon', 'connector_coupon', array(
             'template' => 'connector/coupon.phtml'
         ));
+        $this->checkContentNotEmpty($coupon->toHtml(), false);
         $this->getLayout()->getBlock('content')->append($coupon);
         $this->renderLayout();
     }
@@ -39,6 +41,7 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         ));
         $this->getLayout()->getBlock('content')->append($basket);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
     public function reviewAction()
@@ -51,6 +54,7 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         ));
         $this->getLayout()->getBlock('content')->append($review);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
     /**

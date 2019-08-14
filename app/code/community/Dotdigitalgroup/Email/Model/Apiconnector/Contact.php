@@ -57,7 +57,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $pageSize = $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_LIMIT, $website);
         //skip if the mapping field is missing
         if ( !$helper->getCustomerAddressBook($website))
-            return;
+            return 0;
         $fileHelper = Mage::helper('connector/file');
         $contactModel = Mage::getModel('email_connector/contact');
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
@@ -65,7 +65,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
 
         // no contacts for this webiste
         if (!count($contacts))
-            return;
+            return 0;
         //create customer filename
         $customersFile = strtolower($website->getCode() . '_customers_' . date('d_m_Y_Hi') . '.csv');
         $helper->log('Customers file : ' . $customersFile);
@@ -89,10 +89,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $headers = $mappedHash;
         //custom customer attributes
         $customAttributes = $helper->getCustomAttributes($website);
-        foreach ($customAttributes as $data) {
-            $headers[] = $data['datafield'];
-            $allMappedHash[$data['attribute']] = $data['datafield'];
-        }
+        if ($customAttributes)
+            foreach ($customAttributes as $data) {
+                $headers[] = $data['datafield'];
+                $allMappedHash[$data['attribute']] = $data['datafield'];
+            }
         $headers[] = 'Email';
         $headers[] = 'EmailType';
         $fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $headers);
@@ -116,11 +117,12 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             $connectorCustomer->setCustomerData($customer);
             //count number of customers
             $customers[] = $connectorCustomer;
-            foreach ($customAttributes as $data) {
-                $attribute = $data['attribute'];
-                $value = $customer->getData($attribute);
-                $connectorCustomer->setData($value);
-            }
+            if ($connectorCustomer)
+                foreach ($customAttributes as $data) {
+                    $attribute = $data['attribute'];
+                    $value = $customer->getData($attribute);
+                    $connectorCustomer->setData($value);
+                }
             //contact email and email type
             $connectorCustomer->setData($customer->getEmail());
             $connectorCustomer->setData('Html');

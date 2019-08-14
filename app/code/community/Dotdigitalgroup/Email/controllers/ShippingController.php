@@ -25,6 +25,7 @@ class Dotdigitalgroup_Email_ShippingController extends Dotdigitalgroup_Email_Dyn
         ));
         $this->getLayout()->getBlock('connector_shipping_new')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -51,6 +52,7 @@ class Dotdigitalgroup_Email_ShippingController extends Dotdigitalgroup_Email_Dyn
 	    //items that was shipped
         $this->getLayout()->getBlock('connector_shipping_newguest')->append($items);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 
 	/**
@@ -66,6 +68,7 @@ class Dotdigitalgroup_Email_ShippingController extends Dotdigitalgroup_Email_Dyn
 	    //shipping update content
         $this->getLayout()->getBlock('content')->append($shippingUpdate);
         $this->renderLayout();
+        $this->checkContentNotEmpty($shippingUpdate->toHtml());
     }
 
 	/**
@@ -80,5 +83,6 @@ class Dotdigitalgroup_Email_ShippingController extends Dotdigitalgroup_Email_Dyn
 	    //set shipping content
         $this->getLayout()->getBlock('content')->append($shippingGuest);
         $this->renderLayout();
+        $this->checkContentNotEmpty($this->getLayout()->getOutput());
     }
 }

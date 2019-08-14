@@ -24,7 +24,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Datafield extends Mage
 
                     var reloadurl  = '{$url}';
 
-                    if(datafield_name && datafield_type && datafield_default && datafield_access){
+                    if(datafield_name && datafield_type && datafield_access){
                         new Ajax.Request(reloadurl, {
                             method: 'post',
                             parameters: {'name' : datafield_name, 'type' : datafield_type, 'default' : datafield_default, 'access' : datafield_access, 'website': '$website'},

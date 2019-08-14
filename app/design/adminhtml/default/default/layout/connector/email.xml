@@ -1,5 +1,10 @@
 <?xml version="1.0"?>
 <config>
+    <adminhtml_system_config_edit>
+        <reference name="head">
+            <action method="addCss"><name>connector/config.css</name></action>
+        </reference>
+    </adminhtml_system_config_edit>
     <adminhtml_email_dashboard_index>
         <reference name="head">
             <action method="addCss"><name>connector/dashboard.css</name></action>

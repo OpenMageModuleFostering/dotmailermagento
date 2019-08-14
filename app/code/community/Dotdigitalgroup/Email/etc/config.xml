@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Dotdigitalgroup_Email>
-            <version>3.3.2</version>
+            <version>3.4.0</version>
         </Dotdigitalgroup_Email>
     </modules>
     <frontend>
@@ -15,6 +15,9 @@
                 </args>
             </connector>
         </routers>
+        <secure_url>
+            <connector_customer_newsletter_save>/connector/customer_newsletter/save</connector_customer_newsletter_save>
+        </secure_url>
         <layout>
             <updates>
                 <connector>
@@ -71,6 +74,9 @@
                     <wishlist>
                         <table>email_wishlist</table>
                     </wishlist>
+                    <quote>
+                        <table>email_quote</table>
+                    </quote>
                 </entities>
             </email_connector_resource>
             <core>
@@ -223,14 +229,14 @@
                     </connector_review_save_after>
                 </observers>
             </review_save_after>
-            <wishlist_save_after>
+            <model_save_after>
                 <observers>
                     <connector_wishlist_save_after>
                         <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
                         <method>wishlistSaveAfter</method>
                     </connector_wishlist_save_after>
                 </observers>
-            </wishlist_save_after>
+            </model_save_after>
             <wishlist_item_save_after>
                 <observers>
                     <connector_wishlist_item_save_after>
@@ -255,6 +261,22 @@
                     </connector_wishlist_item_delete_after>
                 </observers>
             </wishlist_item_delete_after>
+            <sales_convert_quote_to_order>
+                <observers>
+                    <connector_quote_to_order>
+                        <class>Dotdigitalgroup_Email_Model_Sales_Observer</class>
+                        <method>handleQuoteToOrder</method>
+                    </connector_quote_to_order>
+                </observers>
+            </sales_convert_quote_to_order>
+            <sales_quote_save_after>
+                <observers>
+                    <connector_sales_quote_save_after>
+                        <class>Dotdigitalgroup_Email_Model_Sales_Observer</class>
+                        <method>handleQuoteSaveAfter</method>
+                    </connector_sales_quote_save_after>
+                </observers>
+            </sales_quote_save_after>
         </events>
     </global>
     <adminhtml>
@@ -334,7 +356,7 @@
                 </schedule>
             </connector_email_campaign>
             <connector_email_order_sync>
-                <run><model>email_connector/cron::orderSync</model></run>
+                <run><model>email_connector/cron::orderAndOrderSync</model></run>
                 <schedule>
                     <cron_expr>*/15 * * * *</cron_expr>
                 </schedule>
@@ -366,12 +388,19 @@
                 <subscribers>0</subscribers>
                 <guests>0</guests>
             </address_book>
+            <address_book_pref>
+                <can_change>0</can_change>
+                <show_books></show_books>
+                <can_show_fields>0</can_show_fields>
+                <fields_to_show></fields_to_show>
+            </address_book_pref>
             <sync>
                 <contact_enabled>0</contact_enabled>
                 <subscriber_enabled>0</subscriber_enabled>
                 <order_enabled>0</order_enabled>
                 <wishlist_enabled>0</wishlist_enabled>
                 <review_enabled>0</review_enabled>
+                <quote_enabled>0</quote_enabled>
             </sync>
             <dynamic_addressbook>
                 <addressbook_name></addressbook_name>
@@ -542,6 +571,11 @@
             <fallback_products>
                 <product_list></product_list>
             </fallback_products>
+            <feefo_feedback_engine>
+                <logon></logon>
+                <reviews_per_product></reviews_per_product>
+                <template></template>
+            </feefo_feedback_engine>
         </connector_dynamic_content>
         <connector_reviews>
             <settings>
@@ -585,15 +619,32 @@
             <transactional_data>
                 <order_statuses></order_statuses>
                 <order_custom_attributes></order_custom_attributes>
+                <quote_custom_attributes></quote_custom_attributes>
             </transactional_data>
             <abandoned_carts>
                 <email_capture>0</email_capture>
                 <limits></limits>
             </abandoned_carts>
+            <dynamic_content_style>
+                <dynamic_syling><![CDATA[table{font-family: Arial, Helvetica, sans-serif; font-size:12px;}]]></dynamic_syling>
+                <name_color><![CDATA[#000000]]></name_color>
+                <name_font_size><![CDATA[12px]]></name_font_size>
+                <name_style></name_style>
+                <price_color><![CDATA[#000000]]></price_color>
+                <price_font_size><![CDATA[12px]]></price_font_size>
+                <price_style></price_style>
+                <link_color><![CDATA[#000000]]></link_color>
+                <link_font_size><![CDATA[12px]]></link_font_size>
+                <link_style></link_style>
+                <other_color><![CDATA[#000000]]></other_color>
+                <other_font_size><![CDATA[14px]]></other_font_size>
+                <other_style></other_style>
+                <font_picker><![CDATA[Arial, Helvetica, sans-serif]]></font_picker>
+                <doc_color><![CDATA[#FFFFFF]]></doc_color>
+            </dynamic_content_style>
             <admin>
                 <disable_newsletter_success>0</disable_newsletter_success>
                 <disable_customer_success>0</disable_customer_success>
-                <recommended_inline><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></recommended_inline>
             </admin>
         </connector_configuration>
         <connector_developer_settings>

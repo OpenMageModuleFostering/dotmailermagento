@@ -83,7 +83,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         'postProgramsEnrolments' => 'post_programs_enrolments',
         'getProgramById' => 'get_program_by_id',
         'getCampaignSummary' => 'get_campaign_summary',
-        'deleteContactsTransactionalData' => 'delete_contacts_transactional_data'
+        'deleteContactsTransactionalData' => 'delete_contacts_transactional_data',
+        'getContactAddressBooks' => 'get_contact_addressBooks'
     );
 
 
@@ -404,7 +405,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
      * @param bool $defaultValue
      * @return mixed
      */
-    public function postDataFields($data, $type = 'String', $visibility = 'public', $defaultValue = false)
+    public function postDataFields($data, $type = 'String', $visibility = 'Public', $defaultValue = false)
     {
         $this->_addApiCall($this->apiCalls[__FUNCTION__]);
 
@@ -1248,4 +1249,28 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 		return $result;
 	}
 
+    /**
+     * get contact address books
+     *
+     * @param $contactId
+     * @return object
+     * @throws Exception
+     */
+    public function getContactAddressBooks($contactId)
+    {
+        $this->_addApiCall($this->apiCalls[__FUNCTION__]);
+
+        $url =  'https://apiconnector.com/v2/contacts/' . $contactId . '/address-books' ;
+        $this->setUrl($url)
+            ->setVerb('GET');
+        $response = $this->execute();
+        if (isset($response->message)) {
+            $message = 'GET CONTACTS ADDRESS BOOKS contact: ' . $contactId .  $response->message;
+            Mage::helper('connector')->log($message);
+            if (! in_array($response->message, $this->exludeMessages))
+                Mage::helper('connector')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
+        }
+
+        return $response;
+    }
 }

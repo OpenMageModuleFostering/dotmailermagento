@@ -41,6 +41,7 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED             = 'connector_sync_settings/sync/order_enabled';
     const XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED          = 'connector_sync_settings/sync/wishlist_enabled';
     const XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED            = 'connector_sync_settings/sync/review_enabled';
+    const XML_PATH_CONNECTOR_SYNC_QUOTE_ENABLED             = 'connector_sync_settings/sync/quote_enabled';
 
     const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID      = 'connector_sync_settings/address_book/customers';
     const XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID    = 'connector_sync_settings/address_book/subscribers';
@@ -54,6 +55,11 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_TOTALREFUND   = 'connector_data_mapping/customer_data/total_refund';
     const XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE      = 'connector_data_mapping/sweet_tooth/active';
 
+    // Address Book Pref
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_CHANGE_BOOKS  = 'connector_sync_settings/address_book_pref/can_change';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_BOOKS        = 'connector_sync_settings/address_book_pref/show_books';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_CAN_SHOW_FIELDS   = 'connector_sync_settings/address_book_pref/can_show_fields';
+    const XML_PATH_CONNECTOR_ADDRESSBOOK_PREF_SHOW_FIELDS       = 'connector_sync_settings/address_book_pref/fields_to_show';
 
     /**
      * Abandoned Carts.
@@ -113,17 +119,35 @@ class Dotdigitalgroup_Email_Helper_Config
 	 */
     const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE       = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
 	const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO          = 'connector_dynamic_content/nosto_recommendation/api';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_FEEFO_LOGON    = 'connector_dynamic_content/feefo_feedback_engine/logon';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_FEEFO_REVIEWS  = 'connector_dynamic_content/feefo_feedback_engine/reviews_per_product';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_FEEFO_TEMPLATE  = 'connector_dynamic_content/feefo_feedback_engine/template';
 
 	/**
      * CONFIGURATION SECTION.
      */
 	const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS              = 'connector_configuration/transactional_data/order_statuses';
 	const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES        = 'connector_configuration/transactional_data/order_custom_attributes';
+    const XML_PATH_CONNECTOR_CUSTOM_QUOTE_ATTRIBUTES        = 'connector_configuration/transactional_data/quote_custom_attributes';
 	const XML_PATH_CONNECTOR_EMAIL_CAPTURE                  = 'connector_configuration/abandoned_carts/email_capture';
 	const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT           = 'connector_configuration/abandoned_carts/limits';
 	const XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS     = 'connector_configuration/admin/disable_newsletter_success';
     const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS       = 'connector_configuration/admin/disable_customer_success';
-    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/admin/recommended_inline';
+    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/dynamic_content_style/dynamic_syling';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_COLOR             = 'connector_configuration/dynamic_content_style/name_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_FONT_SIZE         = 'connector_configuration/dynamic_content_style/name_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_NAME_STYLE             = 'connector_configuration/dynamic_content_style/name_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_COLOR            = 'connector_configuration/dynamic_content_style/price_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_FONT_SIZE        = 'connector_configuration/dynamic_content_style/price_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_PRICE_STYLE            = 'connector_configuration/dynamic_content_style/price_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_COLOR             = 'connector_configuration/dynamic_content_style/link_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_FONT_SIZE         = 'connector_configuration/dynamic_content_style/link_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_LINK_STYLE             = 'connector_configuration/dynamic_content_style/link_style';
+    const XML_PATH_CONNECTOR_DYNAMIC_DOC_FONT               = 'connector_configuration/dynamic_content_style/font_picker';
+    const XML_PATH_CONNECTOR_DYNAMIC_DOC_BG_COLOR           = 'connector_configuration/dynamic_content_style/doc_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_COLOR             = 'connector_configuration/dynamic_content_style/other_color';
+    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_FONT_SIZE         = 'connector_configuration/dynamic_content_style/other_font_size';
+    const XML_PATH_CONNECTOR_DYNAMIC_OTHER_STYLE             = 'connector_configuration/dynamic_content_style/other_style';
 	const XML_PATH_CONNECTOR_RESOURCE_ALLOCATION            = 'connector_developer_settings/import_settings/memory_limit';
 	const XML_PATH_CONNECTOR_SYNC_LIMIT                     = 'connector_developer_settings/import_settings/batch_size';
 	const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_developer_settings/import_settings/orders';
