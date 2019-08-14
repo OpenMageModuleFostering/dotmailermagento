@@ -3,6 +3,8 @@
 class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Data
 {
 
+	const FILE_FULL_ACCESS_PERMISSION = '777';
+
     /**
      * Location of files we are building
      */
@@ -186,4 +188,14 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
         }
         return false;
     }
+
+	/**
+	 * @param $path
+	 *
+	 * @return string
+	 */
+	public function checkPathPermission($path) {
+		clearstatcache(null, $path);
+		return decoct( fileperms($path) & 0777 );
+	}
 }

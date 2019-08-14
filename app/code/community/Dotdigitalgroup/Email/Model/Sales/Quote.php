@@ -37,74 +37,115 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 	public $lostBasketGuests = array(1, 2, 3);
 
 
-    /**
+	/**
 	 * Proccess lost baskets.
+	 *
+	 * @param string $mode
 	 */
-    public function proccessLostBaskets()
+    public function proccessLostBaskets($mode = 'all')
     {
         /**
          * Save lost baskets to be send in Send table.
          */
-        foreach (Mage::app()->getStores() as $store) {
+	    $locale = Mage::app()->getLocale()->getLocale();
+
+	    foreach (Mage::app()->getStores() as $store) {
             $storeId = $store->getId();
             $sendModel = Mage::getModel('email_connector/campaign');
-            /**
-             * Customers campaings
-             */
-            foreach ($this->lostBasketCustomers as $num) {
-                if ($this->_getLostBasketCustomerEnabled($num, $storeId)) {
 
-                    if ($num == 1)
-                        $from = Zend_Date::now()->subMinute($this->_getLostBasketCustomerInterval($num, $storeId));
-                    else
-                        $from = Zend_Date::now()->subHour($this->_getLostBasketCustomerInterval($num, $storeId));
-                    $to = clone($from);
-                    $from->sub('5', Zend_Date::MINUTE);
-                    $quoteCollection = $this->_getStoreQuotes($from->toString('YYYY-MM-dd HH:mm'), $to->toString('YYYY-MM-dd HH:mm'), $guest = false, $storeId);
-                    if ($quoteCollection->getSize())
-                        Mage::helper('connector')->log('Customer lost baskets : ' . $num  . ', from : ' . $from->toString('YYYY-MM-dd HH:mm') . ':' . $to->toString('YYYY-MM-dd HH:mm'));
-                    $campaignId = $this->_getLostBasketCustomerCampaignId($num, $storeId);
-                    foreach ($quoteCollection as $quote) {
-                        //save lost basket for sending
-                        $sendModel->loadByQuoteId($quote->getId(), $storeId)
-                            ->setEmail($quote->getCustomerEmail())
-                            ->setCustomerId($quote->getCustomerId())
-                            ->setEventName('Lost Basket')
-                            ->setCampaignId($campaignId)
-                            ->setStoreId($storeId)
-                            ->setIsSent(null)->save();
-                    }
-                }
+		    if ($mode == 'all' || $mode == 'customers') {
+			    /**
+			     * Customers campaings
+			     */
+			    foreach ( $this->lostBasketCustomers as $num ) {
+				    //customer enabled
+				    if ( $this->_getLostBasketCustomerEnabled( $num, $storeId ) ) {
 
-            }
-            /**
-             * Guests campaigns
-             */
-            foreach ($this->lostBasketGuests as $num) {
-                if ($this->_getLostBasketGuestEnabled($num, $storeId)) {
-                    if ($num == 1)
-                        $from = Zend_Date::now()->subMinute($this->_getLostBasketGuestIterval($num, $storeId));
-                    else
-                        $from = Zend_Date::now()->subHour($this->_getLostBasketGuestIterval($num, $storeId));
-                    $to = clone($from);
-                    $from->sub('5', Zend_Date::MINUTE);
-                    $quoteCollection = $this->_getStoreQuotes($from->toString('YYYY-MM-dd HH:mm'), $to->toString('YYYY-MM-dd HH:mm'), $guest = true, $storeId);
-                    if ($quoteCollection->getSize())
-                        Mage::helper('connector')->log('Guest lost baskets : ' . $num  . ', from : ' . $from->toString('YYYY-MM-dd HH:mm') . ':' . $to->toString('YYYY-MM-dd HH:mm'));
-                    $guestCampaignId = $this->_getLostBasketGuestCampaignId($num, $storeId);
-                    foreach ($quoteCollection as $quote) {
-                        //save lost basket for sending
-                        $sendModel->loadByQuoteId($quote->getId(), $storeId)
-                            ->setEmail($quote->getCustomerEmail())
-                            ->setEventName('Lost Basket')
-                            ->setCheckoutMethod('Guest')
-                            ->setCampaignId($guestCampaignId)
-                            ->setStoreId($storeId)
-                            ->setIsSent(null)->save();
-                    }
-                }
-            }
+					    //number of the campaign use minutes
+					    if ( $num == 1 ) {
+						    $from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
+						    //other use hours
+					    } else {
+						    $from = Zend_Date::now( $locale )->subHour( $this->_getLostBasketCustomerInterval( $num, $storeId ) );
+					    }
 
+					    $to = clone( $from );
+					    $from->sub( '5', Zend_Date::MINUTE );
+
+					    //active quotes
+					    $quoteCollection = $this->_getStoreQuotes( $from->toString( 'YYYY-MM-dd HH:mm' ), $to->toString( 'YYYY-MM-dd HH:mm' ), $guest = false, $storeId );
+
+					    if ( $quoteCollection->getSize() ) {
+						    Mage::helper( 'connector' )->log( 'Customer lost baskets : ' . $num . ', from : ' . $from->toString( 'YYYY-MM-dd HH:mm' ) . ':' . $to->toString( 'YYYY-MM-dd HH:mm' ) );
+					    }
+
+					    //campaign id for customers
+					    $campaignId = $this->_getLostBasketCustomerCampaignId( $num, $storeId );
+					    foreach ( $quoteCollection as $quote ) {
+
+						    $email        = $quote->getCustomerEmail();
+						    //send email only if the interval limit passed, no emails during this interval
+						    $campignFound = $this->_checkCustomerCartLimit( $email, $storeId );
+
+						    //no campign found for interval pass
+						    if ( !$campignFound ) {
+
+							    //save lost basket for sending
+							    $sendModel->loadByQuoteId( $quote->getId(), $storeId )
+								    ->setEmail( $email )
+								    ->setCustomerId( $quote->getCustomerId() )
+								    ->setEventName( 'Lost Basket' )
+								    ->setCampaignId( $campaignId )
+								    ->setStoreId( $storeId )
+								    ->setWebsiteId($store->getWebsiteId())
+								    ->setIsSent( null )->save();
+						    }
+					    }
+				    }
+
+			    }
+		    }
+		    if ($mode == 'all' || $mode == 'guests') {
+			    /**
+			     * Guests campaigns
+			     */
+			    foreach ( $this->lostBasketGuests as $num ) {
+				    if ( $this->_getLostBasketGuestEnabled( $num, $storeId ) ) {
+					    if ( $num == 1 ) {
+						    $from = Zend_Date::now( $locale )->subMinute( $this->_getLostBasketGuestIterval( $num, $storeId ) );
+					    } else {
+						    $from = Zend_Date::now( $locale )->subHour( $this->_getLostBasketGuestIterval( $num, $storeId ) );
+					    }
+					    $to = clone( $from );
+					    $from->sub( '5', Zend_Date::MINUTE );
+					    $quoteCollection = $this->_getStoreQuotes( $from->toString( 'YYYY-MM-dd HH:mm' ), $to->toString( 'YYYY-MM-dd HH:mm' ), $guest = true, $storeId );
+
+					    if ( $quoteCollection->getSize() ) {
+						    Mage::helper( 'connector' )->log( 'Guest lost baskets : ' . $num . ', from : ' . $from->toString( 'YYYY-MM-dd HH:mm' ) . ':' . $to->toString( 'YYYY-MM-dd HH:mm' ) );
+					    }
+					    $guestCampaignId = $this->_getLostBasketGuestCampaignId( $num, $storeId );
+					    foreach ( $quoteCollection as $quote ) {
+						    $email        = $quote->getCustomerEmail();
+
+						    //send email only if the interval limit passed, no emails during this interval
+						    $campignFound = $this->_checkCustomerCartLimit( $email, $storeId );
+
+						    //no campign found for interval pass
+						    if ( !$campignFound ) {
+							    //save lost basket for sending
+							    $sendModel->loadByQuoteId( $quote->getId(), $storeId )
+								    ->setEmail( $email )
+								    ->setEventName( 'Lost Basket' )
+								    ->setCheckoutMethod( 'Guest' )
+						            ->setCampaignId( $guestCampaignId )
+						            ->setStoreId( $storeId )
+								    ->setWebsiteId($store->getWebsiteId())
+								    ->setIsSent( null )->save();
+						    }
+					    }
+				    }
+			    }
+		    }
         }
     }
 
@@ -154,8 +195,7 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
      */
     private function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
     {
-
-        $updated = array(
+	    $updated = array(
             'from' => $from,
             'to' => $to,
             'date' => true);
@@ -168,6 +208,49 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
             ->addFieldToFilter('updated_at', $updated);
         if ($guest)
             $salesCollection->addFieldToFilter('checkout_method' , Mage_Checkout_Model_Type_Onepage::METHOD_GUEST);
-        return $salesCollection;
+
+	    return $salesCollection;
     }
+
+	/**
+	 * Check customer campaign that was sent by a limit from config.
+	 * Return false for any found for this period.
+	 *
+	 * @param $email
+	 * @param $storeId
+	 *
+	 * @return bool
+	 */
+	private function _checkCustomerCartLimit($email, $storeId) {
+
+		$cartLimit = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT, $storeId);
+		$locale = Mage::app()->getLocale()->getLocale();
+
+		//no limit is set skip
+		if (! $cartLimit)
+			return false;
+
+		//time diff
+		$to = Zend_Date::now($locale);
+		$from = Zend_Date::now($locale)->subHour($cartLimit);
+
+		$updated = array(
+			'from' => $from,
+			'to' => $to,
+			'date' => true
+		);
+
+		//number of campigns during this time
+		$campaignLimit = Mage::getModel('email_connector/campaign')->getCollection()
+			->addFieldToFilter('email', $email)
+			->addFieldToFilter('event_name', 'Lost Basket')
+			->addFieldToFilter('sent_at', $updated)
+			->count()
+		;
+
+		if ($campaignLimit)
+			return true;
+
+		return false;
+	}
 }

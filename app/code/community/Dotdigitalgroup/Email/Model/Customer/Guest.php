@@ -14,8 +14,13 @@ class Dotdigitalgroup_Email_Model_Customer_Guest
         $helper = Mage::helper('connector');
         $helper->log('----------- Start guest sync ----------');
         $this->_start = microtime(true);
-        foreach(Mage::app()->getWebsites() as $website)
-            $this->exportGuestPerWebsite($website);
+        foreach(Mage::app()->getWebsites() as $website) {
+
+	        //check if the guest is mapped and enabled
+	        $enabled = $helper->getGuestAddressBook($website);
+	        if ($enabled)
+	            $this->exportGuestPerWebsite($website);
+        }
         $helper->log('---- End Guest total time for guest sync : ' . gmdate("H:i:s", microtime(true) - $this->_start));
         return;
     }

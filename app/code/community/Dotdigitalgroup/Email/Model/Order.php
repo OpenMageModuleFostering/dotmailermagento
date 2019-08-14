@@ -36,7 +36,9 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('order_id', $orderId)
-            ->addFieldToFilter('quote_id', $quoteId);
+            ->addFieldToFilter('quote_id', $quoteId)
+            ->setPageSize(1);
+
         if ($collection->count()) {
             return $collection->getFirstItem();
         } else {
@@ -47,9 +49,15 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
     }
 
 
-    public function getEmailOrderRow($orderId, $quoteId, $storeId)
+	/**
+	 * @param $orderId
+	 * @param $quoteId
+	 * @param $storeId
+	 *
+	 * @return $this|Varien_Object
+	 */
+	public function getEmailOrderRow($orderId, $quoteId, $storeId)
     {
-
         $collection = $this->getCollection()
             ->addFieldToFilter('order_id', $orderId)
             ->addFieldToFilter('quote_id', $quoteId)
@@ -68,14 +76,85 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
         return $this;
 
     }
-    public function getOrdersToImport($storeIds, $limit, $orderStatuses)
+
+	/**
+	 * Get all orders with particular status within certain days.
+	 *
+	 * @param $storeIds
+	 * @param $limit
+	 * @param $orderStatuses
+     * @param $days
+	 *
+	 * @return Dotdigitalgroup_Email_Model_Resource_Order_Collection
+	 */
+    public function getOrdersToImport($storeIds, $limit, $orderStatuses, $days)
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('email_imported', array('null' => true))
             ->addFieldToFilter('store_id', array('in' => $storeIds))
             ->addFieldToFilter('order_status', array('in' => $orderStatuses));
 
+        if($days)
+        {
+            $to = Zend_Date::now()->toString('YYYY-MM-dd HH:mm:ss');
+            $from = Zend_Date::now()->subDay($days)->toString('YYYY-MM-dd HH:mm:ss');
+            $created = array( 'from' => $from, 'to' => $to, 'date' => true);
+            $collection->addFieldToFilter('created_at', $created);
+        }
+
         $collection->getSelect()->limit($limit);
         return $collection->load();
     }
+
+    /**
+     * Get all sent orders older then certain days.
+     *
+     * @param $storeIds
+     * @param $limit
+     * @param $days
+     *
+     * @return Dotdigitalgroup_Email_Model_Resource_Order_Collection
+     */
+    public function getAllSentOrders($storeIds, $limit, $days)
+    {
+        $collection = $this->getCollection()
+            ->addFieldToFilter('email_imported', 1)
+            ->addFieldToFilter('store_id', array('in' => $storeIds));
+
+        if($days)
+        {
+            $from = Zend_Date::now()->subYear(8)->toString('YYYY-MM-dd HH:mm:ss');
+            $to = Zend_Date::now()->subDay($days)->toString('YYYY-MM-dd HH:mm:ss');
+            $created = array( 'from' => $from, 'to' => $to, 'date' => true);
+            $collection->addFieldToFilter('created_at', $created);
+        }
+
+        $collection->getSelect()->limit($limit);
+        return $collection->load();
+    }
+    
+	/**
+	 * Reset the email order for reimport.
+	 *
+	 * @return int
+	 */
+	public function resetOrders()
+	{
+		/** @var $coreResource Mage_Core_Model_Resource */
+		$coreResource = Mage::getSingleton('core/resource');
+
+		/** @var $conn Varien_Db_Adapter_Pdo_Mysql */
+		$conn = $coreResource->getConnection('core_write');
+		try{
+			$num = $conn->update($coreResource->getTableName('email_connector/order'),
+				array('email_imported' => new Zend_Db_Expr('null')),
+				$conn->quoteInto('email_imported is ?', new Zend_Db_Expr('not null'))
+			);
+		}catch (Exception $e){
+			Mage::logException($e);
+		}
+
+		return $num;
+	}
+
 }

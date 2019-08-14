@@ -98,37 +98,37 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
     }
 
 
-    /**
-     * Limit of products displayed.
-     * @param $mode
-     * @return int|mixed
-     */
-    public function getDisplayLimitByMode($mode)
+	/**
+	 * Limit of products displayed.
+	 * @param $mode
+	 *
+	 * @return int|mixed
+	 */
+	public function getDisplayLimitByMode($mode)
     {
         $result = 0;
-        if ($mode) {
-            switch($mode){
-                case 'related':
-                    $result = Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_ITEMS);
-                    break;
-                case 'upsell':
-                    $result = Mage::getStoreConfig(self::XML_PATH_UPSELL_PRODUCTS_ITEMS);
-                    break;
-                case 'crosssell':
-                    $result = Mage::getStoreConfig(self::XML_PATH_CROSSSELL_PRODUCTS_ITEMS);
-                    break;
-                case 'bestsellers':
-                    $result = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_PRODUCT_ITEMS);
-                    break;
-                case 'mostviewed':
-                    $result = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_PRODUCT_ITEMS);
-                    break;
-                case 'recentlyviewed':
-                    $result = Mage::getStoreConfig(self::XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS);
-                    break;
-                case 'push':
-                    $result = Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS);
-            }
+
+        switch($mode){
+            case 'related':
+                $result = Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_ITEMS);
+                break;
+            case 'upsell':
+                $result = Mage::getStoreConfig(self::XML_PATH_UPSELL_PRODUCTS_ITEMS);
+                break;
+            case 'crosssell':
+                $result = Mage::getStoreConfig(self::XML_PATH_CROSSSELL_PRODUCTS_ITEMS);
+                break;
+            case 'bestsellers':
+                $result = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_PRODUCT_ITEMS);
+                break;
+            case 'mostviewed':
+                $result = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_PRODUCT_ITEMS);
+                break;
+            case 'recentlyviewed':
+                $result = Mage::getStoreConfig(self::XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS);
+                break;
+            case 'push':
+                $result = Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS);
         }
 
         return $result;
@@ -145,15 +145,27 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
     public function getTimeFromConfig($config)
     {
         $now = new Zend_Date();
-        $period = Zend_Date::YEAR;
+        $period = '';
         if ($config == 'mostviewed')
             $period = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
-        elseif($config == 'bestsellers')
-            $period = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_TIME_PERIOD);
+        elseif($config == 'bestsellers') {
+	        $period = Mage::getStoreConfig( self::XML_PATH_BESTSELLER_TIME_PERIOD );
+        }elseif($config == 'recentlyviewed')
+            $period = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
 
-	    $period = $now->sub(1, $period);
+        if ($period == 'week') {
+            $sub = Zend_Date::WEEK;
+        } elseif ($period == 'month' || $period == 'M') {
+            $sub = Zend_Date::MONTH;
+        } elseif ($period == 'year') {
+            $sub = Zend_Date::YEAR;
+        }
 
-		return $period->tostring(Zend_Date::ISO_8601);
+        if (isset($sub)) {
+            $period = $now->sub(1, $sub);
+
+            return $period->tostring(Zend_Date::ISO_8601);
+        }
     }
 
     public function getProductPushIds()

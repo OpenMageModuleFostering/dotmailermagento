@@ -10,20 +10,4 @@
             <block type="checkout/onepage_success" name="checkout.roi" as="connector.roi" template="connector/roi_code.phtml"/>
         </reference>
     </checkout_onepage_success>
-    <connector_email_coupon>
-        <reference name="root">
-            <action method="setTemplate"><template>page/blank.phtml</template></action>
-        </reference>
-        <reference name="content">
-            <block type="email_connector/coupon" name="email.coupon" as="email.coupon" template="connector/coupon.phtml"/>
-        </reference>
-    </connector_email_coupon>
-    <connector_order_update>
-        <reference name="root">
-            <action method="setTemplate"><template>page/blank.phtml</template></action>
-        </reference>
-        <reference name="content">
-            <block type="email_connector/order_update" name="connector.order.update" as="connector.order.update" template="connector/sales/order/update.phtml"/>
-        </reference>
-    </connector_order_update>
 </layout>

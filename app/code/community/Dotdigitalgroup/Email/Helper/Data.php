@@ -31,6 +31,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     {
         if ($authRequest != Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)) {
             $this->log('Authenication failed : ' . $authRequest);
+            $this->getRaygunClient()->Send('Authinication failed with code :' . $authRequest);
             exit();
         }
         return true;
@@ -108,12 +109,17 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      * Get the contact id for the custoemer based on website id.
      * @param $email
      * @param $websiteId
-     * @return string contact_id
+     *
+     * @return bool
      */
     public function getContactId($email, $websiteId)
     {
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->postContacts($email);
+
+        if (isset($response->message))
+            return $response->message;
+
         return $response->id;
     }
 
@@ -190,15 +196,20 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
 
     /**
      * Api client by website.
+     *
      * @param int $website
-     * @return Dotdigitalgroup_Email_Model_Apiconnector_Client
+     *
+     * @return bool|Dotdigitalgroup_Email_Model_Apiconnector_Client
      */
     public function getWebsiteApiClient($website = 0)
     {
+        if (! $apiUsername = $this->getApiUsername($website) || ! $apiPassword = $this->getApiPassword($website))
+            return false;
+
         $client = Mage::getModel('email_connector/apiconnector_client');
         $client->setApiUsername($this->getApiUsername($website))
-                ->setApiPassword($this->getApiPassword($website));
-        
+            ->setApiPassword($this->getApiPassword($website));
+
         return $client;
     }
 
@@ -278,6 +289,192 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
             ->loadByCustomerId($customerId)
             ->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_NOT_IMPORTED)
             ->save();
+    }
+
+    /**
+     * Diff between to times;
+     *
+     * @param $time1
+     * @param $time2
+     * @return int
+     */
+    public function dateDiff($time1, $time2=NULL) {
+        if (is_null($time2)) {
+            $time2 = Mage::getModel('core/date')->date();
+        }
+        $time1 = strtotime($time1);
+        $time2 = strtotime($time2);
+        return $time2 - $time1;
+    }
+
+
+    /**
+     * Disable website config when the request is made admin area only!
+     * @param $path
+     *
+     * @throws Mage_Core_Exception
+     */
+    public function disableConfigForWebsite($path)
+    {
+        $scopeId = 0;
+        if ($website = Mage::app()->getRequest()->getParam('website')) {
+            $scope = 'websites';
+            $scopeId = Mage::app()->getWebsite($website)->getId();
+        } else {
+            $scope = "default";
+        }
+        $config = Mage::getConfig();
+        $config->saveConfig($path, 0, $scope, $scopeId);
+        $config->cleanCache();
+    }
+
+    /**
+     * number of customers with duplicate emails, emails as total number
+     * @return Mage_Customer_Model_Resource_Customer_Collection
+     */
+    public function getCustomersWithDuplicateEmails( ) {
+        $customers = Mage::getModel('customer/customer')->getCollection();
+
+        //duplicate emails
+        $customers->getSelect()
+            ->columns(array('emails' => 'COUNT(e.entity_id)'))
+            ->group('email')
+            ->having('emails > ?', 1);
+
+        return $customers;
+    }
+
+    /**
+     * Create new raygun client.
+     *
+     * @return bool|\Raygun4php\RaygunClient
+     */
+    public function getRaygunClient()
+    {
+        $code = Mage::getstoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE);
+
+        if ($this->raygunEnabled()) {
+            require_once Mage::getBaseDir('lib').DS.'Raygun4php/RaygunClient.php';
+            return new Raygun4php\RaygunClient($code, false, true);
+        }
+
+        return false;
+    }
+
+    /**
+     * Raygun logs.
+     * @param int $errno
+     * @param $message
+     * @param string $filename
+     * @param int $line
+     * @param array $tags
+     *
+     * @return int|null
+     */
+    public function rayLog($errno = 100, $message, $filename = 'helper/data.php', $line = 1, $tags = array())
+    {
+        $client = $this->getRaygunClient();
+        if ($client) {
+            //use tags to log the client baseurl
+            if (empty($tags))
+                $tags = array(Mage::getBaseUrl('web'));
+            //send message
+            $code = $client->SendError( $errno, $message, $filename, $line, $tags );
+
+            return $code;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * check for raygun application and if enabled.
+     * @param int $websiteId
+     *
+     * @return mixed
+     * @throws Mage_Core_Exception
+     */
+    public function raygunEnabled($websiteId = 0)
+    {
+        $website = Mage::app()->getWebsite($websiteId);
+
+        return  (bool)$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE);
+
+    }
+
+
+    /**
+     * Create new config if the config was not found.
+     * mark the account api datafields was created
+     * @param $value
+     * @param string $scope
+     *
+     * @return bool
+     */
+    public function isConfigCreatedForPath( $value, $scope = 'default' )
+    {
+        $configModel = Mage::getModel('email_connector/config');
+
+        //we use path as the transactional usename config value
+        $path = Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_USERNAME;
+
+        $itemConfig = $configModel->getCollection()
+            ->addFieldToFilter('path', $path)
+            ->addFieldToFilter('value', $value)
+            ->addFieldToFilter('scope', $scope)
+            ->getFirstItem();
+
+        //config was created
+        if ($itemConfig->getId()) {
+            return true;
+        }
+
+        //new config save data
+        $itemConfig->setPath($path)
+            ->setScope($scope)
+            ->setValue($value)
+            ->save();
+        return false;
+    }
+
+    /**
+     * Generate the baseurl for the default store
+     * dynamic content will be displayed
+     * @return string
+     * @throws Mage_Core_Exception
+     */
+    public function generateDynamicUrl()
+    {
+        $website = Mage::app()->getRequest()->getParam('website', false);
+
+        //set website url for the default store id
+        if ($website) {
+            $website = Mage::app()->getWebsite( $website );
+        }else {
+            $website = 0;
+        }
+        $desfaultStoreId = Mage::app()
+            ->getWebsite($website)
+            ->getDefaultGroup()
+            ->getDefaultStoreId();
+
+        //base url
+        $baseUrl = Mage::app()->getStore($desfaultStoreId)->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
+
+        return $baseUrl;
+
+    }
+
+	/**
+	 *
+	 * @param int $website
+	 *
+	 * @return bool|mixed
+	 */
+    public function getOrderDeleteDays($website = 0)
+    {
+        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_DELETE, $website);
     }
 
 }

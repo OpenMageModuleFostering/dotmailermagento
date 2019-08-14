@@ -49,7 +49,6 @@ class Dotdigitalgroup_Email_Model_Sms_Campaign
 	    $this->_customerFirstName   = $order->getCustomerFirstname();
 	    $this->_incrementId         = $order->getIncrementId();
 		$this->_customerTelephone   = $billingAddress->getTelephone();
-	    Mage::app()->setCurrentStore($this->_storeId);
     }
     /**
      * @return mixed

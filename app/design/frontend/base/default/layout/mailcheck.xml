@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="before_body_end">
+            <block type="page/html_head" name="mailcheck" as="mailcheck" template="mailcheck/scripts.phtml">
+                <action method="addJs" ifconfig="connector_advanced_settings/mailcheck/enabled">
+                    <script>mailcheck/mailcheck.min.js</script>
+                </action>
+                <action method="addJs" ifconfig="connector_advanced_settings/mailcheck/enabled">
+                    <script>mailcheck/magentoMailcheck.js</script>
+                </action>
+                <action method="addItem" ifconfig="connector_advanced_settings/mailcheck/enabled">
+                    <type>skin_js</type>
+                    <name>js/mailcheck/init.js</name>
+                </action>
+            </block>
+        </reference>
+    </default>
+</layout>

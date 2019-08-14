@@ -72,6 +72,13 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Order_Grid extends Mage_Adminhtml_Bl
             'renderer'		=> 'email_connector/adminhtml_column_renderer_imported',
             'options'       => Mage::getModel('email_connector/adminhtml_source_contact_imported')->getOptions(),
             'filter_condition_callback' => array($this, 'filterCallbackContact')
+        ))->addColumn('created_at', array(
+            'header'        => Mage::helper('connector')->__('Created At'),
+            'width'         => '50px',
+            'align'         => 'center',
+            'index'         => 'created_at',
+            'type'          => 'datetime',
+            'escape'        => true,
         ))->addColumn('updated_at', array(
             'header'        => Mage::helper('connector')->__('Updated At'),
             'width'         => '50px',

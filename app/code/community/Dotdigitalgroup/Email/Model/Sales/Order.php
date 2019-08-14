@@ -14,6 +14,16 @@ class Dotdigitalgroup_Email_Model_Sales_Order
 	 * @var string
 	 */
 	private $_apiPassword;
+    /**
+     * @var array
+     */
+    protected $ordersToDelete = array();
+
+	/**
+	 * Global number of orders
+	 * @var int
+	 */
+	private $_countOrders = 0;
 
     /**
      * initial sync the transactional data
@@ -21,13 +31,16 @@ class Dotdigitalgroup_Email_Model_Sales_Order
      */
     public function sync()
     {
+        $response = array('success' => true, 'message' => '');
         $client = Mage::getModel('email_connector/apiconnector_client');
         // Initialise a return hash containing results of our sync attempt
         $this->_searchAccounts();
-	    Mage::helper( 'connector' )->log( 'search for the accounts, transactional order' );
-	    foreach ($this->accounts as $account) {
+        foreach ($this->accounts as $account) {
             $orders = $account->getOrders();
-            if (count($orders)) {
+            $numOrders = count($orders);
+            $this->_countOrders += $numOrders;
+            //send transactional for any number of orders set
+            if ($numOrders) {
                 $client->setApiUsername($account->getApiUsername())
                     ->setApiPassword($account->getApiPassword());
                 Mage::helper('connector')->log('--------- Order sync ---------- : ' . count($orders));
@@ -36,7 +49,26 @@ class Dotdigitalgroup_Email_Model_Sales_Order
             }
             unset($this->accounts[$account->getApiUsername()]);
         }
-        return $this;
+
+        foreach ($this->ordersToDelete as $websiteId => $collection) {
+            if (count($collection)) {
+                $client->setApiUsername(Mage::helper('connector')->getApiUsername($websiteId))
+                    ->setApiPassword(Mage::helper('connector')->getApiPassword($websiteId));
+                foreach($collection as $order) {
+                    $salesOrder = Mage::getModel('sales/order')->load($order->getOrderId());
+                    Mage::helper('connector')->log('--------- Order sync - delete order number ---------- : ' . $salesOrder->getIncrementId());
+                    $response = $client->deleteContactsTransactionalData($salesOrder->getIncrementId(), 'Orders');
+                    if (!isset($response->message))
+                        $order->setEmailImported(null)->save();
+                    Mage::helper('connector')->log('----------end order sync - delete ----------');
+                }
+            }
+            unset($this->ordersToDelete[$websiteId]);
+        }
+
+        if ($this->_countOrders)
+            $response['message'] = 'Number of updated orders : ' . $this->_countOrders;
+        return $response;
     }
 
     /**
@@ -47,6 +79,7 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         $helper = Mage::helper('connector');
         foreach (Mage::app()->getWebsites(true) as $website) {
             if ($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, $website)) {
+
                 $this->_apiUsername = $helper->getApiUsername($website);
                 $this->_apiPassword = $helper->getApiPassword($website);
 
@@ -59,6 +92,7 @@ class Dotdigitalgroup_Email_Model_Sales_Order
                     $this->accounts[$this->_apiUsername] = $account;
                 }
                 $this->accounts[$this->_apiUsername]->setOrders($this->getConnectorOrders($website, $limit));
+                $this->ordersToDelete[$website->getId()] = $this->getConnectorOrdersToDelete($website, $limit);
             }
         }
     }
@@ -77,10 +111,12 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         if(empty($storeIds))
             return;
 
-        $orderStatuses = Mage::helper('connector')->getConfigSelectedStatus($website);
+        $helper = Mage::helper('connector');
+        $orderStatuses = $helper->getConfigSelectedStatus($website);
+        $days = $helper->getOrderDeleteDays($website);
 
         if($orderStatuses)
-            $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
+            $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses, $days);
         else
             return;
 
@@ -119,30 +155,60 @@ class Dotdigitalgroup_Email_Model_Sales_Order
 	private function _createGuestContact($email, $websiteId, $storeId){
         try{
             $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
+
+	        //no api credentials or the guest has no been mapped
+	        if (! $client || ! $addressBookId = Mage::helper('connector')->getGuestAddressBook($websiteId))
+		        return false;
+	        //get contact by email address
             $contactApi = $client->getContactByEmail($email);
+	        //contac was not found let's create new one
             if (isset($contactApi->message) && $contactApi->message == Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_CONTACT_NOT_FOUND) {
-                //create a new contact.
                 $contactApi = $client->postContacts($email);
             } elseif (isset($contactApi->message)) {
+	            Mage::helper('connector')->getRaygunClient()->Send('Creating guest contact with getContactByEmail message : ' . $contactApi->message);
                 return false;
             }
-            // Add guest to address book
-            $response = $client->postAddressBookContacts(Mage::helper('connector')->getGuestAddressBook($websiteId), $contactApi);
+
+            //add guest to address book
+	        $response = $client->postAddressBookContacts($addressBookId, $contactApi);
+
+	        //set contact as was found as guest and
             $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerEmail($email, $websiteId);
             $contactModel->setIsGuest(1)
                 ->setStoreId($storeId)
-                ->setContactId($contactApi->id)
                 ->setEmailImported(1);
+	        //contact id
+	        if (isset($contactApi->id))
+		        $contactModel->setContactId();
 
+	        //mark the contact as surpressed
             if (isset($response->message) && $response->message == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED')
                 $contactModel->setSuppressed(1);
 
+	        //save
             $contactModel->save();
+
             Mage::helper('connector')->log('-- guest found : '  . $email . ' website : ' . $websiteId . ' ,store : ' . $storeId);
         }catch(Exception $e){
+	        Mage::helper('connector')->getRaygunClient()->SendException($e, array(Mage::getBaseUrl('web')));
             Mage::logException($e);
         }
 
         return true;
+    }
+
+    public function getConnectorOrdersToDelete($website, $limit)
+    {
+        $storeIds = $website->getStoreIds();
+        $days = Mage::helper('connector')->getOrderDeleteDays($website);
+
+        if(empty($storeIds))
+            return;
+
+        if(!$days)
+            return;
+
+        $orderModel = Mage::getModel('email_connector/order');
+        return $orderModel->getAllSentOrders($storeIds, $limit, $days);
     }
 }

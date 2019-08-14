@@ -101,7 +101,7 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
             $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
             $apiContact = $client->postContacts($email);
             if(! isset($apiContact->message) && isset($apiContact->id))
-                $client->DeleteContact($apiContact->id);
+                $client->deleteContact($apiContact->id);
 
         }catch (Exception $e){
             Mage::logException($e);
@@ -114,13 +114,14 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 		 * Automation Programme
 		 */
 		$customerAutoCamaignId = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER, $websiteId);
-		Mage::helper( 'connector' )->log( 'AS - customer automation Campaign id : ' . $customerAutoCamaignId );
+		//forward add customer to automation
 		if ($customerAutoCamaignId) {
+			Mage::helper( 'connector' )->log( 'AS - customer automation Campaign id : ' . $customerAutoCamaignId );
 			$client = Mage::helper( 'connector' )->getWebsiteApiClient( $websiteId );
 			$apiContact = $client->postContacts($email);
 
 			// get a program by id
-			$program = $client->GetProgramById($customerAutoCamaignId);
+			$program = $client->getProgramById($customerAutoCamaignId);
 			/**
 			 * id
 			 * name
@@ -136,7 +137,7 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 				'DateCreated' => $program->dateCreated,
 				'AddressBooks' => array()
 			);
-			$client->PostProgramsEnrolments($data);
+			$client->postProgramsEnrolments($data);
 		}
 	}
 

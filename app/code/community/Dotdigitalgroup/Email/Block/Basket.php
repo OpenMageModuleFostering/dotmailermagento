@@ -25,7 +25,7 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId())->loadByEmail($email);
 
         if (! $customer->getId()) {
-            Mage::helper('connector')->log('Lost basket : customer not found : ' . $email);
+            Mage::helper('connector')->log('Lost basket, customer not found : ' . $email);
             exit();
         }
         //last active  guest  basket
@@ -39,8 +39,10 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $quoteModel = $quoteModel->getFirstItem();
         $this->_quote = $quoteModel;
 
-        $storeId = $quoteModel->getStoreId();
-        Mage::app()->setCurrentStore($storeId);
+	    //Start environment emulation of the specified store
+	    $storeId = $quoteModel->getStoreId();
+	    $appEmulation = Mage::getSingleton('core/app_emulation');
+	    $appEmulation->startEnvironmentEmulation($storeId);
 
         return $quoteModel->getAllItems();
     }

@@ -1,32 +1,20 @@
 <?php
+require_once 'Dotdigitalgroup' . DS . 'Email' . DS . 'controllers' . DS . 'DynamicContentController.php';
 
-class Dotdigitalgroup_Email_OrderController extends Mage_Core_Controller_Front_Action
+class Dotdigitalgroup_Email_OrderController extends Dotdigitalgroup_Email_DynamicContentController
 {
-    public function preDispatch()
-    {
-        Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
-        $orderId = $this->getRequest()->getParam('order_id', false);
-        if ($orderId) {
-            $order = Mage::getModel('sales/order')->load($orderId);
-            if ($order->getId()) {
-                Mage::app()->setCurrentStore($order->getStoreId());
-            } else {
-                Mage::helper('connector')->log('TE : order not found: ' . $orderId);
-                exit;
-            }
-        } else {
-            Mage::helper('connector')->log('TE : order_id missing :' . $orderId);
-            exit;
-        }
-        parent::preDispatch();
-    }
-    public function newAction()
+	/**
+	 * Display new order content.
+	 */
+	public function newAction()
     {
         $this->loadLayout();
+	    //set content template
         $newOrder = $this->getLayout()->createBlock('email_connector/order', 'connector_order', array(
             'template' => 'connector/order/new.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
+	    //set the items for this order
         $items = $this->getLayout()->createBlock('email_connector/order', 'connector_order_items', array(
             'template' => 'connector/order/items.phtml'
         ));
@@ -34,37 +22,50 @@ class Dotdigitalgroup_Email_OrderController extends Mage_Core_Controller_Front_A
         $this->renderLayout();
     }
 
-    public function newguestAction()
+	/**
+	 * New order for guest.
+	 */
+	public function newguestAction()
     {
         $this->loadLayout();
-        $newOrder = $this->getLayout()->createBlock('email_connector/order', 'connector_order_guest', array(
+	    //set content template
+        $newGuestOrder = $this->getLayout()->createBlock('email_connector/order', 'connector_order_guest', array(
             'template' => 'connector/order/newguest.phtml'
         ));
-        $this->getLayout()->getBlock('content')->append($newOrder);
+        $this->getLayout()->getBlock('content')->append($newGuestOrder);
+	    //set the items for this order
         $items = $this->getLayout()->createBlock('email_connector/order', 'connector_order_items', array(
             'template' => 'connector/order/items.phtml'
         ));
         $this->getLayout()->getBlock('connector_order_guest')->append($items);
         $this->renderLayout();
-
     }
-    public function updateAction()
+
+	/**
+	 * Show order update information.
+	 */
+	public function updateAction()
     {
         $this->loadLayout();
+	    //set content template
         $newOrder = $this->getLayout()->createBlock('email_connector/order', 'connector_order_update', array(
             'template' => 'connector/order/update.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
         $this->renderLayout();
     }
-    public function updateguestAction()
+
+	/**
+	 * Show order update for guest.
+	 */
+	public function updateguestAction()
     {
         $this->loadLayout();
+	    //set the content template
         $newOrder = $this->getLayout()->createBlock('email_connector/order', 'connector_order_update_guest', array(
             'template' => 'connector/order/updateguest.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
         $this->renderLayout();
     }
-
 }

@@ -1,30 +1,8 @@
 <?php
+require_once 'Dotdigitalgroup' . DS . 'Email' . DS . 'controllers' . DS . 'DynamicContentController.php';
 
-class Dotdigitalgroup_Email_CreditmemoController extends Mage_Core_Controller_Front_Action
+class Dotdigitalgroup_Email_CreditmemoController extends Dotdigitalgroup_Email_DynamicContentController
 {
-	/**
-	 * predispatch
-	 *
-	 * @return Mage_Core_Controller_Front_Action|void
-	 */
-	public function preDispatch()
-    {
-        Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
-        $orderId = $this->getRequest()->getParam('order_id', false);
-        if ($orderId) {
-            $order = Mage::getModel('sales/order')->load($orderId);
-            if ($order->getId()) {
-                Mage::app()->setCurrentStore($order->getStoreId());
-            } else {
-                Mage::helper('connector')->log('TE : order not found: ' . $orderId);
-                exit;
-            }
-        } else {
-            Mage::helper('connector')->log('TE : order_id missing :' . $orderId);
-            exit;
-        }
-        parent::preDispatch();
-    }
 
 	/**
 	 * New creditmemo.

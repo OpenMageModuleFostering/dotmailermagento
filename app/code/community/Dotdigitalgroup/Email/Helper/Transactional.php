@@ -15,23 +15,31 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     const XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_DEFAULT        = 'connector_transactional_emails/email_mapping/default_email_templates';
     const XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_CUSTOM         = 'connector_transactional_emails/email_mapping/custom_email_templates';
 
-    const MAP_COLUMN_KEY_DATAFIELD                              = 'datafield';
-    const MAP_COLUMN_KEY_SENDTYPE                               = 'sendtype';
+	const MAP_COLUMN_KEY_TEMPLATE                               = 'template';
+	const MAP_COLUMN_KEY_SENDTYPE                               = 'sendtype';
+	const MAP_COLUMN_KEY_CAMPAIGN                               = 'campaign';
+	const MAP_COLUMN_KEY_DATAFIELD                              = 'datafield';
 
-    /**
+	const TRANSACTIONAL_SENDTYPE_SYSTEM_DEFAULT                 = '0';
+	const TRANSACTIONAL_SENDTYPE_VIA_CONNECTOR                  = '1';
+	const TRANSACTIOANL_SNEDTYPE_DESIGN_VIA_CONNECTOR           = '2';
+
+
+
+	/**
 	 * Get the api enabled.
 	 *
 	 * @return mixed
 	 */
     public function isEnabled()
     {
-        return Mage::getStoreConfig(self::XML_PATH_TRANSACTIONAL_API_ENABLED);
+        return Mage::getStoreConfigFlag(self::XML_PATH_TRANSACTIONAL_API_ENABLED);
     }
 
     /**
 	 * Get api username.
 	 *
-	 * @param int $website
+	 * @param mixed $website
 	 *
 	 * @return mixed
 	 * @throws Mage_Core_Exception
@@ -46,7 +54,7 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     /**
 	 * Get api password.
 	 *
-	 * @param int $website
+	 * @param mixed $website
 	 *
 	 * @return mixed
 	 * @throws Mage_Core_Exception
@@ -99,57 +107,55 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
      * @param $storeId
      * @return array
      */
-    public function getAllTemplateMapping($storeId){
-        $allTemplateMapping = array();
+	public function getAllTemplateMapping($storeId){
+		$allTemplateMapping = array();
 
-        $defaultTemplateMapping = $this->getDefaultEmailTemplates($storeId);
-        $customTemplateMapping = $this->getCustomEmailTemplates($storeId);
+		$defaultTemplateMapping = $this->getDefaultEmailTemplates($storeId);
+		$customTemplateMapping = $this->getCustomEmailTemplates($storeId);
 
-        if(is_array($defaultTemplateMapping) && is_array($customTemplateMapping))
-        {
-            $allTemplateMapping = array_merge($defaultTemplateMapping, $customTemplateMapping);
-        }
-        elseif(is_array($defaultTemplateMapping))
-        {
-            $allTemplateMapping = $defaultTemplateMapping;
-        }
-        elseif(is_array($customTemplateMapping))
-        {
-            $allTemplateMapping = $customTemplateMapping;
-        }
+		if(is_array($defaultTemplateMapping) && is_array($customTemplateMapping))
+		{
+			$allTemplateMapping = array_merge($defaultTemplateMapping, $customTemplateMapping);
+		}
+		elseif(is_array($defaultTemplateMapping))
+		{
+			$allTemplateMapping = $defaultTemplateMapping;
+		}
+		elseif(is_array($customTemplateMapping))
+		{
+			$allTemplateMapping = $customTemplateMapping;
+		}
 
-        return $allTemplateMapping;
-    }
+		return $allTemplateMapping;
+	}
 
     /**
-     * Check if the template is mapped
-     * @param $templateId
-     * @param $key
-     * @param $storeId
+     * Transactional emails check for campaing id if it's mapped.
+     * Default Emails stored in magento
      *
      * @return mixed
      */
-    public function getMapping($templateId, $key ,$storeId = null)
-    {
-        $allTemplateMapping = $this->getAllTemplateMapping($storeId);
-        $isMapped = false;
+	public function getMapping($templateId, $key ,$storeId = null)
+	{
+		$allTemplateMapping = $this->getAllTemplateMapping($storeId);
+		$isMapped = false;
 
-        foreach($allTemplateMapping as $templateMapping)
-        {
-            if($isMapped = $this->findTemplateIdInArray($templateId, $templateMapping))
-                break;
-        }
+		foreach($allTemplateMapping as $templateMapping)
+		{
+			if($isMapped = $this->findTemplateIdInArray($templateId, $templateMapping))
+				break;
+		}
 
-        if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_DATAFIELD)
-            return $isMapped[self::MAP_COLUMN_KEY_DATAFIELD];
+		if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_DATAFIELD)
+			return $isMapped[self::MAP_COLUMN_KEY_DATAFIELD];
 
-        if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_SENDTYPE)
-            return $isMapped[self::MAP_COLUMN_KEY_SENDTYPE];
+		if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_SENDTYPE)
+			return $isMapped[self::MAP_COLUMN_KEY_SENDTYPE];
 
-        return $isMapped;
-    }
+		return $isMapped;
+	}
 
-    /*
+    /**
      *  find template id in array
      * @param mixed $id
      * @param array $data
@@ -168,7 +174,7 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
         return $result;
     }
 
-    /*
+    /**
      * get un-serialised config value for all default email templates for all modules
      *
      * @return array
@@ -178,7 +184,7 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
         return unserialize(Mage::getStoreConfig(self::XML_PATH_CONNECTOR_TRANSACTIONAL_EMAIL_DEFAULT, $storeId));
     }
 
-    /*
+    /**
      * get un-serialised config value for custom templates
      *
      * @return array
@@ -246,10 +252,12 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     public function getWebsiteApiClient($website = 0)
     {
         $client = Mage::getModel('email_connector/apiconnector_client');
-        $client->setApiUsername($this->getApiUsername($website))
-               ->setApiPassword($this->getApiPassword($website));
-
-        return $client;
+	    $website = Mage::app()->getWebsite($website);
+	    if ($website) {
+		    $client->setApiUsername($this->getApiUsername($website))
+		           ->setApiPassword($this->getApiPassword($website));
+	    }
+	    return $client;
     }
 
     public function getEmailSettings($path, $websiteId)

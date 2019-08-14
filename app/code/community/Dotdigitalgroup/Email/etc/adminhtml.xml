@@ -42,17 +42,17 @@
                     <children>
                         <api_credentials translate="title">
                             <title>Api Credentials</title>
-                            <sort_order>10</sort_order>
+                            <sort_order>20</sort_order>
                             <action>adminhtml/system_config/edit/section/connector_api_credentials</action>
                         </api_credentials>
                         <data_mapping translate="title">
                             <title>Data Mapping</title>
-                            <sort_order>20</sort_order>
+                            <sort_order>30</sort_order>
                             <action>adminhtml/system_config/edit/section/connector_data_mapping</action>
                         </data_mapping>
                         <sync_settings translate="title">
                             <title>Sync Settings</title>
-                            <sort_order>30</sort_order>
+                            <sort_order>40</sort_order>
                             <action>adminhtml/system_config/edit/section/connector_sync_settings</action>
                         </sync_settings>
                     </children>
@@ -68,7 +68,7 @@
                         <title>Email Connector</title>
                         <children>
                             <email_connector_dashboard translate="title">
-                            <title>Dashboard</title>
+                                <title>Dashboard</title>
                             </email_connector_dashboard>
                             <automation_studio translate="title">
                                 <title>Automation Studio</title>
@@ -97,7 +97,7 @@
                                         <title>Data Mapping</title>
                                     </data_mapping>
                                     <sync_settings translate="title">
-                                    <title>Sync Settings</title>
+                                        <title>Sync Settings</title>
                                     </sync_settings>
                                 </children>
                             </email_configuration>

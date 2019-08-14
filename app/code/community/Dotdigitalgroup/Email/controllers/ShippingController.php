@@ -1,36 +1,25 @@
 <?php
+require_once 'Dotdigitalgroup' . DS . 'Email' . DS . 'controllers' . DS . 'DynamicContentController.php';
 
-class Dotdigitalgroup_Email_ShippingController extends Mage_Core_Controller_Front_Action
+class Dotdigitalgroup_Email_ShippingController extends Dotdigitalgroup_Email_DynamicContentController
 {
-    public function preDispatch()
-    {
-        Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
-        $orderId = $this->getRequest()->getParam('order_id', false);
-        if ($orderId) {
-            $order = Mage::getModel('sales/order')->load($orderId);
-            if ($order->getId()) {
-                Mage::app()->setCurrentStore($order->getStoreId());
-            } else {
-                Mage::helper('connector')->log('TE : order not found: ' . $orderId);
-                exit;
-            }
-        } else {
-            Mage::helper('connector')->log('TE : order_id missing :' . $orderId);
-            exit;
-        }
-        parent::preDispatch();
-    }
-    public function newAction()
+	/**
+	 * New shipping for this order.
+	 */
+	public function newAction()
     {
         $this->loadLayout();
+	    //set content template
         $newOrder = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_new', array(
             'template' => 'connector/shipping/new.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
+	    //set content items
         $items = $this->getLayout()->createBlock('email_connector/order', 'connector_shipping_items', array(
             'template' => 'connector/order/items.phtml'
         ));
         $this->getLayout()->getBlock('connector_shipping_new')->append($items);
+	    //rewrite the items to dislpay the shipped ones
         $items = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_track', array(
             'template' => 'email/order/shipment/track.phtml'
         ));
@@ -38,42 +27,58 @@ class Dotdigitalgroup_Email_ShippingController extends Mage_Core_Controller_Fron
         $this->renderLayout();
     }
 
-    public function newguestAction()
+	/**
+	 * New shipping for guest.
+	 */
+	public function newguestAction()
     {
         $this->loadLayout();
+	    //set content template
         $newOrder = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_newguest', array(
             'template' => 'connector/shipping/newguest.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($newOrder);
+	    //set content items
         $items = $this->getLayout()->createBlock('email_connector/order', 'connector_shipping_items', array(
             'template' => 'connector/order/items.phtml'
         ));
+	    //new guest shipping items
         $this->getLayout()->getBlock('connector_shipping_newguest')->append($items);
+	    //rewrite the items to dislpay the shipped ones
         $items = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_track', array(
             'template' => 'email/order/shipment/track.phtml'
         ));
+	    //items that was shipped
         $this->getLayout()->getBlock('connector_shipping_newguest')->append($items);
         $this->renderLayout();
-
     }
 
-    public function updateAction()
+	/**
+	 * Shipping update for this order.
+	 */
+	public function updateAction()
     {
         $this->loadLayout();
-        $newOrder = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_update', array(
+	    //set the content template
+        $shippingUpdate = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_update', array(
             'template' => 'connector/shipping/update.phtml'
         ));
-        $this->getLayout()->getBlock('content')->append($newOrder);
+	    //shipping update content
+        $this->getLayout()->getBlock('content')->append($shippingUpdate);
         $this->renderLayout();
     }
 
-    public function updateguestAction()
+	/**
+	 * Shipping update for guests.
+	 */
+	public function updateguestAction()
     {
         $this->loadLayout();
-        $newOrder = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_updateguest', array(
+        $shippingGuest = $this->getLayout()->createBlock('email_connector/order_shipping', 'connector_shipping_updateguest', array(
             'template' => 'connector/shipping/updateguest.phtml'
         ));
-        $this->getLayout()->getBlock('content')->append($newOrder);
+	    //set shipping content
+        $this->getLayout()->getBlock('content')->append($shippingGuest);
         $this->renderLayout();
     }
 }

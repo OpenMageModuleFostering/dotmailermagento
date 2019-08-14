@@ -49,14 +49,22 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
      */
     public function sendTransactional($templateId, $sender, $email, $name, $vars=array(), $storeId=null)
     {
-        $sendType = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_SENDTYPE);
-        $transEnabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
-        $campaignId = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_DATAFIELD);
+
+	    $sendType = Mage::helper('connector/transactional')->getMapping($templateId, Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_SENDTYPE, $storeId);
+
+        $transEnabled = Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
+
+	    $campaignId = Mage::helper('connector/transactional')->getMapping($templateId, Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_DATAFIELD, $storeId);
 
         //design and send. campaign id is needed for this option
-        if($sendType == 2 && $transEnabled && $campaignId)
-        {
-            $this->setSentSuccess($this->designAndSend($templateId, $vars, $campaignId, $email, $storeId));
+        if ($sendType == 2 && $transEnabled && $campaignId) {
+            if(is_array($email)) {
+                foreach($email as $one) {
+                    $this->setSentSuccess($this->designAndSend($templateId, $vars, $campaignId, $one, $storeId));
+                }
+            } else {
+                $this->setSentSuccess($this->designAndSend($templateId, $vars, $campaignId, $email, $storeId));
+            }
             return $this;
         }
 
@@ -174,17 +182,17 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
         foreach($emails as $email){
             try{
                 $now = Mage::getSingleton('core/date')->gmtDate();
-                $emailCreate = Mage::getModel('email_connector/create');
+                $emailCreate = Mage::getModel('email_connector/campaign');
                 $emailCreate
                     ->setEmail($email)
                     ->setFromName($this->getSenderName())
                     ->setWebsiteId($websiteId)
-                    ->setName($templateName)
+                    ->setEventName($templateName)
                     ->setSubject($subject)
                     ->setHtmlContent($body)
-                    ->setPlainTextContent('Want to unsubscribe or change your details? http://$UNSUB$')
+                    ->setPlainTextContent($helper->__('Want to unsubscribe or change your details?') . 'http://$UNSUB$')
                     ->setCreatedAt($now)
-                    ->setCopy($helper->getSendCopy($websiteId))
+                    ->setType(2)
                     ->save();
             }catch (Exception $e) {
                 Mage::logException($e);
@@ -229,6 +237,8 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
     {
         $order = $data['order'];
         $storeId = $order->getStoreId();
+	    $websiteId = Mage::getModel('core/store')->load($storeId)->getWebsiteId();
+
         Mage::helper('connector')->log('-- Sales Order :'  . $campaignId);
         try{
             $now = Mage::getSingleton('core/date')->gmtDate();
@@ -241,6 +251,7 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
                 ->setStoreId($storeId)
                 ->setCampaignId($campaignId)
                 ->setEventName($this->_registered[$templateId])
+	            ->setWebsiteId($websiteId)
                 ->setCreatedAt($now)
             ;
             $emailCampaign->save();
@@ -288,6 +299,7 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
     {
         $helper = Mage::helper('connector/transactional');
         Mage::helper('connector')->log('-- Other campaign: '  . $campaignId);
+		$websiteId = Mage::getModel('core/store')->load($storeId)->getWebsiteId();
 
         try{
             $now = Mage::getSingleton('core/date')->gmtDate();
@@ -298,7 +310,8 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
                     ->setEmail($email)
                     ->setStoreId($storeId)
                     ->setCampaignId($campaignId)
-                    ->setEventName($helper->getTemplateLabelById($templateId))
+	                ->setWebsiteId($websiteId)
+	                ->setEventName($helper->getTemplateLabelById($templateId))
                     ->setCreatedAt($now);
                 $emailCampaign->save();
             }

@@ -25,7 +25,9 @@ class Dotdigitalgroup_Email_Block_Products extends Mage_Core_Block_Template
         if ($orderId && $mode) {
             $orderModel = Mage::getModel('sales/order')->load($orderId);
             if ($orderModel->getId()) {
-                Mage::app()->setCurrentStore($orderModel->getStoreId());
+	            $storeId = $orderModel->getStoreId();
+	            $appEmulation = Mage::getSingleton('core/app_emulation');
+	            $appEmulation->startEnvironmentEmulation($storeId);
                 //order products
                 $productRecommended = Mage::getModel('email_connector/dynamic_recommended', $orderModel);
                 $productRecommended->setMode($mode);

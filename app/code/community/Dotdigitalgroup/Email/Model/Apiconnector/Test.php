@@ -3,7 +3,7 @@
 class Dotdigitalgroup_Email_Model_Apiconnector_Test extends Dotdigitalgroup_Email_Model_Apiconnector_Client
 {
     const TEST_API_USERNAME = 'apiuser-8e3b8f244ec9@apiconnector.com';
-    const TEST_API_PASSWORD = 'Magento2013';
+    const TEST_API_PASSWORD = 'TWFnZW50bzIwMTM=';
     const TEST_API_CAMPAIGN = '2643928';
     const TEST_CONTACT_ID   = '13';
     const TEST_CONTACT_EMAIL = 'ben.staveley@dotmailer.co.uk';
@@ -50,7 +50,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Test extends Dotdigitalgroup_Emai
                 ->setApiPassword($apiPassword);
             $response = $this->getAccountInfo();
             if (isset($response->message)) {
-                $message = 'API Username And API Password Do Not Match!';
+                $message = 'API Username And Password Do Not Match!';
                 Mage::helper('connector')->log($message);
             }
             return $message;
@@ -65,11 +65,14 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Test extends Dotdigitalgroup_Emai
     {
         // set test credentials
         $this->setApiUsername(self::TEST_API_USERNAME)
-            ->setApiPassword(self::TEST_API_PASSWORD);
+            ->setApiPassword(
+	            base64_decode(self::TEST_API_PASSWORD));
         $testEmail         = self::TEST_CONTACT_EMAIL;
         $contactId         = self::TEST_CONTACT_ID;
         $campaignId        = self::TEST_API_CAMPAIGN;
 
+	    Mage::log($this->getApiUsername());
+	    Mage::log($this->getApiPassword());
         /**
          * send initial info
          */

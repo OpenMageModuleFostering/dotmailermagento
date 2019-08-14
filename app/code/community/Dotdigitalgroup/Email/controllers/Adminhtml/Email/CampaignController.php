@@ -169,6 +169,40 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
         $this->_redirect('*/*/index');
     }
 
+    /**
+     * Mass mark for recreate campaings.
+     */
+    public function massRecreateAction()
+    {
+        $campaignIds = $this->getRequest()->getParam('campaign');
+        $count = 0;
+        if (!is_array($campaignIds)) {
+            $this->_getSession()->addError($this->__('Please select campaigns.'));
+        } else {
+            try {
+                foreach ($campaignIds as $campaignId) {
+                    $campaign = Mage::getSingleton('email_connector/campaign')->load($campaignId);
+                    if($campaign->getSubject() && $campaign->getHtmlContent() && ($campaign->getIsSent() == NULL)){
+                        $count++;
+                        Mage::dispatchEvent('connector_controller_campaign_recreate', array('campaign' => $campaign));
+                        $campaign->setIsCreated(null)->save();
+                    }
+                    elseif(($campaign->getIsSent() == NULL) && $campaign->getIsCopy() == 1){
+                        $count++;
+                        Mage::dispatchEvent('connector_controller_campaign_recreate', array('campaign' => $campaign));
+                        $campaign->setIsCreated(null)->save();
+                    }
+                }
+                $this->_getSession()->addSuccess(
+                    Mage::helper('connector')->__('Total of %d record(s) have recreate.', $count)
+                );
+            } catch (Exception $e) {
+                $this->_getSession()->addError($e->getMessage());
+            }
+        }
+        $this->_redirect('*/*/index');
+    }
+
 
     /**
 	 * main page.

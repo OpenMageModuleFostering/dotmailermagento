@@ -14,7 +14,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Contact_Grid extends Mage_Adminhtml_
 
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('email_connector/contact')->getCollection();
+	    $collection = Mage::getModel('email_connector/contact')->getCollection();
         $this->setCollection($collection);
         $this->setDefaultSort('updated_at');
         $this->setDefaultDir('DESC');

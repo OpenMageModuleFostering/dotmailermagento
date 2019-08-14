@@ -18,49 +18,57 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Mage_Core_Block_T
      */
     public function getLoadedProductCollection()
     {
+	    //products to be diplayd for recommended pages
         $productsToDisplay = array();
         $orderId = $this->getRequest()->getParam('order_id');
+	    //display mode based on the action name
         $mode  = $this->getRequest()->getActionName();
         $orderModel = Mage::getModel('sales/order')->load($orderId);
-
+	    //number of product items to be displayed
         $limit      = Mage::helper('connector/recommended')->getDisplayLimitByMode($mode);
         $orderItems = $orderModel->getAllItems();
+	    $numItems = count($orderItems);
 
-        if (count($orderItems) > $limit) {
+	    //no product found to display
+	    if ($numItems == 0 || ! $limit) {
+		    return array();
+	    }elseif (count($orderItems) > $limit) {
             $maxPerChild = 1;
         } else {
             $maxPerChild = number_format($limit / count($orderItems));
         }
 
-		Mage::helper('connector')->log('DYNAMIC PRODUCTS : limit ' . $limit . ' products : ' . count($orderItems) . ', max per child : '. $maxPerChild);
+		Mage::helper('connector')->log('DYNAMIC PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($orderItems as $item) {
+	        $i = 0;
             $productId = $item->getProductId();
-            /** @var Mage_Catalog_Model_Product $productModel */
+            //parent product
             $productModel = Mage::getModel('catalog/product')->load($productId);
+	        //check for product exists
             if ($productModel->getId()) {
-                $recommendedProducts = $this->_getRecommendedProduct($productModel, $mode);
-                $i = 0;
+	            //get single product for current mode
+	            $recommendedProducts = $this->_getRecommendedProduct($productModel, $mode);
                 foreach ($recommendedProducts as $product) {
+	                //load child product
                     $product = Mage::getModel('catalog/product')->load($product->getId());
-                    if (count($productsToDisplay) < $limit) {
-                        if ($i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
-                            $productsToDisplay[$product->getId()] = $product;
-                            $i++;
-                        }
+	                //check if still exists
+	                if ($product->getId() && count($productsToDisplay) < $limit && $i <= $maxPerChild && $product->isSaleable() && !$product->getParentId()) {
+		                //we have a product to display
+                        $productsToDisplay[$product->getId()] = $product;
+                        $i++;
                     }
                 }
             }
+	        //have reached the limit don't loop for more
             if (count($productsToDisplay) == $limit) {
                 break;
             }
-
         }
 
-        //fill up the table with fallback products
+        //check for more space to fill up the table with fallback products
         if (count($productsToDisplay) < $limit) {
             $fallbackIds = Mage::helper('connector/recommended')->getFallbackIds();
-            Mage::helper( 'connector' )->log( 'fallback products' );
 
             foreach ($fallbackIds as $productId) {
                 $product = Mage::getModel('catalog/product')->load($productId);

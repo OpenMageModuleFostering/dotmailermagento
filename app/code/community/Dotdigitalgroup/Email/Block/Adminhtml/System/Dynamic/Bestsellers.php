@@ -3,19 +3,18 @@
 class Dotdigitalgroup_Email_Block_Adminhtml_System_Dynamic_Bestsellers extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
     /** label */
-    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
-    {
-        $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
-        $website = Mage::app()->getRequest()->getParam('website', false);
+    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element) {
 
-        if ($website) {
-            $website = Mage::app()->getWebsite($website);
-            $baseUrl  = $website->getConfig('web/secure/base_url');
-        }
+	    //base url
+	    $baseUrl = Mage::helper('connector')->generateDynamicUrl();
+
+	    //config passcode
         $passcode = Mage::helper('connector')->getPasscode();
 
-        if(!strlen($passcode)) $passcode = '[PLEASE SET UP A PASSCODE]';
+        if (!strlen($passcode))
+	        $passcode = '[PLEASE SET UP A PASSCODE]';
 
+	    //full url
         $text = sprintf('%sconnector/report/bestsellers/code/%s', $baseUrl, $passcode);
         $element->setData('value', $text);
         $element->setData('disabled', 'disabled');

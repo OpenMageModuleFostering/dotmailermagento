@@ -20,7 +20,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml
     {
         $collection = Mage::getModel('email_connector/campaign')->getCollection();
         $this->setCollection($collection);
-        $this->setDefaultSort('updated_at');
+        $this->setDefaultSort('created_at');
         $this->setDefaultDir('DESC');
         return parent::_prepareCollection();
     }
@@ -41,17 +41,43 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml
             'index'         => 'email',
             'type'          => 'text',
             'escape'        => true
+        ))->addColumn('is_created', array(
+            'header'        => Mage::helper('connector')->__('Is Created'),
+            'align'         => 'center',
+            'width'         => '20px',
+            'index'         => 'is_created',
+            'escape'        => true,
+	        'type'          => 'options',
+            'renderer'     => 'email_connector/adminhtml_column_renderer_imported',
+            'options'       => array(
+	            '1'    => 'Is Created',
+	            'null' => 'Not Created'
+            ),
+            'filter_condition_callback' => array($this, 'filterCallbackContact')
         ))->addColumn('is_sent', array(
             'header'        => Mage::helper('connector')->__('Is Sent'),
             'align'         => 'center',
             'width'         => '20px',
             'index'         => 'is_sent',
             'escape'        => true,
-	        'type'          => 'options',
+            'type'          => 'options',
             'renderer'     => 'email_connector/adminhtml_column_renderer_imported',
             'options'       => array(
-	            '1'    => 'Is Send',
-	            'null' => 'Not Send'
+                '1'    => 'Is Send',
+                'null' => 'Not Send'
+            ),
+            'filter_condition_callback' => array($this, 'filterCallbackContact')
+        ))->addColumn('is_copy', array(
+            'header'        => Mage::helper('connector')->__('Is Copy'),
+            'align'         => 'center',
+            'width'         => '20px',
+            'index'         => 'is_copy',
+            'escape'        => true,
+            'type'          => 'options',
+            'renderer'     => 'email_connector/adminhtml_column_renderer_imported',
+            'options'       => array(
+                '1'    => 'Is A Copy',
+                'null' => 'Not A Copy'
             ),
             'filter_condition_callback' => array($this, 'filterCallbackContact')
         ))->addColumn('order_increment_id', array(
@@ -61,15 +87,29 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml
             'index'         => 'order_increment_id',
             'type'          => 'number',
             'escape'        => true
+        ))->addColumn('create_message', array(
+            'header'		=> Mage::helper('connector')->__('Create Message'),
+            'align'		=> 'left',
+            'width'		=> '300px',
+            'index'     => 'create_message',
+            'type'      => 'text',
+            'escape'    => true
+        ))->addColumn('contact_message', array(
+            'header'		=> Mage::helper('connector')->__('Contact Message'),
+            'align'		=> 'left',
+            'width'		=> '300px',
+            'index'     => 'contact_message',
+            'type'      => 'text',
+            'escape'    => true
         ))->addColumn('message', array(
-            'header'		=> Mage::helper('connector')->__('Message'),
+            'header'		=> Mage::helper('connector')->__('Send Message'),
             'align'		=> 'left',
             'width'		=> '300px',
             'index'     => 'message',
             'type'      => 'text',
             'escape'    => true
         ))->addColumn('event_name', array(
-            'header'        => Mage::helper('connector')->__('Event Name'),
+            'header'        => Mage::helper('connector')->__('Email Name'),
             'align'         => 'left',
             'index'         => 'event_name',
             'width'		    => '100px',
@@ -80,6 +120,13 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml
             'align'     => 'center',
             'width'     => '100px',
             'index'     => 'created_at',
+            'type'      => 'datetime',
+            'escape'    => true
+        ))->addColumn('updated_at', array(
+            'header'    => Mage::helper('connector')->__('Updated At'),
+            'align'     => 'center',
+            'width'     => '100px',
+            'index'     => 'updated_at',
             'type'      => 'datetime',
             'escape'    => true
         ))->addColumn('sent_at', array(
@@ -132,6 +179,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Grid extends Mage_Adminhtml
         );
 
         $this->getMassactionBlock()->addItem('resend', array('label'=>Mage::helper('connector')->__('Resend'),'url'=>$this->getUrl('*/*/massResend')));
+        $this->getMassactionBlock()->addItem('re-create', array('label'=>Mage::helper('connector')->__('Recreate'),'url'=>$this->getUrl('*/*/massRecreate')));
         return $this;
     }
 

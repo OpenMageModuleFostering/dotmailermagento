@@ -25,10 +25,12 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     public function handleSalesOrderSaveAfter(Varien_Event_Observer $observer)
     {
         try{
-	        $currentStoreId = Mage::app()->getStore()->getId();
 	        $order = $observer->getEvent()->getOrder();
             $status  = $order->getStatus();
             $storeId = $order->getStoreId();
+	        // start app emulation
+	        $appEmulation = Mage::getSingleton('core/app_emulation');
+	        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
             $emailOrder = Mage::getModel('email_connector/order')->loadByOrderId($order->getEntityId(), $order->getQuoteId());
             //reimport email order
             $emailOrder->setUpdatedAt($order->getUpdatedAt())
@@ -49,7 +51,7 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
                 $smsCampaign->setStatus($status);
                 $smsCampaign->sendSms();
 	            // set back the current store
-	            Mage::app()->setCurrentStore($currentStoreId);
+	            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             }
             $emailOrder->save();
 

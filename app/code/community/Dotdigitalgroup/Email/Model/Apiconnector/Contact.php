@@ -13,7 +13,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
 	 */
 	public function sync()
     {
-        $result = array('error' => false, 'message' => "Done.");
+        $result = array('success' => true, 'message' => '');
         /** @var Dotdigitalgroup_Email_Helper_Data $helper */
         $helper = Mage::helper('connector');
         $helper->log('---------- Start customer sync ----------');
@@ -23,15 +23,34 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         foreach (Mage::app()->getWebsites(true) as $website) {
             $enabled = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $website);
             $sync = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED, $website);
-            if ($enabled && $sync)
-                $this->exportCustomersForWebsite($website);
+            if ($enabled && $sync) {
+
+	            $numUpdated = $this->exportCustomersForWebsite($website);
+	            // show message for any number of customers
+	            if ($numUpdated)
+	                $result['message'] .=  '</br>' . $website->getName() . ', updated customers = ' . $numUpdated;
+            }
         }
-        $helper->log('Total time for sync : ' . gmdate("H:i:s", microtime(true) - $this->_start));
+	    $message = 'Total time for sync : ' . gmdate("H:i:s", microtime(true) - $this->_start) . ', Total updated = ' . $this->_countCustomers;
+        $helper->log($message);
+
+	    if ($this->_countCustomers) {
+		    $message .= $result['message'];
+		    $result['message'] = $message;
+	    }
 
         return $result;
     }
 
-    public function exportCustomersForWebsite(Mage_Core_Model_Website $website){
+	/**
+	 * Execute the contact sync for the website
+	 * number of customer synced.
+	 * @param Mage_Core_Model_Website $website
+	 *
+	 * @return int|void
+	 */
+    public function exportCustomersForWebsite(Mage_Core_Model_Website $website)
+    {
         $updated = 0;
         $customers = $headers = $allMappedHash = array();
         $helper = Mage::helper('connector');
@@ -136,7 +155,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             $client->postContactsTransactionalDataImport($websiteWishlists, 'Wishlist');
         }
 
-        $helper->log('Website : ' . $website->getName() . ', customers = ' . count($customers));
+	    $customerNum = count($customers);
+        $helper->log('Website : ' . $website->getName() . ', customers = ' . $customerNum);
         $helper->log('---------------------------- execution time :' . gmdate("H:i:s", microtime(true) - $this->_start));
 
         if (file_exists($fileHelper->getFilePath($customersFile))) {
@@ -147,7 +167,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             $fileHelper->archiveCSV($customersFile);
         }
         $this->_countCustomers += $updated;
-        return;
+        return $customerNum;
     }
 
     /**

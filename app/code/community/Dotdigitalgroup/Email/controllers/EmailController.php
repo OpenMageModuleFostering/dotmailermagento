@@ -2,20 +2,33 @@
 
 class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_Action
 {
-    public function indexAction()
+    /**
+     * Generate coupon for a coupon code id.
+     */
+    public function couponAction()
     {
-        //Get current layout state
+        //authinticate
+        Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
+
         $this->loadLayout();
+        //page root template
+        if ($root = $this->getLayout()->getBlock('root')) {
+            $root->setTemplate('page/blank.phtml');
+        }
+        //content template
+        $coupon = $this->getLayout()->createBlock('email_connector/coupon', 'connector_coupon', array(
+            'template' => 'connector/coupon.phtml'
+        ));
+        $this->getLayout()->getBlock('content')->append($coupon);
         $this->renderLayout();
     }
 
-    public function couponAction()
-    {
-        $this->loadLayout();
-        $this->renderLayout();
-    }
+    /**
+     * Basket page to display the user items with specific email.
+     */
     public function basketAction()
     {
+        //authinticate
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
         $this->loadLayout();
         if ($root = $this->getLayout()->getBlock('root')) {
@@ -28,18 +41,21 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         $this->renderLayout();
     }
 
+    /**
+     * Access Log files.
+     */
     public function logAction()
     {
         //file name param
-	    $fileName = $filePath = '';
+        $fileName = $filePath = '';
         $file = $this->getRequest()->getParam('file', false);
-	    if ($file) {
-		    $fileName = $file . '.log';
-		    $filePath = Mage::getBaseDir( 'log' ) . DIRECTORY_SEPARATOR . $fileName;
-	    } elseif ($csv = $this->getRequest()->getParam('archive', false)){
-		    $fileName = $csv . '.csv';
-		    $filePath = Mage::getBaseDir('export') . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive' . DIRECTORY_SEPARATOR . $fileName;
-	    }
+        if ($file) {
+            $fileName = $file . '.log';
+            $filePath = Mage::getBaseDir( 'log' ) . DIRECTORY_SEPARATOR . $fileName;
+        } elseif ($csv = $this->getRequest()->getParam('archive', false)){
+            $fileName = $csv . '.csv';
+            $filePath = Mage::getBaseDir('export') . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive' . DIRECTORY_SEPARATOR . $fileName;
+        }
 
         $this->_prepareDownloadResponse($fileName, array(
             'type'  => 'filename',
@@ -48,36 +64,41 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         exit();
     }
 
-	public function showAction() {
-		$list = array();
+    public function showAction() {
+        $list = array();
 
-		if ($handle = opendir(Mage::getBaseDir('export') . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive')) {
+        if ($handle = opendir(Mage::getBaseDir('export') . DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive')) {
 
 
-				while (false !== ($entry = readdir($handle))) {
+            while (false !== ($entry = readdir($handle))) {
 
-				if ($entry != "." && $entry != "..") {
+                if ($entry != "." && $entry != "..") {
 
-					$list[] = $entry;
-				}
-			}
+                    $list[] = $entry;
+                }
+            }
 
-			closedir($handle);
-		}
+            closedir($handle);
+        }
 
-		foreach ( $list as $one ) {
+        foreach ( $list as $one ) {
 
-			echo $one . '</br>';
-		}
-		return;
-	}
+            echo $one . '</br>';
+        }
+        return;
+    }
 
+    /**
+     * Callback action for the automation studio.
+     */
     public function callbackAction()
     {
         $code = $this->getRequest()->getParam('code', false);
         $userId = $this->getRequest()->getParam('state');
         $adminUser = Mage::getModel('admin/user')->load($userId);
         $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
+
+        //callback url
         $callback    = $baseUrl . 'connector/email/callback';
 
         if ($code) {
@@ -101,11 +122,14 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
 
             $response = json_decode(curl_exec($ch));
             if ($response === false) {
-	            Mage::helper('connector')->log("Error Number: " . curl_errno($ch));
+                Mage::helper('connector')->rayLog('100', 'Automaion studio number not found : ' . serialize($response));
+                Mage::helper('connector')->log("Error Number: " . curl_errno($ch));
             }
 
+            //save the refresh token to the admin user
             $adminUser->setRefreshToken($response->refresh_token)->save();
         }
+        //redirect to automation index page
         $this->_redirectReferer(Mage::helper('adminhtml')->getUrl('adminhtml/email_automation/index'));
     }
 }

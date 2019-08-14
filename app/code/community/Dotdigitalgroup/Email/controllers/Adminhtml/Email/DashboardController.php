@@ -6,16 +6,71 @@ class Dotdigitalgroup_Email_Adminhtml_Email_DashboardController extends Mage_Adm
 	 * main page.
 	 */
 	public function indexAction()
-    {
-        $this->_title($this->__('Dashboard'));
+	{
+		$this->_title($this->__('Dashboard'));
 
-        $this->loadLayout();
-        $this->_setActiveMenu('email_connector');
-        $this->_addContent($this->getLayout()->createBlock('email_connector/adminhtml_dashboard'));
-        $this->renderLayout();
-    }
-    protected function _isAllowed()
-    {
-        return Mage::getSingleton('admin/session')->isAllowed('newsletter/email_connector/email_connector_dashboard');
-    }
+		$this->loadLayout();
+		$this->_setActiveMenu('email_connector');
+		$this->_addContent($this->getLayout()->createBlock('adminhtml/widget_container'))
+		     ->_addLeft($this->getLayout()->createBlock ('email_connector/adminhtml_dashboard_tabs'));
+		$this->renderLayout();
+	}
+
+	/**
+	 * Load Status Grid as ajax requst.
+	 */
+	public function statusGridAction() {
+
+		$block = $this->getLayout()->createBlock('email_connector/adminhtml_dashboard_tabs_status');
+		$this->getResponse()->setBody($block->toHtml());
+
+	}
+
+	/**
+	 * Ajax tab for config data.
+	 */
+	public function emailConfigAction() {
+		$block = $this->getLayout()->createBlock('email_connector/adminhtml_dashboard_tabs_config');
+
+		$this->getResponse()->setBody($block->toHtml());
+	}
+
+	protected function _isAllowed()
+	{
+		return Mage::getSingleton('admin/session')->isAllowed('newsletter/email_connector/email_connector_dashboard');
+	}
+
+
+	/**
+	 * Ajax save the state of expandbles fieldsets.
+	 */
+	public function stateAction()
+	{
+		$configState = array(
+			$this->getRequest()->getParam('container') => $this->getRequest()->getParam('value')
+		);
+		$this->_saveState($configState);
+	}
+
+	protected function _saveState($configState = array())
+	{
+		$adminUser = Mage::getSingleton('admin/session')->getUser();
+		if (is_array($configState)) {
+			$extra = $adminUser->getExtra();
+			if (!is_array($extra)) {
+				$extra = array();
+			}
+			if (!isset($extra['configState'])) {
+				$extra['configState'] = array();
+			}
+			foreach ($configState as $fieldset => $state) {
+				$extra['configState'][$fieldset] = $state;
+			}
+			$adminUser->saveExtra($extra);
+		}
+
+		return true;
+	}
+
+
 }

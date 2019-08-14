@@ -25,6 +25,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Mostviewed extends Mage_Core_Block
         $mode = $this->getRequest()->getActionName();
         $limit = Mage::helper('connector/recommended')->getDisplayLimitByMode($mode);
         $from  = Mage::helper('connector/recommended')->getTimeFromConfig($mode);
+	    //@todo localize this value
         $to = Zend_Date::now()->toString(Zend_Date::ISO_8601);
 
         $productCollection = Mage::getResourceModel('reports/product_collection')

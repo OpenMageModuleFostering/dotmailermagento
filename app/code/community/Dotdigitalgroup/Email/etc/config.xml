@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Dotdigitalgroup_Email>
-            <version>3.1.2</version>
+            <version>3.2.0</version>
         </Dotdigitalgroup_Email>
     </modules>
     <frontend>
@@ -22,6 +22,16 @@
                 </connector>
             </updates>
         </layout>
+        <events>
+            <controller_action_postdispatch>
+                <observers>
+                    <connector_switcher>
+                        <class>Dotdigitalgroup_Email_Model_Controller_Observer</class>
+                        <method>controllerActionPostdispatch</method>
+                    </connector_switcher>
+                </observers>
+            </controller_action_postdispatch>
+        </events>
     </frontend>
     <global>
         <resources>
@@ -52,6 +62,9 @@
                     <create>
                         <table>email_create</table>
                     </create>
+                    <config>
+                        <table>email_config</table>
+                    </config>
                 </entities>
             </email_connector_resource>
             <core>
@@ -71,6 +84,7 @@
             </email_connector>
         </blocks>
         <events>
+
             <admin_system_config_changed_section_connector_api_credentials>
                 <observers>
                     <connector_api_save>
@@ -83,18 +97,10 @@
                 <observers>
                     <connector_transactional_api>
                         <class>Dotdigitalgroup_Email_Model_Adminhtml_Observer</class>
-                        <method>actionConfigTransactional</method>
+                        <method>saveConfigForTransactional</method>
                     </connector_transactional_api>
                 </observers>
             </admin_system_config_changed_section_connector_transactional_emails>
-            <admin_system_config_changed_section_connector_sync_settings>
-                <observers>
-                    <connector_sync_reset>
-                        <class>Dotdigitalgroup_Email_Model_Adminhtml_Observer</class>
-                        <method>actionConfigResetContacts</method>
-                    </connector_sync_reset>
-                </observers>
-            </admin_system_config_changed_section_connector_sync_settings>
             <admin_system_config_changed_section_connector_data_mapping>
                 <observers>
                     <connector_data_mapping_reset>
@@ -103,6 +109,14 @@
                     </connector_data_mapping_reset>
                 </observers>
             </admin_system_config_changed_section_connector_data_mapping>
+            <admin_system_config_changed_section_connector_sync_settings>
+                <observers>
+                    <connector_sys_check_feature_active>
+                        <class>Dotdigitalgroup_Email_Model_Adminhtml_Observer</class>
+                        <method>checkFeatureActive</method>
+                    </connector_sys_check_feature_active>
+                </observers>
+            </admin_system_config_changed_section_connector_sync_settings>
             <customer_save_after>
                 <observers>
                     <connector_customer_save_after>
@@ -120,6 +134,14 @@
                     </connector_customer_register_success>
                 </observers>
             </customer_register_success>
+            <customer_delete_after>
+                <observers>
+                    <connector_customer_delete_after>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>handleCustomerDeleteAfter</method>
+                    </connector_customer_delete_after>
+                </observers>
+            </customer_delete_after>
             <newsletter_subscriber_save_before>
                 <observers>
                     <connector_newsletter_subscriber_save_before>
@@ -195,6 +217,17 @@
                 </connector_email>
             </updates>
         </layout>
+        <events>
+            <controller_action_predispatch>
+                <observers>
+                    <connector_feed>
+                        <type>singleton</type>
+                        <class>Dotdigitalgroup_Email_Model_Adminhtml_Observer</class>
+                        <method>updateFeed</method>
+                    </connector_feed>
+                </observers>
+            </controller_action_predispatch>
+        </events>
         <translate>
             <modules>
                 <Dotdigitalgroup_Email>
@@ -221,7 +254,7 @@
             <connector_email_customer_sync>
                 <run><model>email_connector/cron::contactSync</model></run>
                 <schedule>
-                    <cron_expr>*/15 * * * *</cron_expr>
+                    <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
             </connector_email_customer_sync>
             <connector_email_subscriber_and_guest_sync>
@@ -236,20 +269,12 @@
                     <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
             </connector_email_lostbaskets>
-            <connector_email_create>
-                <run>
-                    <model>email_connector/cron::createEmailsToCampaigns</model>
-                </run>
-                <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
-                </schedule>
-            </connector_email_create>
             <connector_email_campaign>
                 <run>
                     <model>email_connector/cron::sendMappedEmails</model>
                 </run>
                 <schedule>
-                    <cron_expr>02,07,12,17,22,27,32,37,42,47,52,57 * * * *</cron_expr>
+                    <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
             </connector_email_campaign>
             <connector_email_order_sync>
@@ -273,12 +298,17 @@
                 <username></username>
                 <password></password>
             </api>
+            <oauth>
+                <client_id></client_id>
+                <client_key></client_key>
+                <test_connect></test_connect>
+            </oauth>
         </connector_api_credentials>
         <connector_sync_settings>
             <address_book>
-                <customers></customers>
-                <subscribers></subscribers>
-                <guests></guests>
+                <customers>0</customers>
+                <subscribers>0</subscribers>
+                <guests>0</guests>
             </address_book>
             <sync>
                 <contact_enabled>0</contact_enabled>
@@ -287,7 +317,7 @@
                 <wishlist_enabled>0</wishlist_enabled>
             </sync>
             <dynamic_addressbook>
-                <addressbook_name></addressbook_name>
+                <addressbook_name>0</addressbook_name>
             </dynamic_addressbook>
         </connector_sync_settings>
         <connector_data_mapping>
@@ -302,6 +332,8 @@
                 <created_at></created_at>
                 <last_logged_date></last_logged_date>
                 <customer_group></customer_group>
+                <review_count></review_count>
+                <last_review_date></last_review_date>
                 <billing_address_1></billing_address_1>
                 <billing_address_2></billing_address_2>
                 <billing_city></billing_city>
@@ -321,13 +353,26 @@
                 <total_spend></total_spend>
                 <last_order_date></last_order_date>
                 <last_order_id></last_order_id>
+                <total_refund></total_refund>
                 <custom_attributes></custom_attributes>
                 <validator></validator>
             </customer_data>
             <dynamic_datafield>
                 <datafield_name></datafield_name>
                 <datafield_type></datafield_type>
+                <datafield_default></datafield_default>
+                <datafield_access></datafield_access>
             </dynamic_datafield>
+            <sweet_tooth>
+                <active>0</active>
+                <reward_point_balance></reward_point_balance>
+                <reward_point_pending></reward_point_pending>
+                <reward_point_pending_time></reward_point_pending_time>
+                <reward_point_on_hold></reward_point_on_hold>
+                <reward_point_expiration></reward_point_expiration>
+                <reward_point_last_earn></reward_point_last_earn>
+                <reward_point_last_spent></reward_point_last_spent>
+            </sweet_tooth>
         </connector_data_mapping>
         <connector_roi_tracking>
             <page_tracking>
@@ -445,38 +490,57 @@
                 <api_password></api_password>
             </credentials>
             <email_settings>
+                <from_address></from_address>
                 <unsubscribe_link>1</unsubscribe_link>
                 <reply_action>Webmail</reply_action>
                 <reply_address></reply_address>
+                <send_copy></send_copy>
             </email_settings>
             <email_mapping>
                 <default_email_templates></default_email_templates>
                 <custom_email_templates></custom_email_templates>
             </email_mapping>
         </connector_transactional_emails>
+        <connector_automation_studio>
+            <automation>
+                <customer_automation>0</customer_automation>
+                <subscriber_automation>0</subscriber_automation>
+            </automation>
+        </connector_automation_studio>
         <connector_advanced_settings>
             <sync_limits>
                 <orders>500</orders>
+                <order_statuses></order_statuses>
+                <order_delete>0</order_delete>
             </sync_limits>
+            <abandoned_cart>
+                <limits>0</limits>
+                <shell></shell>
+            </abandoned_cart>
+            <sync_settings>
+                <contact_sync></contact_sync>
+                <subscriber_sync></subscriber_sync>
+                <order_sync></order_sync>
+                <delete_contact></delete_contact>
+                <reimport_customers></reimport_customers>
+                <reimport_subscribers></reimport_subscribers>
+                <reimport_orders></reimport_orders>
+                <suppressed_contacts></suppressed_contacts>
+            </sync_settings>
             <admin>
                 <setup_data_fields></setup_data_fields>
-                <delete_contact></delete_contact>
-                <reimport_orders></reimport_orders>
-                <reimport_subscribers></reimport_subscribers>
-                <suppressed_contacts></suppressed_contacts>
                 <memory_limit>0</memory_limit>
                 <batch_size>10000</batch_size>
                 <debug_enabled>1</debug_enabled>
-                <inline_styling><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></inline_styling>
+                <debug_api_calls>0</debug_api_calls>
+                <raygun_code>JOWaQ4nf4Ox7eAFUvr+TAw==</raygun_code>
                 <recommended_inline><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></recommended_inline>
+                <feed_enabled>1</feed_enabled>
+                <feed_url>dotmailerformagento.co.uk/feed</feed_url>
+                <use_https>0</use_https>
+                <frequency>1</frequency>
+                <last_update></last_update>
             </admin>
         </connector_advanced_settings>
     </default>
-    <phpunit>
-        <suite>
-            <modules>
-                <Dotdigitalgroup_Email />
-            </modules>
-        </suite>
-    </phpunit>
 </config>

@@ -86,12 +86,16 @@ class Dotdigitalgroup_Email_Model_Connector_Order
         $this->quote_id     = $orderData->getQuoteId();
         $this->email        = $orderData->getCustomerEmail();
         $this->store_name   = $orderData->getStoreName();
-        $created_at = new Zend_Date($orderData->getCreatedAt(), Zend_Date::ISO_8601);
-        $this->purchase_date = $created_at->toString(Zend_Date::ISO_8601);
+
+	    $created_at = new Zend_Date($orderData->getCreatedAt(), Zend_Date::ISO_8601);
+
+	    $this->purchase_date = $created_at->toString(Zend_Date::ISO_8601);
         $this->delivery_method = $orderData->getShippingDescription();
         $this->delivery_total = $orderData->getShippingAmount();
         $this->currency = $orderData->getStoreCurrencyCode();
-        $this->payment = $orderData->getPayment()->getMethodInstance()->getTitle();
+
+	    if ($payment = $orderData->getPayment())
+            $this->payment = $payment->getMethodInstance()->getTitle();
         $this->couponCode = $orderData->getCouponCode();
 
         /**
@@ -128,7 +132,7 @@ class Dotdigitalgroup_Email_Model_Connector_Order
          * Order items.
          */
         foreach ($orderData->getAllItems() as $productItem) {
-	        Mage::helper( 'connector' )->log( 'order is : ' . $this->id . ', email: '.  $this->email );
+
 	        $product = $productItem->getProduct();
 	        if ($product) {
 		        // category names

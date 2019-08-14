@@ -26,7 +26,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Automation_Programme
 		}
 		 **/
 
-		$programmes = $client->GetPrograms();
+		$programmes = $client->getPrograms();
 		$fields[] = array('value' => '0', 'label' => Mage::helper('connector')->__('-- Disabled --'));
 
 		foreach ($programmes as $one) {
