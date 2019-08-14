@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Dotdigitalgroup_Email>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </Dotdigitalgroup_Email>
     </modules>
     <frontend>
@@ -251,6 +251,9 @@
                 <order_enabled>0</order_enabled>
                 <wishlist_enabled>0</wishlist_enabled>
             </sync>
+            <dynamic_addressbook>
+                <addressbook_name></addressbook_name>
+            </dynamic_addressbook>
         </connector_sync_settings>
         <connector_data_mapping>
             <customer_data>
@@ -283,8 +286,13 @@
                 <total_spend></total_spend>
                 <last_order_date></last_order_date>
                 <last_order_id></last_order_id>
+                <custom_attributes></custom_attributes>
                 <validator></validator>
             </customer_data>
+            <dynamic_datafield>
+                <datafield_name></datafield_name>
+                <datafield_type></datafield_type>
+            </dynamic_datafield>
         </connector_data_mapping>
         <connector_roi_tracking>
             <page_tracking>
@@ -319,50 +327,43 @@
             </guests>
         </connector_lost_baskets>
         <connector_sms>
-            <sms_message_one>
+            <sms_one>
                 <enabled>0</enabled>
-                <order_status></order_status>
+                <status></status>
                 <message></message>
-            </sms_message_one>
-            <sms_message_two>
+            </sms_one>
+            <sms_two>
                 <enabled>0</enabled>
-                <order_status></order_status>
+                <status></status>
                 <message></message>
-            </sms_message_two>
-            <sms_message_three>
+            </sms_two>
+            <sms_three>
                 <enabled>0</enabled>
-                <order_status></order_status>
+                <status></status>
                 <message></message>
-            </sms_message_three>
-            <sms_message_four>
+            </sms_three>
+            <sms_four>
                 <enabled>0</enabled>
-                <order_status></order_status>
+                <status></status>
                 <message></message>
-            </sms_message_four>
+            </sms_four>
         </connector_sms>
         <connector_dynamic_content>
             <products>
-                <related></related>
-                <related_display_type>grid</related_display_type>
-                <related_items_to_display>4</related_items_to_display>
-                <upsell></upsell>
-                <upsell_display_type>grid</upsell_display_type>
-                <upsell_items_to_display>4</upsell_items_to_display>
-                <crosssell></crosssell>
-                <crosssell_display_type>grid</crosssell_display_type>
-                <crosssell_items_to_display>4</crosssell_items_to_display>
-                <bestsellers></bestsellers>
-                <bestsellers_display_type>grid</bestsellers_display_type>
-                <bestsellers_items_to_display>4</bestsellers_items_to_display>
+                <related_display_type>list</related_display_type>
+                <related_items_to_display>2</related_items_to_display>
+                <upsell_display_type>list</upsell_display_type>
+                <upsell_items_to_display>2</upsell_items_to_display>
+                <crosssell_display_type>list</crosssell_display_type>
+                <crosssell_items_to_display>2</crosssell_items_to_display>
+                <bestsellers_display_type>list</bestsellers_display_type>
+                <bestsellers_items_to_display>2</bestsellers_items_to_display>
                 <bestsellers_time_period></bestsellers_time_period>
-                <most_viewed></most_viewed>
-                <most_viewed_display_type>grid</most_viewed_display_type>
-                <most_viewed_items_to_display>4</most_viewed_items_to_display>
+                <most_viewed_display_type>list</most_viewed_display_type>
+                <most_viewed_items_to_display>2</most_viewed_items_to_display>
                 <most_viewed_time_period></most_viewed_time_period>
-                <recently_viewed></recently_viewed>
-                <recently_viewed_display_type>grid</recently_viewed_display_type>
-                <recently_viewed_items_to_display>4</recently_viewed_items_to_display>
-                <validator></validator>
+                <recently_viewed_display_type>list</recently_viewed_display_type>
+                <recently_viewed_items_to_display>2</recently_viewed_items_to_display>
             </products>
             <external_dynamic_content_urls>
                 <passcode>secret</passcode>
@@ -376,15 +377,26 @@
                 <most_viewed_url></most_viewed_url>
                 <product_push_url></product_push_url>
                 <recently_viewed_url></recently_viewed_url>
-                <transactional_customer_new_url></transactional_customer_new_url>
-                <transactional_order_new_url></transactional_order_new_url>
-                <transactional_order_creditmemo_new_url></transactional_order_creditmemo_new_url>
-                <transactional_order_update_url></transactional_order_update_url>
-                <transactional_invoice_new_url></transactional_invoice_new_url>
+                <new_order_url></new_order_url>
+                <new_order_guest_url></new_order_guest_url>
+                <order_update_url></order_update_url>
+                <order_update_guest_url></order_update_guest_url>
+                <new_invoice_url></new_invoice_url>
+                <new_invoice_guest_url></new_invoice_guest_url>
+                <invoice_update_url></invoice_update_url>
+                <invoice_update_guest_url></invoice_update_guest_url>
+                <new_creditmemo_url></new_creditmemo_url>
+                <new_creditmemo_guest_url></new_creditmemo_guest_url>
+                <creditmemo_update_url></creditmemo_update_url>
+                <creditmemo_update_guest_url></creditmemo_update_guest_url>
+                <new_shipment_url></new_shipment_url>
+                <new_shipment_guest_url></new_shipment_guest_url>
+                <shipment_update_url></shipment_update_url>
+                <shipment_update_guest_url></shipment_update_guest_url>
             </external_dynamic_content_urls>
             <manual_product_search>
-                <display_type></display_type>
-                <items_to_display></items_to_display>
+                <display_type>list</display_type>
+                <items_to_display>2</items_to_display>
                 <products_push_items></products_push_items>
             </manual_product_search>
             <fallback_products>
@@ -392,24 +404,30 @@
             </fallback_products>
         </connector_dynamic_content>
         <connector_transactional_emails>
-            <transactional_email>
-                <email>
-                    <api_username></api_username>
-                    <api_password></api_password>
-                    <validator></validator>
-                </email>
-                <email_mapping>
-                    <new_creditmemo></new_creditmemo>
-                    <new_creditmemo_guest></new_creditmemo_guest>
-                    <creditmemo></creditmemo>
-                    <new_invoice></new_invoice>
-                    <invoice_update></invoice_update>
-                    <sales_email_order_template></sales_email_order_template>
-                    <order_update></order_update>
-                    <new_shipment></new_shipment>
-                    <shipment_update></shipment_update>
-                </email_mapping>
-            </transactional_email>
+            <credentials>
+                <enabled>0</enabled>
+                <api_username></api_username>
+                <api_password></api_password>
+            </credentials>
+            <email_mapping>
+                <sales_email_order_template></sales_email_order_template>
+                <sales_email_order_guest_template></sales_email_order_guest_template>
+                <sales_email_order_comment_template></sales_email_order_comment_template>
+                <sales_email_order_comment_guest_template></sales_email_order_comment_guest_template>
+                <sales_email_invoice_template></sales_email_invoice_template>
+                <sales_email_invoice_guest_template></sales_email_invoice_guest_template>
+                <sales_email_invoice_comment_template></sales_email_invoice_comment_template>
+                <sales_email_invoice_comment_guest_template></sales_email_invoice_comment_guest_template>
+                <sales_email_creditmemo_template></sales_email_creditmemo_template>
+                <sales_email_creditmemo_guest_template></sales_email_creditmemo_guest_template>
+                <sales_email_creditmemo_comment_template></sales_email_creditmemo_comment_template>
+                <sales_email_creditmemo_comment_guest_template></sales_email_creditmemo_comment_guest_template>
+                <sales_email_shipment_template></sales_email_shipment_template>
+                <sales_email_shipment_guest_template></sales_email_shipment_guest_template>
+                <sales_email_shipment_comment_template></sales_email_shipment_comment_template>
+                <sales_email_shipment_comment_guest_template></sales_email_shipment_comment_guest_template>
+                <customer_create_account_email_template></customer_create_account_email_template>
+            </email_mapping>
         </connector_transactional_emails>
         <connector_advanced_settings>
             <sync_limits>
@@ -419,6 +437,7 @@
                 <setup_data_fields></setup_data_fields>
                 <delete_contact></delete_contact>
                 <reimport_orders></reimport_orders>
+                <reimport_subscribers></reimport_subscribers>
                 <suppressed_contacts></suppressed_contacts>
                 <memory_limit>0</memory_limit>
                 <batch_size>10000</batch_size>

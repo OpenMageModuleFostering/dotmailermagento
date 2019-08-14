@@ -45,7 +45,7 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     {
         $path = self::XML_PATH_TRANSACTIONAL_MAPPING . $templateId;
 
-        return '0' != Mage::getStoreConfig($path);
+        return Mage::getStoreConfig($path);
     }
 
     /**

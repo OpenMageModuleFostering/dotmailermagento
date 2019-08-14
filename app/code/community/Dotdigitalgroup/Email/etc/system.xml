@@ -208,7 +208,7 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>0</show_in_store>
                     <fields>
-                        <addressbook_name module="connector">
+                        <addressbook_name translate="label" module="connector">
                             <label>Address Book Name</label>
                             <frontend_type>text</frontend_type>
                             <frontend_model>email_connector/adminhtml_system_config_addressbook</frontend_model>
@@ -217,9 +217,9 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </addressbook_name>
-                        <addresbook_button translate="label" module="connector">
+                        <addresbook_button translate="label button_label" module="connector">
                             <label />
-                            <button_label>Create New Address book</button_label>
+                            <button_label>Create New Address Book</button_label>
                             <frontend_model>email_connector/adminhtml_system_dynamic_addressbookbutton</frontend_model>
                             <sort_order>30</sort_order>
                             <show_in_default>1</show_in_default>
@@ -601,7 +601,7 @@
                             <show_in_store>0</show_in_store>
                             <expended>1</expended>
                         </datafield_type>
-                        <datafield_button translate="label" module="connector">
+                        <datafield_button translate="label button_label" module="connector">
                             <label />
                             <button_label>Create New Data Field</button_label>
                             <frontend_model>email_connector/adminhtml_system_dynamic_datafieldbutton</frontend_model>
@@ -1896,7 +1896,7 @@
                         </orders>
                     </fields>
                 </sync_limits>
-                <admin translate="label" module="connector">
+                <admin translate="label comment" module="connector">
                     <label>Admin</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>30</sort_order>
@@ -1979,7 +1979,7 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </debug_enabled>
-                        <inline_styling translate="label" module="connector">
+                        <inline_styling translate="label comment" module="connector">
                             <label>Transactional Emails Styling</label>
                             <frontend_type>textarea</frontend_type>
                             <sort_order>80</sort_order>

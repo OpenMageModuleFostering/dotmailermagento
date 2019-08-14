@@ -30,18 +30,22 @@ class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_
         Mage::helper('connector')->log('template id : ' . $this->getTemplateId());
         $templateParams = $this->getTemplateParams();
 
+        $transEnabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
         //Disable the emails if the transactional data is mapped
-        if (Mage::helper('connector/transactional')->isMapped($this->getTemplateId())) {
+        if (Mage::helper('connector/transactional')->isMapped($this->getTemplateId()) && $transEnabled) {
             if(array_key_exists($this->getTemplateId(), $this->_registered)){
                 $this->_registerOrderCampaign($templateParams);
+                return $this;
+
             }
             if(array_key_exists($this->getTemplateId(), $this->_registeredCustomer)){
                 $this->_registerCustomer($templateParams);
+                return $this;
             }
-            return $this;
+            Mage::helper('connector')->log('not matching registeredd templates');
         }
 
-        Mage::helper('connector')->log('NOT MAPPED : ' . $this->getTemplateId());
+        Mage::helper('connector')->log('NOT MAPPED : ' . $this->getTemplateId() . ', enabled : ' . $transEnabled);
 
         $emailTemplate = Mage::getModel('core/email_template');
         // Send all emails from corresponding list
