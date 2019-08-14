@@ -1,4 +1,5 @@
 <?php
+
 class Dotdigitalgroup_Email_Model_Automation extends Mage_Core_Model_Abstract
 {
 	const AUTOMATION_TYPE_NEW_CUSTOMER      = 'customer_automation';
@@ -129,12 +130,12 @@ class Dotdigitalgroup_Email_Model_Automation extends Mage_Core_Model_Abstract
 				break;
 		}
 	}
-	private function _updateDefaultDatafields($email)
+	protected function _updateDefaultDatafields($email)
 	{
 		$website = Mage::app()->getWebsite($this->websiteId);
 		Mage::helper('ddg')->updateDataFields($email, $website, $this->storeName);
 	}
-	private function _updateNewOrderDatafields($email)
+	protected function _updateNewOrderDatafields($email)
 	{
 		$website = Mage::app()->getWebsite($this->websiteId);
 		$order = Mage::getModel('sales/order')->load($this->typeId);
@@ -187,7 +188,7 @@ class Dotdigitalgroup_Email_Model_Automation extends Mage_Core_Model_Abstract
 	 *
 	 * @return bool
 	 */
-	private function _checkCampignEnrolmentActive($programId)
+	protected function _checkCampignEnrolmentActive($programId)
 	{
 		//program is not set
 		if (!$programId)

@@ -35,8 +35,6 @@ sql:
 locale:
   - en_US#Dotdigitalgroup_Email.csv
 block:
-  - Adminhtml#Campaign#Edit#Form.php
-  - Adminhtml#Campaign#Edit.php
   - Adminhtml#Campaign#Grid.php
   - Adminhtml#Column#Renderer#Imported.php
   - Adminhtml#Column#Renderer#Status.php
@@ -71,7 +69,6 @@ block:
   - Adminhtml#System#Advanced#Runsubscribersync.php
   - Adminhtml#System#Advanced#Runwishlistsync.php
   - Adminhtml#System#Advanced#Setupdatafields.php
-  - Adminhtml#System#Advanced#Suppressedcontacts.php
   - Adminhtml#System#Automation#Connect.php
   - Adminhtml#System#Config#Addressbook.php
   - Adminhtml#System#Config#Datafield.php
@@ -139,12 +136,7 @@ block:
   - Order#Creditmemo.php
   - Order#Invoice.php
   - Order#Shipping.php
-  - Recommended#Bestsellers.php
-  - Recommended#Mostviewed.php
   - Recommended#Products.php
-  - Recommended#Push.php
-  - Recommended#Quoteproducts.php
-  - Recommended#Recentlyviewed.php
   - Basket.php
   - Coupon.php
   - Order.php
@@ -154,7 +146,6 @@ helper:
   - Data.php
   - File.php
   - Recommended.php
-  - Review.php
 model:
   - Abstract#Rest.php
   - Adminhtml#Dashboard#Tabs#Analysis#Abandoned.php
@@ -238,27 +229,9 @@ design:
   - adminhtml#default#default#template#connector#system#config#createdatafield.phtml
   - frontend#base#default#layout#connector.xml
   - frontend#base#default#layout#mailcheck.xml
-  - frontend#base#default#template#connector#creditmemo#items.phtml
-  - frontend#base#default#template#connector#creditmemo#new.phtml
-  - frontend#base#default#template#connector#creditmemo#newguest.phtml
-  - frontend#base#default#template#connector#creditmemo#update.phtml
-  - frontend#base#default#template#connector#creditmemo#updateguest.phtml
-  - frontend#base#default#template#connector#invoice#new.phtml
-  - frontend#base#default#template#connector#invoice#newguest.phtml
-  - frontend#base#default#template#connector#invoice#update.phtml
-  - frontend#base#default#template#connector#invoice#updateguest.phtml
-  - frontend#base#default#template#connector#order#items.phtml
-  - frontend#base#default#template#connector#order#new.phtml
-  - frontend#base#default#template#connector#order#newguest.phtml
-  - frontend#base#default#template#connector#order#update.phtml
-  - frontend#base#default#template#connector#order#updateguest.phtml
   - frontend#base#default#template#connector#product#list.phtml
   - frontend#base#default#template#connector#product#nosto.phtml
   - frontend#base#default#template#connector#product#price.phtml
-  - frontend#base#default#template#connector#shipping#new.phtml
-  - frontend#base#default#template#connector#shipping#newguest.phtml
-  - frontend#base#default#template#connector#shipping#update.phtml
-  - frontend#base#default#template#connector#shipping#updateguest.phtml
   - frontend#base#default#template#connector#basket.phtml
   - frontend#base#default#template#connector#coupon.phtml
   - frontend#base#default#template#connector#email_capture.phtml
