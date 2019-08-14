@@ -1,6 +1,6 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Mage_Core_Block_Template
+class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Dotdigitalgroup_Email_Block_Edc
 {
     /**
      * Prepare layout, set the template.
@@ -69,7 +69,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Wishlistproducts extends Mage_Core
         Mage::helper('ddg')->log('DYNAMIC WISHLIST PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($items as $item) {
-            $i = 0;
+            $i = 1;
             //parent product
             $product = $item->getProduct();
             //check for product exists

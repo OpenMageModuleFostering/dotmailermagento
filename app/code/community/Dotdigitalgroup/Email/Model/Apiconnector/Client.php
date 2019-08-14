@@ -25,97 +25,49 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     const REST_TEMPLATES                        = 'https://apiconnector.com/v2/templates';
 
     //rest error responces
-	const API_ERROR_API_EXCEEDED                = 'Your account has generated excess API activity and is being temporarily capped. Please contact support. ERROR_APIUSAGE_EXCEEDED';
-	const API_ERROR_TRANS_ALLOWANCE             = 'TransactionalDataAllowanceInMegabytes';
-	const API_ERROR_EMAIL_NOT_VALID             = 'Email is not a valid email address. ERROR_PARAMETER_INVALID';
-	const API_ERROR_FEATURENOTACTIVE            = 'Error: ERROR_FEATURENOTACTIVE';
-	const API_ERROR_REPORT_NOT_FOUND            = 'Import is not processed yet or completed with error. ERROR_IMPORT_REPORT_NOT_FOUND';
-	const API_ERROR_TRANS_NOT_EXISTS            = 'Error: ERROR_TRANSACTIONAL_DATA_DOES_NOT_EXIST';
-	const API_ERROR_DATAFIELD_EXISTS            = 'Field already exists. ERROR_NON_UNIQUE_DATAFIELD';
-	const API_ERROR_CONTACT_NOT_FOUND           = 'Error: ERROR_CONTACT_NOT_FOUND';
-	const API_ERROR_PROGRAM_NOT_ACTIVE          = 'Error: ERROR_PROGRAM_NOT_ACTIVE';
-	const API_ERROR_ENROLMENT_EXCEEDED          = 'Error: ERROR_ENROLMENT_ALLOWANCE_EXCEEDED ';
-	const API_ERROR_SEND_NOT_PERMITTED          = 'Send not permitted at this time. ERROR_CAMPAIGN_SENDNOTPERMITTED';
-	const API_ERROR_CONTACT_SUPPRESSED          = 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED';
-	const API_ERROR_AUTHORIZATION_DENIED        = 'Authorization has been denied for this request.';
-	const API_ERROR_ADDRESSBOOK_NOT_FOUND       = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
-
+    const API_ERROR_API_EXCEEDED                = 'Your account has generated excess API activity and is being temporarily capped. Please contact support. ERROR_APIUSAGE_EXCEEDED';
+    const API_ERROR_TRANS_ALLOWANCE             = 'TransactionalDataAllowanceInMegabytes';
+    const API_ERROR_EMAIL_NOT_VALID             = 'Email is not a valid email address. ERROR_PARAMETER_INVALID';
+    const API_ERROR_FEATURENOTACTIVE            = 'Error: ERROR_FEATURENOTACTIVE';
+    const API_ERROR_REPORT_NOT_FOUND            = 'Import is not processed yet or completed with error. ERROR_IMPORT_REPORT_NOT_FOUND';
+    const API_ERROR_TRANS_NOT_EXISTS            = 'Error: ERROR_TRANSACTIONAL_DATA_DOES_NOT_EXIST';
+    const API_ERROR_DATAFIELD_EXISTS            = 'Field already exists. ERROR_NON_UNIQUE_DATAFIELD';
+    const API_ERROR_CONTACT_NOT_FOUND           = 'Error: ERROR_CONTACT_NOT_FOUND';
+    const API_ERROR_PROGRAM_NOT_ACTIVE          = 'Error: ERROR_PROGRAM_NOT_ACTIVE';
+    const API_ERROR_ENROLMENT_EXCEEDED          = 'Error: ERROR_ENROLMENT_ALLOWANCE_EXCEEDED ';
+    const API_ERROR_SEND_NOT_PERMITTED          = 'Send not permitted at this time. ERROR_CAMPAIGN_SENDNOTPERMITTED';
+    const API_ERROR_CONTACT_SUPPRESSED          = 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED';
+    const API_ERROR_AUTHORIZATION_DENIED        = 'Authorization has been denied for this request.';
+    const API_ERROR_ADDRESSBOOK_NOT_FOUND       = 'Error: ERROR_ADDRESSBOOK_NOT_FOUND';
 
 
     protected $_limit = 10;
-	public $fileHelper;
-	protected $_filename;
-	protected $_api_helper;
-	protected $_address_book_id;
-	protected $_customers_filename;
-	protected $_subscribers_filename;
-	protected $_customers_address_book_id;
-	protected $_subscribers_address_book_id;
-	protected $_customers_file_slug   = 'customer_sync';
-	protected $_subscribers_file_slug = 'subscriber_sync';
+    public $fileHelper;
+    protected $_filename;
+    protected $_api_helper;
+    protected $_address_book_id;
+    protected $_customers_filename;
+    protected $_subscribers_filename;
+    protected $_customers_address_book_id;
+    protected $_subscribers_address_book_id;
+    protected $_customers_file_slug   = 'customer_sync';
+    protected $_subscribers_file_slug = 'subscriber_sync';
     public $result = array('error' => false, 'message' => '');
 
 
-    public $apiCalls = array(
-        'getContactById' => 'get_contact_by_id',
-        'postAddressBookContactsImport' => 'post_address_book_contacts_import',
-        'postAddressBookContacts' => 'post_address_book_contacts',
-        'deleteAddressBookContact' => 'delete_address_book_contact',
-        'getContactsImportReport' => 'get_contacts_import',
-        'getContactByEmail' => 'get_contact_by_email',
-        'getAddressBooks' => 'get_address_books',
-        'postAddressBooks' => 'post_address_books',
-	    'getAddressBookById' => 'get_address_book_by_id',
-        'getCampaigns' => 'get_campaigns',
-        'postDataFields' => 'post_data_fields',
-        'deleteDataField' => 'delete_data_field',
-        'getDataFields' => 'get_data_fields',
-        'updateContact' => 'update_contact',
-        'deleteContact' => 'delete_contact',
-        'updateContactDatafieldsByEmail' => 'update_contact_datafields_by_email',
-        'postCampaignsSend' => 'post_campaigns_send',
-        'postContacts' => 'post_contacts',
-        'getContactsSuppressedSinceDate' => 'get_contacts_suppressed_sinse_date',
-        'postContactsTransactionalDataImport' => 'post_contacts_transactional_data_import',
-        'postContactsTransactionalData' => 'post_contacts_transactional_data',
-        'getContactsTransactionalDataByKey' => 'get_contacts_transactional_data_by_key',
-        'deleteContactTransactionalData' => 'delete_contact_transactional_data',
-        'getAccountInfo' => 'get_account_info',
-        'postSmsMessagesSendTo' => 'post_sms_message_send_to',
-        'deleteAddressBookContactsInbulk' => 'delete_addess_book_contacts_in_bulk',
-        'postContactsResubscribe' => 'post_contacts_resubscribe',
-        'getCustomFromAddresses' => 'get_custom_fromaddresses',
-        'postCampaign' => 'post_campaign',
-        'getPrograms' => 'get_programs',
-        'postProgramsEnrolments' => 'post_programs_enrolments',
-        'getProgramById' => 'get_program_by_id',
-        'getCampaignSummary' => 'get_campaign_summary',
-        'deleteContactsTransactionalData' => 'delete_contacts_transactional_data',
-        'getContactAddressBooks' => 'get_contact_addressBooks',
-        'getApiTemplateList'    => 'get_api_template_list',
-        'getApiTemplate'   =>  'get_api_template',
-        'postAccountTransactionalDataImport'    => 'post_account_transactional_data_import',
-        'getCampaignsWithActivitySinceDate' => 'get_campaigns_with_activity_since_date',
-        'getCampaignActivityByContactId' => 'get_campaign_activity_by_contact_id',
-        'getContactsImportByImportId' => 'get_contacts_import_by_import_id',
-        'getContactsTransactionalDataImportByImportId' => 'get_contacts_transactional_data_import_by_import_id'
-    );
+    /**
+     * constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-
-
-	/**
-	 * constructor.
-	 */
-	public function __construct()
-	{
-		parent::__construct();
-	}
-
-	/**
-	 * Excluded api response that we don't want to send.
-	 * @var array
-	 */
-	public $exludeMessages = array(
+    /**
+     * Excluded api response that we don't want to send.
+     * @var array
+     */
+    public $exludeMessages = array(
         self::API_ERROR_FEATURENOTACTIVE,
         self::API_ERROR_PROGRAM_NOT_ACTIVE,
         self::API_ERROR_CONTACT_SUPPRESSED,
@@ -125,7 +77,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         self::API_ERROR_SEND_NOT_PERMITTED,
         self::API_ERROR_TRANS_NOT_EXISTS,
         self::API_ERROR_ADDRESSBOOK_NOT_FOUND
-	);
+    );
 
     /**
      * @param $apiUsername
@@ -187,18 +139,18 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_USERPWD, $this->getApiUsername() . ':' . $this->getApiPassword());
 
-	    //case the deprication of @filename for uploading
-	    if (function_exists('curl_file_create')) {
-		    curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
-		    $args['file'] = curl_file_create(Mage::helper('ddg/file')->getFilePath($filename), 'text/csv');
-		    curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
+        //case the deprication of @filename for uploading
+        if (function_exists('curl_file_create')) {
+            curl_setopt($ch, CURLOPT_SAFE_UPLOAD, false);
+            $args['file'] = curl_file_create(Mage::helper('ddg/file')->getFilePath($filename), 'text/csv');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
 
-	    } else {
-		    //standart use of curl file
-		    curl_setopt($ch, CURLOPT_POSTFIELDS, array (
-			    'file' => '@'.Mage::helper('ddg/file')->getFilePath($filename)
-		    ));
-	    }
+        } else {
+            //standart use of curl file
+            curl_setopt($ch, CURLOPT_POSTFIELDS, array (
+                'file' => '@'.Mage::helper('ddg/file')->getFilePath($filename)
+            ));
+        }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -236,11 +188,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
             $message = 'POST ADDRESS BOOK CONTACTS ' . $url . ', ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages)) {
-		        Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
+            if (! in_array($response->message, $this->exludeMessages)) {
+                Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
 
 
-	        }
+            }
         }
 
         return $response;
@@ -278,7 +230,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'GET CONTACTS IMPORT REPORT  . ' . $url . ' message : ' . $response->message;
             Mage::helper( 'ddg' )->log( $message );
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper( 'ddg' )->rayLog( '100', $message, 'apiconnector/client.php', __LINE__);
         }
         return $response;
@@ -300,7 +252,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'GET CONTACT BY email : ' . $email . ' ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -321,35 +273,35 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message  = 'GET ALL ADDRESS BOOKS : '  . $url . ', ' .  $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
         return $response;
     }
 
-	/**
-	 * Gets an address book by ID.
-	 * @param $id
-	 *
-	 * @return null
-	 * @throws Exception
-	 */
-	public function getAddressBookById($id)
-	{
-		$url = self::REST_ADDRESS_BOOKS . $id;
+    /**
+     * Gets an address book by ID.
+     * @param $id
+     *
+     * @return null
+     * @throws Exception
+     */
+    public function getAddressBookById($id)
+    {
+        $url = self::REST_ADDRESS_BOOKS . $id;
 
-		$this->setUrl($url)
-			->setVerb('GET');
+        $this->setUrl($url)
+            ->setVerb('GET');
 
-		$response = $this->execute();
+        $response = $this->execute();
 
-		if (isset($response->message)) {
-			$message = 'GET ADDRESS BOOK BY ID '. $id . ', ' . $response->message;
-			Mage::helper('ddg')->log($message);
-		}
+        if (isset($response->message)) {
+            $message = 'GET ADDRESS BOOK BY ID '. $id . ', ' . $response->message;
+            Mage::helper('ddg')->log($message);
+        }
 
-		return $response;
-	}
+        return $response;
+    }
 
     /**
      *  Creates an address book.
@@ -371,8 +323,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'Postaddressbooks ' . $response->message . ', url :' . $url ;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
-		        Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
+            if (! in_array($response->message, $this->exludeMessages))
+                Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
         return $response;
     }
@@ -392,7 +344,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'GET CAMPAIGNS ' . $response->message . ' api user : '  . $this->getApiUsername();
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -410,17 +362,17 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     public function postDataFields($data, $type = 'String', $visibility = 'public', $defaultValue = false)
     {
         $url = self::REST_DATA_FILEDS;
-	    //set default value for the numeric datatype
+        //set default value for the numeric datatype
         if($type == 'numeric' && !$defaultValue)
             $defaultValue = 0;
-	    //set data for the string datatype
+        //set data for the string datatype
         if (is_string($data)) {
             $data = array(
                 'Name' => $data,
                 'Type' => $type,
                 'Visibility' => $visibility
             );
-	        //default value
+            //default value
             if($defaultValue)
                 $data['DefaultValue'] = $defaultValue;
         }
@@ -434,7 +386,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             $message = 'POST CREATE DATAFIELDS ' . $response->message;
             Mage::helper('ddg')->log($message);
             Mage::helper('ddg')->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -458,7 +410,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'DELETE DATA FIELD :' . $name . ' '  . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
         return $request->execute();
@@ -480,7 +432,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'GET ALL DATAFIELDS ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -506,7 +458,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             $message = 'ERROR : UPDATE SINGLE CONTACT : ' . $url . ' message : ' . $response->message;
             Mage::helper('ddg')->log($message);
             Mage::helper('ddg')->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -531,7 +483,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'DELETE CONTACT : ' . $url . ', ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
         return $response;
@@ -550,14 +502,14 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
 
         $apiContact = $this->postContacts($email);
-	    //do not create for non contact id set
-	    if (! isset($apiContact->id)) {
-		    return $apiContact;
-	    } else {
-		    //get the contact id for this email
-		    $contactId = $apiContact->id;
-	    }
-	    $data = array(
+        //do not create for non contact id set
+        if (! isset($apiContact->id)) {
+            return $apiContact;
+        } else {
+            //get the contact id for this email
+            $contactId = $apiContact->id;
+        }
+        $data = array(
             'Email' => $email,
             'EmailType' => 'Html');
         $data['DataFields'] = $dataFields;
@@ -571,7 +523,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             $message = 'ERROR: UPDATE CONTACT DATAFIELD ' . $url . ' message : ' . $response->message;
             Mage::helper('ddg')->log($message);
             Mage::helper('ddg')->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -605,7 +557,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             $message = 'SENDING CAMPAIGN ' .  $response->message;
             $helper->log($message);
             $helper->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -634,7 +586,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'CREATE A NEW CONTACT : ' . $email . ' , url ' . $url . ', ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -662,7 +614,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'GET CONTACTS SUPPRESSED SINSE : ' . $dateString . ' select ' . $select . ' skip : ' . $skip . '   response : ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -697,7 +649,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = ' SEND MULTI TRANSACTIONAL DATA ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -731,11 +683,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->buildPostBody($apiData);
         $response = $this->execute();
 
-	    if (isset($response->message)) {
+        if (isset($response->message)) {
             $message = 'POST CONTACTS TRANSACTIONAL DATA  ' . $response->message;
             Mage::helper('ddg')->log($message);
             Mage::helper('ddg')->log($apiData);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, __FILE__, __LINE__);
         }
 
@@ -787,7 +739,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'GET ACCOUNT INFO for api user : ' . $this->getApiUsername() . ' ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -814,7 +766,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'POST SMS MESSAGE SEND to ' . $telephoneNumber . ' message: ' . $message . ' error: ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -842,7 +794,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'DELETE BULK ADDRESS BOOK CONTACTS ' . $response->message . ' address book ' . $addressBookId;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
         return $response;
@@ -870,17 +822,17 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             $message = 'Resubscribe : ' . $url . ', message :' .  $response->message;
             Mage::helper('ddg')->log($message);
             Mage::helper('ddg')->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
     }
 
-	/**
-	 * Gets all custom from addresses which can be used in a campaign.
-	 *
-	 * @return null
-	 * @throws Exception
-	 */
+    /**
+     * Gets all custom from addresses which can be used in a campaign.
+     *
+     * @return null
+     * @throws Exception
+     */
 
     public function getCustomFromAddresses()
     {
@@ -896,7 +848,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
             $message = 'GET CampaignFromAddressList ' . $response->message . ' api user : '  . $this->getApiUsername();
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -924,7 +876,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = ' CREATE CAMPAIGN ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -949,7 +901,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'Get programmes : ' . $response->message ;
             Mage::helper( 'ddg' )->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -975,7 +927,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             $message = 'Post programs enrolments : ' . $response->message;
             Mage::helper('ddg')->log($message);
             Mage::helper('ddg')->log($data);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog('100', $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -1001,7 +953,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'Get program by id  ' . $id . ', ' . $response->message;
             Mage::helper('ddg')->log($message);
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper("ddg")->rayLog(100, $message, 'apiconnector/client.php', __LINE__);
 
         }
@@ -1027,7 +979,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         if (isset($response->message)) {
             $message = 'Get Campaign Summary ' . $response->message . '  ,url : ' . $url;
             Mage::helper('ddg')->log( $message );
-	        if (! in_array($response->message, $this->exludeMessages))
+            if (! in_array($response->message, $this->exludeMessages))
                 Mage::helper('ddg')->rayLog(100, $message, 'apiconnector/client.php', __LINE__);
         }
 
@@ -1052,14 +1004,14 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         return $response;
     }
 
-	/**
-	 * Adds a document to a campaign as an attachment.
-	 * @param $campaignId
-	 * @param $data
-	 *
-	 * @return object
-	 * @throws Exception
-	 */
+    /**
+     * Adds a document to a campaign as an attachment.
+     * @param $campaignId
+     * @param $data
+     *
+     * @return object
+     * @throws Exception
+     */
     public function postCampaignAttachments($campaignId, $data)
     {
         $url = self::REST_CREATE_CAMPAIGN . "/$campaignId/attachments";
@@ -1074,33 +1026,33 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     }
 
 
-	public function getNostoProducts($slotName, $email)
-	{
-		$recommended = Dotdigitalgroup_Email_Helper_Config::API_ENDPOINT . '/recommendations/email';
-		$token = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO);
+    public function getNostoProducts($slotName, $email)
+    {
+        $recommended = Dotdigitalgroup_Email_Helper_Config::API_ENDPOINT . '/recommendations/email';
+        $token = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO);
 
-		//check for strin length
-		if (strlen($slotName) > 1 && strlen($email) > 1) {
+        //check for strin length
+        if (strlen($slotName) > 1 && strlen($email) > 1) {
 
-			$recommended .= '?elements=' . $slotName;
-			$recommended .= '&emails=' . $email;
-		}
+            $recommended .= '?elements=' . $slotName;
+            $recommended .= '&emails=' . $email;
+        }
 
-		$this->setApiUsername('')
-			->setApiPassword($token)
-			->setUrl($recommended)
-			->setVerb('GET');
+        $this->setApiUsername('')
+            ->setApiPassword($token)
+            ->setUrl($recommended)
+            ->setVerb('GET');
 
-		$result = $this->execute();
+        $result = $this->execute();
 
-		if (isset($result->message)) {
-			$message = $result->message;
-			Mage::helper('ddg')->log($message);
-			Mage::helper('ddg')->log("Nosto recommendation slot name : $slotName , email : $email");
-		}
+        if (isset($result->message)) {
+            $message = $result->message;
+            Mage::helper('ddg')->log($message);
+            Mage::helper('ddg')->log("Nosto recommendation slot name : $slotName , email : $email");
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
     /**
      * get contact address books
@@ -1140,7 +1092,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb('GET');
         $response = $this->execute();
 
-	    if (isset($response->message)) {
+        if (isset($response->message)) {
             $message = 'GET API CONTACT LIST ' .  $response->message;
             Mage::helper('ddg')->log($message);
 

@@ -53,8 +53,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Automation_Grid extends Mage_Adminht
 				'Deactivated' => 'Deactivated',
 				'ReadOnly'  => 'ReadOnly',
 				'NotAvailableInThisVersion' => 'NotAvailableInThisVersion',
-				'Failed'    => 'Failed',
-				'Suppressed' => 'Suppressed'
+				'Failed'    => 'Failed'
 			),
 			'escape'        => true
 		))->addColumn('email', array(
@@ -76,12 +75,18 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Automation_Grid extends Mage_Adminht
 			'type'          => 'text',
 			'escape'        => true
 		))->addColumn('created_at', array(
-			'header'        => Mage::helper('ddg')->__('Created_at'),
+			'header'        => Mage::helper('ddg')->__('Created at'),
 			'align'         => 'center',
 			'index'         => 'created_at',
 			'escape'        => true,
 			'type'          => 'datetime'
 
+		))->addColumn('updated_at', array(
+			'header'        => Mage::helper('ddg')->__('Updated at'),
+			'align'         => 'center',
+			'index'         => 'updated_at',
+			'escape'        => true,
+			'type'          => 'datetime'
 		));
 		if (!Mage::app()->isSingleStoreMode()) {
 			$this->addColumn('website_id', array(

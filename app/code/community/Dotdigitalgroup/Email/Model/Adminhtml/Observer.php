@@ -176,10 +176,9 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
 	{
 		$segmentsIds = $observer->getEvent()->getSegmentIds();
 		$customerId = Mage::getSingleton('customer/session')->getCustomerId();
-
 		$websiteId = Mage::app()->getStore()->getWebsiteId();
 
-		if (!empty($segmentsIds)) {
+		if (!empty($segmentsIds) && $customerId) {
 			$this->addContactsFromWebsiteSegments($customerId, $segmentsIds, $websiteId);
 		}
 
@@ -197,7 +196,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
 	 */
 	protected function addContactsFromWebsiteSegments($customerId, $segmentIds, $websiteId){
 
-		if (empty($segmentIds))
+		if (empty($segmentIds) || ! $customerId)
 			return;
 		$segmentIds = implode(',', $segmentIds);
 

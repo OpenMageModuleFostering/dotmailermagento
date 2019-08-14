@@ -1,6 +1,6 @@
 <?php
 
-class Dotdigitalgroup_Email_Block_Recommended_Quoteproducts extends Mage_Core_Block_Template
+class Dotdigitalgroup_Email_Block_Recommended_Quoteproducts extends Dotdigitalgroup_Email_Block_Edc
 {
     /**
      * Prepare layout, set the template.
@@ -41,7 +41,7 @@ class Dotdigitalgroup_Email_Block_Recommended_Quoteproducts extends Mage_Core_Bl
         Mage::helper('ddg')->log('DYNAMIC QUOTE PRODUCTS : limit ' . $limit . ' products : ' . $numItems . ', max per child : '. $maxPerChild);
 
         foreach ($quoteItems as $item) {
-            $i = 0;
+            $i = 1;
             $productId = $item->getProductId();
             //parent product
             $productModel = Mage::getModel('catalog/product')->load($productId);

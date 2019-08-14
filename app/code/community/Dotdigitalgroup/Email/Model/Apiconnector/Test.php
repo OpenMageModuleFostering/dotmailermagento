@@ -1,22 +1,19 @@
 <?php
-
 class Dotdigitalgroup_Email_Model_Apiconnector_Test extends Dotdigitalgroup_Email_Model_Apiconnector_Client
 {
-
     /**
-	 * Validate apiuser on save.
-	 *
-	 * @param $apiUsername
-	 * @param $apiPassword
-	 *
-	 * @return bool|mixed
-	 */
+     * Validate apiuser on save.
+     *
+     * @param $apiUsername
+     * @param $apiPassword
+     *
+     * @return bool|mixed
+     */
     public function validate($apiUsername, $apiPassword)
     {
         if ($apiUsername && $apiPassword) {
-                $this->setApiUsername($apiUsername)
+            $this->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
-
             $accountInfo = $this->getAccountInfo();
             if (isset($accountInfo->message)) {
                 Mage::getSingleton('adminhtml/session')->addError($accountInfo->message);
@@ -27,15 +24,14 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Test extends Dotdigitalgroup_Emai
         }
         return false;
     }
-
     /**
-	 * Ajax validate api user.
-	 *
-	 * @param $apiUsername
-	 * @param $apiPassword
-	 *
-	 * @return bool|string
-	 */
+     * Ajax validate api user.
+     *
+     * @param $apiUsername
+     * @param $apiPassword
+     *
+     * @return bool|string
+     */
     public function ajaxvalidate($apiUsername, $apiPassword)
     {
         if ($apiUsername && $apiPassword) {
