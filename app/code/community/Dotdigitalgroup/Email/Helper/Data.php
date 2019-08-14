@@ -120,12 +120,21 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getContactId($email, $websiteId)
     {
+	    $contact = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($email, $websiteId);
+	    if ($contactId = $contact->getContactId()) {
+		    return $contactId;
+	    }
+
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->postContacts($email);
 
         if (isset($response->message))
-            return $response->message;
-
+            return false;
+	    //save contact id
+		if (isset($response->id)){
+			$contact->setContactId($response->id)
+				->save();
+		}
         return $response->id;
     }
 
@@ -579,10 +588,10 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      * update data fields
      *
      * @param $email
-     * @param $website
+     * @param Mage_Core_Model_Website $website
      * @param $storeName
      */
-    public function updateDataFields($email, $website, $storeName)
+    public function updateDataFields($email, Mage_Core_Model_Website $website, $storeName)
     {
         $data = array();
         if($store_name = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME)){
@@ -698,4 +707,20 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
 		$config = new Mage_Core_Model_Config();
 		$config->saveConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE, $raygunCode);
 	}
+
+	/**
+	 * Get the config id by the automation type.
+	 * @param $automationType
+	 * @param int $websiteId
+	 *
+	 * @return mixed
+	 */
+	public function getAutomationIdByType($automationType, $websiteId = 0)
+	{
+		$path = constant('Dotdigitalgroup_Email_Helper_Config::' . $automationType);
+		$automationCampaignId = $this->getWebsiteConfig($path, $websiteId);
+
+		return $automationCampaignId;
+	}
+
 }

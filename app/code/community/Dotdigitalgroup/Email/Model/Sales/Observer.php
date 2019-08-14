@@ -26,9 +26,11 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     public function handleSalesOrderSaveAfter(Varien_Event_Observer $observer)
     {
         try{
+			/** @var $order Mage_Sales_Model_Order */
 	        $order = $observer->getEvent()->getOrder();
             $status  = $order->getStatus();
             $storeId = $order->getStoreId();
+	        $store = Mage::app()->getStore($storeId);
 	        // start app emulation
 	        $appEmulation = Mage::getSingleton('core/app_emulation');
 	        $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($storeId);
@@ -41,6 +43,10 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
                 $emailOrder->setEmailImported(null);
             }
 
+	        //if api is not enabled
+	        if (!$store->getWebsite()->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+		        return $this;
+
             // check for order status change
             $statusBefore = Mage::registry('sales_order_status_before');
             if ( $status!= $statusBefore) {
@@ -51,9 +57,9 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
                 $smsCampaign = Mage::getModel('ddg_automation/sms_campaign', $order);
                 $smsCampaign->setStatus($status);
                 $smsCampaign->sendSms();
-	            // set back the current store
-	            $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             }
+	        // set back the current store
+	        $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
             $emailOrder->save();
 
             //admin oder when editing the first one is canceled
@@ -75,74 +81,44 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
 	public function handleSalesOrderPlaceAfter(Varien_Event_Observer $observer)
     {
         /** @var $order Mage_Sales_Model_Order */
-        $order = $observer->getEvent()->getOrder();
-        $website = Mage::app()->getWebsite($order->getWebsiteId());
-        $websiteName = $website->getName();
+	    $order = $observer->getEvent()->getOrder();
+	    $email      = $order->getCustomerEmail();
+	    $website = Mage::app()->getWebsite($order->getWebsiteId());
         $storeName = Mage::app()->getStore($order->getStoreId())->getName();
-        $data = array();
 
         //if api is not enabled
         if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
             return $this;
 
-        //data fields
-        if($last_order_id = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID)){
-            $data[] = array(
-                'Key' => $last_order_id,
-                'Value' => $order->getId()
-            );
-        }
-        if($order_increment_id = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_INCREMENT_ID)){
-            $data[] = array(
-                'Key' => $order_increment_id,
-                'Value' => $order->getIncrementId()
-            );
-        }
-        if($store_name = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME)){
-            $data[] = array(
-                'Key' => $store_name,
-                'Value' => $storeName
-            );
-        }
-        if($website_name = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME)){
-            $data[] = array(
-                'Key' => $website_name,
-                'Value' => $websiteName
-            );
-        }
-        if($last_order_date = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_DATE)){
-            $data[] = array(
-                'Key' => $last_order_date,
-                'Value' => $order->getCreatedAt()
-            );
-        }
-        if(($customer_id = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_ID)) && $order->getCustomerId()){
-            $data[] = array(
-                'Key' => $customer_id,
-                'Value' => $order->getCustomerId()
-            );
-        }
+	    //automation enrolment for order
+	    if($order->getCustomerIsGuest()){
+		    // guest to automation mapped
+		    $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
+		    $automationType = Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_GUEST_ORDER;
+	    }else{
+		    // customer to automation mapped
+		    $programType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
+		    $automationType = Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_ORDER;
+	    }
 
-        if(!empty($data)){
-            //update data fields
-            $client = Mage::helper('ddg')->getWebsiteApiClient($website);
-            $client->updateContactDatafieldsByEmail($order->getCustomerEmail(), $data);
-        }
+	    $programId     = Mage::helper( 'ddg' )->getAutomationIdByType($programType );
+	    //the program is not mappped
+	    if (! $programId)
+		    return $this;
+	    try {
+		    $automation = Mage::getModel( 'ddg_automation/automation' );
+		    $automation->setEmail( $email )
+			    ->setAutomationType( $automationType )
+			    ->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+			    ->setTypeId( $order->getId() )
+			    ->setWebsiteId($website->getId())
+			    ->setStoreName($storeName)
+			    ->setProgramId($programId);
+	        $automation->save();
+	    }catch(Exception $e) {
+		    Mage::logException( $e );
+	    }
 
-        //automation enrolment for order
-        if($order->getCustomerIsGuest()){
-            //send guest to automation mapped
-            $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
-            $email      = $order->getCustomerEmail();
-            $websiteId  = $order->getWebsiteId();
-            $this->_postCustomerToAutomation($email, $websiteId, $automationType);
-        }else{
-            //send customer to automation mapped
-            $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
-            $email      = $order->getCustomerEmail();
-            $websiteId  = $order->getWebsiteId();
-            $this->_postCustomerToAutomation($email, $websiteId, $automationType);
-        }
         return $this;
     }
 
@@ -260,7 +236,7 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
         $quoteId = $order->getQuoteId();
         $connectorQuote = Mage::getModel('ddg_automation/quote')->loadQuote($quoteId);
         if($connectorQuote)
-            $connectorQuote->setModified(1)->setConvertedToOrder(1)->save();
+            $connectorQuote->setModified(null)->setConvertedToOrder(1)->save();
 
         return $this;
     }
@@ -279,7 +255,7 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
             $connectorQuote = Mage::getModel('ddg_automation/quote')->loadQuote($quote->getId());
             if($connectorQuote){
                 if($connectorQuote->getImported())
-                    $connectorQuote->setModified(1)->setImported(null)->save();
+                    $connectorQuote->setModified(1)->save();
             }
             else
                 $this->_registerQuote($quote);

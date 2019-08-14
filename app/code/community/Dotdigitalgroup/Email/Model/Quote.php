@@ -61,6 +61,9 @@ class Dotdigitalgroup_Email_Model_Quote extends Mage_Core_Model_Abstract
 
                 //remove quotes
                 $this->_deleteQuoteForWebsite($website);
+
+                //update quotes
+                $this->_exportQuoteForWebsiteInSingle($website);
             }
         }
         $response['message'] = "quote updated: ". $this->_count;
@@ -102,17 +105,24 @@ class Dotdigitalgroup_Email_Model_Quote extends Mage_Core_Model_Abstract
      *
      * @param Mage_Core_Model_Website $website
      * @param int $limit
+     * @param $modified
+     *
      * @return mixed
      */
-    private function _getQuoteToImport(Mage_Core_Model_Website $website, $limit = 100)
+    private function _getQuoteToImport(Mage_Core_Model_Website $website, $limit = 100, $modified = false)
     {
         $collection = $this->getCollection()
-            ->addFieldToFilter('imported', array('null' => true))
             ->addFieldToFilter('store_id', array('in' => $website->getStoreIds()))
             ->addFieldToFilter('customer_id', array('notnull' => true));
 
+        if ($modified) {
+            $collection->addFieldToFilter('modified', 1)
+                ->addFieldToFilter('imported', 1);
+        } else {
+            $collection->addFieldToFilter('imported', array('null' => true));
+        }
         $collection->getSelect()->limit($limit);
-        return $collection->load();
+        return $collection;
     }
 
     /**
@@ -129,13 +139,44 @@ class Dotdigitalgroup_Email_Model_Quote extends Mage_Core_Model_Abstract
             foreach($collection as $emailQuote){
                 $result = $client->deleteContactsTransactionalData($emailQuote->getQuoteId(), 'Quote');
                 if (!isset($result->message)){
-                    $emailQuote->setModified(null)->save();
+                    $emailQuote->delete();
                     $this->_count++;
                 }
-                $message = 'Quote removed : ' . $emailQuote->getQuoteId();
-                Mage::helper('ddg')->log($message);
             }
         }catch(Exception $e){
+            Mage::logException($e);
+        }
+    }
+
+    /**
+     * update quotes for website in single
+     *
+     * @param Mage_Core_Model_Website $website
+     */
+    private function _exportQuoteForWebsiteInSingle(Mage_Core_Model_Website $website)
+    {
+        try {
+            $limit = Mage::helper('ddg')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT, $website);
+            $client = Mage::helper('ddg')->getWebsiteApiClient($website);
+            $collection = $this->_getQuoteToImport($website, $limit, true);
+            foreach ($collection as $emailQuote) {
+                $store = Mage::app()->getStore($emailQuote->getStoreId());
+                $quote = Mage::getModel('sales/quote')->setStore($store)->load($emailQuote->getQuoteId());
+                if ($quote->getId()) {
+                    $connectorQuote = Mage::getModel('ddg_automation/connector_quote', $quote);
+                    //single api
+                    $result = $client->postContactsTransactionalData($connectorQuote, 'Quote');
+                    //if no error
+                    if (!isset($result->message)) {
+                        $message = 'Quote updated : ' . $emailQuote->getQuoteId();
+                        Mage::helper('ddg')->log($message);
+                        $emailQuote->setModified(null)->save();
+                        $this->_count++;
+                    }
+
+                }
+            }
+        } catch (Exception $e) {
             Mage::logException($e);
         }
     }
@@ -150,12 +191,11 @@ class Dotdigitalgroup_Email_Model_Quote extends Mage_Core_Model_Abstract
     private function _getQuoteToDelete(Mage_Core_Model_Website $website, $limit = 100)
     {
         $collection = $this->getCollection()
+            ->addFieldToFilter('imported', 1)
             ->addFieldToFilter('converted_to_order', 1)
-            ->addFieldToFilter('modified', 1)
             ->addFieldToFilter('store_id', array('in' => $website->getStoreIds()));
-
         $collection->getSelect()->limit($limit);
-        return $collection->load();
+        return $collection;
     }
 
     /**
@@ -193,7 +233,8 @@ class Dotdigitalgroup_Email_Model_Quote extends Mage_Core_Model_Abstract
                 array('imported' => new Zend_Db_Expr('null')),
                 array(
                     $conn->quoteInto('imported is ?', new Zend_Db_Expr('not null')),
-                    $conn->quoteInto('converted_to_order is ?', new Zend_Db_Expr('null'))
+                    $conn->quoteInto('converted_to_order is ?', new Zend_Db_Expr('null')),
+                    $conn->quoteInto('modified is ?', new Zend_Db_Expr('null'))
                 )
             );
         }catch (Exception $e){

@@ -147,4 +147,9 @@ class Dotdigitalgroup_Email_Model_Cron
 		return Mage::getModel('core/date')->date(NULL, $executedAt);
 	}
 
+	public function automationStatus()
+	{
+		Mage::getModel('ddg_automation/automation')->enrollment();
+
+	}
 }

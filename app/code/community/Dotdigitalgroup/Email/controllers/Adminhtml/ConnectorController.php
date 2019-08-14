@@ -16,10 +16,10 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
         // get all possible datatifileds
         $datafields = Mage::getModel('ddg_automation/connector_datafield')->getContactDatafields();
         foreach ($datafields as $key => $datafield) {
-            $response = $apiModel->postDataFields($datafield);
+            $response = $apiModel->postDataFields($datafield, 'Private');
 
             //ignore existing datafields message
-            if (isset($response->message) && $response->message != Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_API_DATAFILEDS_EXISTS) {
+            if (isset($response->message) && $response->message != Dotdigitalgroup_Email_Model_Apiconnector_Client::API_ERROR_DATAFIELD_EXISTS) {
                 $result['errors'] = true;
                 $result['message'] .=  ' Datafield ' . $datafield['name'] . ' - '. $response->message . '</br>';
             } else {

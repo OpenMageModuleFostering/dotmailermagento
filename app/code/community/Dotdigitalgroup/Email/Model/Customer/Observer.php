@@ -4,18 +4,27 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 {
     /**
      * Create new contact or update info, also check for email change
-     * event: customer_save_before
+     * event: customer_save_after
      * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function handleCustomerSaveBefore(Varien_Event_Observer $observer)
+    public function handleCustomerSaveAfter(Varien_Event_Observer $observer)
     {
         $customer = $observer->getEvent()->getCustomer();
         $email      = $customer->getEmail();
         $websiteId  = $customer->getWebsiteId();
         $customerId = $customer->getEntityId();
         $isSubscribed = $customer->getIsSubscribed();
-        try{
+
+	    try{
+		    // fix for a multiple hit of the observer
+		    $emailReg =  Mage::registry($email . '_customer_save');
+
+		    if ($emailReg){
+			    return $this;
+		    }
+
+		    Mage::register($email . '_customer_save', $email);
             $emailBefore = Mage::getModel('customer/customer')->load($customer->getId())->getEmail();
             $contactModel = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($emailBefore, $websiteId);
             //email change detection
@@ -54,7 +63,6 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
         }catch(Exception $e){
             Mage::logException($e);
         }
-
         return $this;
     }
 
@@ -66,23 +74,37 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 	 */
 	public function handleCustomerRegiterSuccess(Varien_Event_Observer $observer)
 	{
-        /** @var $customer Mage_Customer_Model_Customer */
+		/** @var $customer Mage_Customer_Model_Customer */
 		$customer = $observer->getEvent()->getCustomer();
-		$email      = $customer->getEmail();
-        $storeName = $customer->getStore()->getName();
 		$websiteId  = $customer->getWebsiteId();
-        $website = Mage::app()->getWebsite($websiteId);
+		$website = Mage::app()->getWebsite($websiteId);
+		$storeName = $customer->getStore()->getName();
 
-        //if api is not enabled
-        if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
-            return $this;
 
-        //data fields
-        Mage::helper('ddg')->updateDataFields($email, $website, $storeName);
+		//if api is not enabled
+		if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+			return $this;
 
-		// send customer to automation mapped
-        $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER';
-		$this->_postCustomerToAutomation($email, $websiteId, $automationType);
+		try {
+			//program id must be map
+			$programId     = Mage::helper( 'ddg' )->getAutomationIdByType( 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER' );
+			if (!$programId)
+				return $this;
+			$email      = $customer->getEmail();
+			$automation = Mage::getModel( 'ddg_automation/automation' );
+			$automation->setEmail( $email )
+			           ->setAutomationType( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_CUSTOMER )
+				       ->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+				       ->setTypeId( $customer->getId() )
+			           ->setWebsiteId($websiteId)
+			           ->setStoreName($storeName)
+			           ->setProgramId($programId)
+			;
+
+			$automation->save();
+		}catch(Exception $e) {
+			Mage::logException($e);
+		}
 
 		return $this;
 	}
@@ -99,106 +121,83 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
         $customer = $observer->getEvent()->getCustomer();
         $email      = $customer->getEmail();
         $websiteId  = $customer->getWebsiteId();
+	    $helper = Mage::helper('ddg');
+
+	    //api enabled
+	    $enabled = $helper->getWebsiteConfig(
+		    Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED,
+		    $websiteId
+	    );
+	    //sync enabled
+	    $syncEnabled = $helper->getWebsiteConfig(
+		    Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED,
+		    $websiteId
+	    );
+
         /**
          * Remove contact.
          */
-        try{
-            $contactModel = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($email, $websiteId);
-            if ($contactModel->getId()) {
-                //remove contact
-                $contactModel->delete();
-            }
-            //remove from account
-            $client = Mage::helper('ddg')->getWebsiteApiClient($websiteId);
-            $apiContact = $client->postContacts($email);
-            if(! isset($apiContact->message) && isset($apiContact->id))
-                $client->deleteContact($apiContact->id);
+	    if ($enabled && $syncEnabled) {
+		    try {
+			    $contactModel = Mage::getModel( 'ddg_automation/contact' )->loadByCustomerEmail( $email, $websiteId );
+			    if ( $contactModel->getId() ) {
+				    //remove contact
+				    $contactModel->delete();
+			    }
+			    //remove from account
+			    $client     = Mage::helper( 'ddg' )->getWebsiteApiClient( $websiteId );
+			    $apiContact = $client->postContacts( $email );
+			    if ( ! isset( $apiContact->message ) && isset( $apiContact->id ) ) {
+				    $client->deleteContact( $apiContact->id );
+			    }
 
-        }catch (Exception $e){
-            Mage::logException($e);
-        }
+		    } catch ( Exception $e ) {
+			    Mage::logException( $e );
+		    }
+	    }
         return $this;
     }
-
-    /**
-     * enrol single contact to automation
-     *
-     * @param $email
-     * @param $websiteId
-     * @param $automationType
-     */
-	private function _postCustomerToAutomation( $email, $websiteId, $automationType) {
-		/**
-		 * Automation Programme
-		 */
-        $path = constant('Dotdigitalgroup_Email_Helper_Config::' . $automationType);
-		$automationCampaignId = Mage::helper('ddg')->getWebsiteConfig($path, $websiteId);
-		$enabled = Mage::helper('ddg')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
-
-		//add customer to automation
-		if ($enabled && $automationCampaignId) {
-			Mage::helper( 'ddg' )->log( 'AS - ' . $automationType . ' automation Campaign id : ' . $automationCampaignId );
-			$client = Mage::helper( 'ddg' )->getWebsiteApiClient( $websiteId );
-			$apiContact = $client->postContacts($email);
-
-			// get a program by id
-			$program = $client->getProgramById($automationCampaignId);
-			/**
-			 * id
-			 * name
-			 * status
-			 * dateCreated
-			 */
-			Mage::helper( 'ddg' )->log( 'AS - get ' . $automationType . ' Program id : ' . $program->id);
-            //check for active program with status "Active"
-            if (isset($program->status) && $program->status == 'Active') {
-                $data = array(
-                    'Contacts' => array($apiContact->id),
-                    'ProgramId'   => $program->id,
-                    'Status'      => $program->status,
-                    'DateCreated' => $program->dateCreated,
-                    'AddressBooks' => array()
-                );
-                $client->postProgramsEnrolments($data);
-            }
-		}
-	}
 
     /**
      * Set contact to re-import if registered customer submitted a review. Save review in email_review table.
      * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function reviewSaveAfter(Varien_Event_Observer $observer)
-    {
-        /** @var $dataObject Mage_Newsletter_Model_Subscriber */
-        $dataObject = $observer->getEvent()->getDataObject();
-        if($dataObject->getCustomerId() && $dataObject->getStatusId() == Mage_Review_Model_Review::STATUS_PENDING){
-            $customerId = $dataObject->getCustomerId();
-            $helper = Mage::helper('ddg');
-            $helper->setConnectorContactToReImport($customerId);
-            //save review info in the table
-            $this->_registerReview($dataObject);
-            $store = Mage::app()->getStore($dataObject->getStoreId());
-            $storeName = $store->getName();
-            $website = Mage::app()->getStore($store)->getWebsite();
+	public function reviewSaveAfter(Varien_Event_Observer $observer)
+	{
+		$dataObject = $observer->getEvent()->getDataObject();
 
-            //if api is not enabled
-            if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
-                return $this;
+		if($dataObject->getCustomerId() && $dataObject->getStatusId() == Mage_Review_Model_Review::STATUS_PENDING){
+			$helper = Mage::helper('ddg');
+			$customerId = $dataObject->getCustomerId();
+			$helper->setConnectorContactToReImport($customerId);
+			//save review info in the table
+			$this->_registerReview($dataObject);
+			$store = Mage::app()->getStore($dataObject->getStoreId());
+			$storeName = $store->getName();
+			$website = Mage::app()->getStore($store)->getWebsite();
+			$customer = Mage::getModel('customer/customer')->load($customerId);
 
-            //data fields
-            Mage::helper('ddg')->updateDataFields($dataObject->getEmail(), $website, $storeName);
 
-            // send customer to automation mapped
-            $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW';
-            $customer = Mage::getModel('customer/customer')->load($customerId);
-            $email      = $customer->getEmail();
-            $websiteId  = $customer->getWebsiteId();
-            $this->_postCustomerToAutomation($email, $websiteId, $automationType);
-        }
-        return $this;
-    }
+			//if api is not enabled
+			if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+				return $this;
+
+			$programId     = Mage::helper( 'ddg' )->getAutomationIdByType('XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW');
+			if ($programId) {
+				$automation = Mage::getModel( 'ddg_automation/automation' );
+				$automation->setEmail( $customer->getEmail() )
+				           ->setAutomationType( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_REVIEW )
+							->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+				           ->setTypeId( $dataObject->getReviewId() )
+				           ->setWebsiteId( $website->getId() )
+				           ->setStoreName( $storeName )
+				           ->setProgramId( $programId );
+				$automation->save();
+			}
+		}
+		return $this;
+	}
 
     /**
      * register review
@@ -243,38 +242,47 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
      */
     private function _registerWishlist($wishlist)
     {
-        try{
-            $emailWishlist = Mage::getModel('ddg_automation/wishlist');
-            $customer = Mage::getModel('customer/customer');
+	    try{
+		    $emailWishlist = Mage::getModel('ddg_automation/wishlist');
+		    $customer = Mage::getModel('customer/customer');
 
-            //if wishlist exist not to save again
-            if(!$emailWishlist->getWishlist($wishlist['wishlist_id'])){
-                $customer->load($wishlist['customer_id']);
-                $emailWishlist->setWishlistId($wishlist['wishlist_id'])
-                    ->setCustomerId($wishlist['customer_id'])
-                    ->setStoreId($customer->getStoreId())
-                    ->save();
+		    //if wishlist exist not to save again
+		    if(!$emailWishlist->getWishlist($wishlist['wishlist_id'])){
+			    $customer->load($wishlist['customer_id']);
+			    $email      = $customer->getEmail();
+			    $wishlistId = $wishlist['wishlist_id'];
+			    $websiteId  = $customer->getWebsiteId();
+			    $emailWishlist->setWishlistId($wishlistId)
+			                  ->setCustomerId($wishlist['customer_id'])
+			                  ->setStoreId($customer->getStoreId())
+			                  ->save();
 
-                $store = Mage::app()->getStore($customer->getStoreId());
-                $storeName = $store->getName();
-                $website = Mage::app()->getStore($store)->getWebsite();
+			    $store = Mage::app()->getStore($customer->getStoreId());
+			    $storeName = $store->getName();
+			    $website = Mage::app()->getStore($store)->getWebsite();
 
-                //if api is not enabled
-                if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
-                    return $this;
+			    //if api is not enabled
+			    if (!$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED))
+				    return $this;
 
-                //data fields
-                Mage::helper('ddg')->updateDataFields($customer->getEmail(), $website, $storeName);
+			    $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST';
+			    $programId     = Mage::helper( 'ddg' )->getAutomationIdByType($automationType );
+			    if ($programId) {
+				    $automation = Mage::getModel( 'ddg_automation/automation' );
+				    $automation->setEmail( $email )
+				               ->setAutomationType( Dotdigitalgroup_Email_Model_Automation::AUTOMATION_TYPE_NEW_WISHLIST )
+					            ->setEnrolmentStatus(Dotdigitalgroup_Email_Model_Automation::AUTOMATION_STATUS_PENDING)
+				               ->setTypeId( $wishlistId )
+				               ->setWebsiteId( $websiteId )
+				               ->setStoreName( $storeName )
+				               ->setProgramId( $programId );
+				    $automation->save();
+			    }
 
-                // send customer to automation mapped
-                $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST';
-                $email      = $customer->getEmail();
-                $websiteId  = $customer->getWebsiteId();
-                $this->_postCustomerToAutomation($email, $websiteId, $automationType);
-            }
-        }catch(Exception $e){
-            Mage::logException($e);
-        }
+		    }
+	    }catch(Exception $e){
+		    Mage::logException($e);
+	    }
     }
 
     /**
@@ -314,29 +322,37 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 
     }
 
-    /**
-     * wishlist delete observer
-     *
-     * @param Varien_Event_Observer $observer
-     */
-    public function wishlistDeleteAfter(Varien_Event_Observer $observer)
-    {
-        $object = $observer->getEvent()->getDataObject();
-        $customer = Mage::getModel('customer/customer')->load($object->getCustomerId());
-        $website = Mage::app()->getStore($customer->getStoreId())->getWebsite();
-        $client = Mage::helper('ddg')->getWebsiteApiClient($website);
+	/**
+	 * Wishlist delete.
+	 *
+	 * @param Varien_Event_Observer $observer
+	 */
+	public function wishlistDeleteAfter(Varien_Event_Observer $observer)
+	{
+		$object = $observer->getEvent()->getDataObject();
+		$customer = Mage::getModel('customer/customer')->load($object->getCustomerId());
+		$website = Mage::app()->getStore($customer->getStoreId())->getWebsite();
+		$helper = Mage::helper('ddg');
+		$client = $helper->getWebsiteApiClient($website);
 
-         //Remove wishlist
-        try{
-            $item = Mage::getModel('ddg_automation/wishlist')->getWishlist($object->getWishlistId());
-            if ($item->getId()) {
-                $result = $client->deleteContactsTransactionalData($item->getId(), 'Wishlist');
-                if (!isset($result->message)){
-                    $item->delete();
-                }
-            }
-        }catch (Exception $e){
-            Mage::logException($e);
-        }
-    }
+		//sync enabled
+		$syncEnabled = $helper->getWebsiteConfig(
+			Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED,
+			$website->getId()
+		);
+		if ($helper->isEnabled($website->getId()) && $syncEnabled) {
+			//Remove wishlist
+			try {
+				$item = Mage::getModel( 'ddg_automation/wishlist' )->getWishlist( $object->getWishlistId() );
+				if ( $item->getId() ) {
+					$result = $client->deleteContactsTransactionalData( $item->getId(), 'Wishlist' );
+					if ( ! isset( $result->message ) ) {
+						$item->delete();
+					}
+				}
+			} catch ( Exception $e ) {
+				Mage::logException( $e );
+			}
+		}
+	}
 }

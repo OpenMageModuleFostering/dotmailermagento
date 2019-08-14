@@ -110,12 +110,12 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
 
     /**
      * If the path does not exist then create it
-     * @param string $path
+     * @param string $pathz
      */
     public function pathExists($path)
     {
         if (!is_dir($path)) {
-            mkdir($path, 0777, true);
+            mkdir($path, 0770, true);
         } // end
 
         return;

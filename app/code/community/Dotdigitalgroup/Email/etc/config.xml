@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Dotdigitalgroup_Email>
-            <version>4.0.0</version>
+            <version>4.1.3</version>
         </Dotdigitalgroup_Email>
     </modules>
     <frontend>
@@ -87,6 +87,9 @@
                     <quote>
                         <table>email_quote</table>
                     </quote>
+                    <automation>
+                        <table>email_automation</table>
+                    </automation>
                 </entities>
             </email_connector_resource>
             <newsletter>
@@ -149,7 +152,7 @@
                 <observers>
                     <ddg_customer_save_after>
                         <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
-                        <method>handleCustomerSaveBefore</method>
+                        <method>handleCustomerSaveAfter</method>
                     </ddg_customer_save_after>
                 </observers>
             </customer_save_after>
@@ -333,6 +336,12 @@
                     <cron_expr>*/15 * * * *</cron_expr>
                 </schedule>
             </ddg_automation_customer_sync>
+            <ddg_automation_status>
+                <run><model>ddg_automation/cron::automationStatus</model></run>
+                <schedule>
+                    <cron_expr>*/15 * * * *</cron_expr>
+                </schedule>
+            </ddg_automation_status>
             <ddg_automation_subscriber_and_guest_sync>
                 <run><model>ddg_automation/cron::subscribersAndGuestSync</model></run>
                 <schedule>

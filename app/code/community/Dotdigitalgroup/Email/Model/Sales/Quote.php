@@ -75,8 +75,8 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 					    $quoteCollection = $this->_getStoreQuotes( $from->toString( 'YYYY-MM-dd HH:mm' ), $to->toString( 'YYYY-MM-dd HH:mm' ), $guest = false, $storeId );
 
 					    if ( $quoteCollection->getSize() ) {
+						    Mage::helper( 'ddg' )->log( 'Customer lost baskets : ' . $num . ', from : ' . $from->toString( 'YYYY-MM-dd HH:mm' ) . ':' . $to->toString( 'YYYY-MM-dd HH:mm' ) );
 					    }
-					    Mage::helper( 'ddg' )->log( 'Customer lost baskets : ' . $num . ', from : ' . $from->toString( 'YYYY-MM-dd HH:mm' ) . ':' . $to->toString( 'YYYY-MM-dd HH:mm' ) );
 
 					    //campaign id for customers
 					    $campaignId = $this->_getLostBasketCustomerCampaignId( $num, $storeId );

@@ -102,7 +102,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('contact_id', array('null' => true))
-            ->addFieldToFilter('suppressed', array('null' => true))
+            ->addFieldToFilter('suppressed', null)
             ->addFieldToFilter('website_id', $websiteId);
 
         $collection->getSelect()->limit($pageSize);
