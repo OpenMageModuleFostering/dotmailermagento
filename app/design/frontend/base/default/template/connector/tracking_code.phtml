@@ -1,4 +1,12 @@
 <?php
-if(Mage::getStoreConfig('connector_roi_page_tracking_settings/page_tracking/enabled')) :?>
-    <script src="http://t.trackedlink.net/_dmpt.js" type="text/javascript"></script>
+if(Mage::helper('connector')->getPageTrackingEnabled()) :?>
+    <script type="text/javascript">
+        (function(){
+            var connector = document.createElement('script');
+            connector.type = 'text/javascript';
+            connector.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://') + 't.trackedlink.net/_dmpt.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(connector, s);
+        })();
+    </script>
+
 <?php endif;?>

@@ -1,0 +1,1864 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <tabs>
+        <connector translate="label" module="connector">
+            <label>EMAIL</label>
+            <sort_order>1000</sort_order>
+        </connector>
+    </tabs>
+    <sections>
+        <connector_api_settings translate="label" module="connector">
+            <label><![CDATA[API Credentials]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <api_credentials translate="label" module="connector">
+                    <label>API Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <username translate="label" module="connector">
+                            <label>API Username</label>
+                            <frontend_type>text</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_wrapper</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                            <validate>validate-length minimum-length-36</validate>
+                        </username>
+                        <password translate="label" module="connector">
+                            <label>API Password</label>
+                            <frontend_type>password</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_ajaxvalidate</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </password>
+                        <validator>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_waitingfield</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+                </api_credentials>
+            </groups>
+        </connector_api_settings>
+        <connector_sync_settings translate="label" module="connector">
+            <label><![CDATA[Sync Settings]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>3000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <address_book translate="label" module="connector">
+                    <label>Address Book Mapping</label>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <customers translate="label" module="connector">
+                            <label>Add Customers To</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_addressbooks</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customers>
+                        <subscribers translate="label" module="connector">
+                            <label>Add Subscribers To</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_addressbooks</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </subscribers>
+                        <guests translate="label" module="connector">
+                            <label>Add Guests To</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_addressbooks</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </guests>
+                    </fields>
+                </address_book>
+                <sync translate="label" module="connector">
+                    <label>Sync</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <contact_title translate="label" module="connector">
+                            <label>Contact Sync</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </contact_title>
+                        <contact_enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </contact_enabled>
+                        <subscriber_title translate="label" module="connector">
+                            <label>Subscriber Sync</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </subscriber_title>
+                        <subscriber_enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </subscriber_enabled>
+                        <order_title translate="label" module="connector">
+                            <label>Order Sync</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_title>
+                        <order_enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_enabled>
+                        <wishlist_title translate="label" module="connector">
+                            <label>Wishlist Sync</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </wishlist_title>
+                        <wishlist_enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </wishlist_enabled>
+                        <validator>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_waitingfield</frontend_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+                </sync>
+            </groups>
+        </connector_sync_settings>
+        <connector_data_field_settings translate="label" module="connector">
+            <label><![CDATA[Data Mapping]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>2000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <customer_data translate="label" module="connector">
+                    <label>Data Fields Mapping</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <customer_title translate="label" module="connector">
+                            <label>Customer Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_title>
+                        <title translate="label" module="connector">
+                            <label>Title</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </title>
+                        <customer_id translate="label" module="connector">
+                            <label>Customer ID</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_id>
+                        <firstname translate="label" module="connector">
+                            <label>First Name</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </firstname>
+                        <lastname translate="label" module="connector">
+                            <label>Last Name</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </lastname>
+                        <dob translate="label" module="connector">
+                            <label>D.O.B.</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </dob>
+                        <gender translate="label" module="connector">
+                            <label>Gender</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </gender>
+                        <website_name translate="label" module="connector">
+                            <label>Website Created On</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </website_name>
+                        <store_name translate="label" module="connector">
+                            <label>Store Created On</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </store_name>
+                        <created_at translate="label" module="connector">
+                            <label>Account Created Date</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </created_at>
+                        <last_logged_date translate="label" module="connector">
+                            <label>Last Logged In Date</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_logged_date>
+                        <customer_group translate="label" module="connector">
+                            <label>Customer Group</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_group>
+                        <address_title translate="label" module="connector">
+                            <label>Address Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </address_title>
+                        <billing_address_1 translate="label" module="connector">
+                            <label>Billing Address Line 1</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_address_1>
+                        <billing_address_2 translate="label" module="connector">
+                            <label>Billing Address Line 2</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_address_2>
+                        <billing_city translate="label" module="connector">
+                            <label>Billing City</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_city>
+                        <billing_state translate="label" module="connector">
+                            <label>Billing State/Region</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>155</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_state>
+                        <billing_country translate="label" module="connector">
+                            <label>Billing Country</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_country>
+                        <billing_postcode translate="label" module="connector">
+                            <label>Billing Zip/Postcode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_postcode>
+                        <billing_telephone translate="label" module="connector">
+                            <label>Billing Telephone</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_telephone>
+                        <delivery_address_1 translate="label" module="connector">
+                            <label>Delivery Address Line 1</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_address_1>
+                        <delivery_address_2 translate="label" module="connector">
+                            <label>Delivery Address Line 2</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_address_2>
+                        <delivery_city translate="label" module="connector">
+                            <label>Delivery City</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>220</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_city>
+                        <delivery_state translate="label" module="connector">
+                            <label>Delivery State/Region</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>215</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_state>
+                        <delivery_country translate="label" module="connector">
+                            <label>Delivery Country</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>230</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_country>
+                        <delivery_postcode translate="label" module="connector">
+                            <label>Delivery Zip/Postcode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_postcode>
+                        <delivery_telephone translate="label" module="connector">
+                            <label>Delivery Telephone</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>250</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_telephone>
+                        <sales_title translate="label" module="connector">
+                            <label>Sales Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>260</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sales_title>
+                        <number_of_orders translate="label" module="connector">
+                            <label>Total Number of Orders</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>270</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </number_of_orders>
+                        <average_order_value translate="label" module="connector">
+                            <label>Average Order Value</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>280</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </average_order_value>
+                        <total_spend translate="label" module="connector">
+                            <label>Total Spend</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>290</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </total_spend>
+                        <last_order_date translate="label" module="connector">
+                            <label>Last Purchase Date</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>300</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_order_date>
+                        <last_order_id translate="label" module="connector">
+                            <label>Last Order ID</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>310</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_order_id>
+                        <validator translate="label" module="connector">
+                            <label>Validation Block</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <frontend_model>connector/adminhtml_system_config_validator</frontend_model>
+                            <sort_order>320</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                            <expanded>1</expanded>
+                        </validator>
+                    </fields>
+                </customer_data>
+            </groups>
+        </connector_data_field_settings>
+        <connector_roi_page_tracking_settings translate="label" module="connector">
+            <label><![CDATA[ROI & Tracking]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>4000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <page_tracking translate="label" module="connector">
+                    <label>Page Tracking</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                    </fields>
+                </page_tracking>
+                <roi_tracking translate="label" module="connector">
+                    <label>ROI Tracking</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                    </fields>
+                </roi_tracking>
+            </groups>
+        </connector_roi_page_tracking_settings>
+        <lost_basket_settings translate="label" module="connector">
+            <label><![CDATA[Lost Baskets]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>6000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <active translate="label" module="connector">
+                    <label>Lost Baskets Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>0</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <active translate="label" module="connector">
+                            <label>Consider Order Complete For Lost Baskets</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_activebasket</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                    </fields>
+                </active>
+                <customers translate="label" module="connector">
+                    <label>Customers</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <heading_1 translate="label" module="connector">
+                            <label>Lost Basket 1</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_1>
+                        <enabled_1 translate="label" module="connector">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/customers/enabled_1</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_1>
+                        <send_after_1 translate="label" module="connector">
+                            <label>Send After (min)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_lostbasket</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_1>
+                        <campaign_1 translate="label" module="connector">
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_1>
+                        <heading_2 translate="label" module="connector">
+                            <label>Lost Basket 2</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_2>
+                        <enabled_2 translate="label" module="connector">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/customers/enabled_2</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_2>
+                        <send_after_2 translate="label" module="connector">
+                            <label>Send After (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampaignafter</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_2>
+                        <campaign_2 translate="label" module="connector">
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_2>
+                        <heading_3 translate="label" module="connector">
+                            <label>Lost Basket 3</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_3>
+                        <enabled_3 translate="label" module="connector">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/customers/enabled_3</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_3>
+                        <send_after_3 translate="label" module="connector">
+                            <label>Send After (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampaignafter</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_3>
+                        <campaign_3 translate="label" module="connector">
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_3>
+                    </fields>
+                </customers>
+                <guests translate="label" module="connector">
+                    <label>Guests</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <heading_1 translate="label" module="connector">
+                            <label>Lost Basket 1</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </heading_1>
+                        <enabled_1 translate="label" module="connector">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/guests/enabled_1</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled_1>
+                        <send_after_1 translate="label" module="connector">
+                            <label>Send After (min)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_lostbasket</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </send_after_1>
+                        <campaign_1 translate="label" module="connector">
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </campaign_1>
+                        <heading_2 translate="label" module="connector">
+                            <label>Lost Basket 2</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </heading_2>
+                        <enabled_2 translate="label" module="connector">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/guests/enabled_2</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled_2>
+                        <send_after_2 translate="label" module="connector">
+                            <label>Send After (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampaignafter</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </send_after_2>
+                        <campaign_2 translate="label" module="connector">
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </campaign_2>
+                        <heading_3 translate="label" module="connector">
+                            <label>Lost Basket 3</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </heading_3>
+                        <enabled_3 translate="label" module="connector">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/guests/enabled_3</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled_3>
+                        <send_after_3 translate="label" module="connector">
+                            <label>Send After (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampaignafter</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </send_after_3>
+                        <campaign_3 translate="label" module="connector">
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </campaign_3>
+                    </fields>
+                </guests>
+            </groups>
+        </lost_basket_settings>
+        <sms_section translate="label" module="connector">
+            <label><![CDATA[SMS]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>7000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <sms_message_one translate="label" module="connector">
+                    <label>SMS Message 1</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <order_status translate="label" module="connector">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <message translate="label" module="connector">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessageone</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+                </sms_message_one>
+                <sms_message_two translate="label" module="connector">
+                    <label>SMS Message 2</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <order_status translate="label" module="connector">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <message translate="label" module="connector">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessagetwo</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+                </sms_message_two>
+                <sms_message_three translate="label" module="connector">
+                    <label>SMS Message 3</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <order_status translate="label" module="connector">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <message translate="label" module="connector">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessagethree</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+                </sms_message_three>
+                <sms_message_four translate="label" module="connector">
+                    <label>SMS Message 4</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <enabled translate="label" module="connector">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <order_status translate="label" module="connector">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_status>
+                        <message translate="label" module="connector">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_Smsmessagefour</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+                </sms_message_four>
+            </groups>
+        </sms_section>
+        <dynamic_content translate="label" module="connector">
+            <label><![CDATA[Dynamic Content]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>8000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <products translate="label" module="connector">
+                    <label>Dynamic Products</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <related translate="label" module="connector">
+                            <label>Related Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related>
+                        <related_display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related_display_type>
+                        <related_items_to_display translate="label" module="connector">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </related_items_to_display>
+                        <upsell translate="label" module="connector">
+                            <label>Up Sell Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </upsell>
+                        <upsell_display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </upsell_display_type>
+                        <upsell_items_to_display translate="label" module="connector">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </upsell_items_to_display>
+                        <crosssell translate="label" module="connector">
+                            <label>Cross Sell Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </crosssell>
+                        <crosssell_display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </crosssell_display_type>
+                        <crosssell_items_to_display translate="label" module="connector">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </crosssell_items_to_display>
+                        <bestsellers translate="label" module="connector">
+                            <label>Best Sellers</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </bestsellers>
+                        <bestsellers_display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </bestsellers_display_type>
+                        <bestsellers_items_to_display translate="label" module="connector">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </bestsellers_items_to_display>
+                        <bestsellers_time_period translate="label" module="connector">
+                            <label>Time Period</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_timeperiod</source_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </bestsellers_time_period>
+                        <most_viewed translate="label" module="connector">
+                            <label>Most Viewed</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed>
+                        <most_viewed_display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_display_type>
+                        <most_viewed_items_to_display translate="label" module="connector">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>160</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_items_to_display>
+                        <most_viewed_time_period translate="label" module="connector">
+                            <label>Time Period</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_timeperiod</source_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_time_period>
+                        <recently_viewed translate="label" module="connector">
+                            <label>Recently Viewed</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed>
+                        <recently_viewed_display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed_display_type>
+                        <recently_viewed_items_to_display translate="label" module="connector">
+                            <label>items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed_items_to_display>
+                        <validator>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_gridlist</frontend_model>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+                </products>
+                <manual_product_search translate="label" module="connector">
+                    <label>Manual Product Push</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <settings tranlate="label" module="connector">
+                            <label>Settings</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </settings>
+                        <display_type translate="label" module="connector">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </display_type>
+                        <items_to_display translate="label" module="connector">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </items_to_display>
+                        <products_push translate="label" module="connector">
+                            <label>Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </products_push>
+                        <products_push_items translate="label comment" module="connector">
+                            <label>Products</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Comma Separated Product Id's]]></comment>
+                        </products_push_items>
+                    </fields>
+                </manual_product_search>
+                <fallback_products translate="label" module="connector">
+                    <label>Fallback Products</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <product_list translate="label comment" module="connector">
+                            <label>Products</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Comma Separated Product Id's]]></comment>
+                        </product_list>
+                    </fields>
+                </fallback_products>
+            </groups>
+        </dynamic_content>
+        <transactional_emails translate="label" module="connector">
+            <label>Transactional Emails</label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <show_in_default>0</show_in_default>
+            <show_in_website>0</show_in_website>
+            <show_in_store>0</show_in_store>
+            <sort_order>9000</sort_order>
+            <groups>
+                <transactional_email translate="label" module="connector">
+                    <label>Transactional Emails</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <api_username translate="label" module="connector">
+                            <label>API Username</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_username>
+                        <api_password translate="label" module="connector">
+                            <label>API Password</label>
+                            <frontend_type>password</frontend_type>
+                            <!--<frontend_model>connector/adminhtml_system_config_testbutton</frontend_model>-->
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_password>
+                        <validator>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_waitingfield</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+                </transactional_email>
+                <email_mapping translate="label" module="connector">
+                    <label>Email Mapping</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>200</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <order_title translate="label" module="connector">
+                            <label>Order Emails</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_title>
+                        <new_creditmemo translate="label" module="connector">
+                            <label>New Credit Memo</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </new_creditmemo>
+                        <new_creditmemo_guest translate="label" module="connector">
+                            <label>New Credit Memo Guest</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </new_creditmemo_guest>
+                        <creditmemo translate="label" module="connector">
+                            <label>Credit Memo Update</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </creditmemo>
+                        <new_invoice translate="label" module="connector">
+                            <label>New Invoice</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </new_invoice>
+                        <invoice_update translate="label" module="connector">
+                            <label>Invoice Update</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </invoice_update>
+                        <new_order translate="label" module="connector">
+                            <label>New Order</label>
+                            <sort_order>70</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </new_order>
+                        <order_update translate="label" module="connector">
+                            <label>Order Update</label>
+                            <sort_order>80</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_update>
+                        <new_shipment translate="label" module="connector">
+                            <label>New Shipment</label>
+                            <sort_order>90</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </new_shipment>
+                        <shipment_update translate="label" module="connector">
+                            <label>Shipment Update</label>
+                            <sort_order>100</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </shipment_update>
+                        <customer_emails_heading translate="label" module="connector">
+                            <label>Customer Emails</label>
+                            <sort_order>110</sort_order>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_emails_heading>
+                        <password_remind translate="label" module="connector">
+                            <label>Password Remind</label>
+                            <sort_order>120</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </password_remind>
+                        <forgot_password translate="label" module="connector">
+                            <label>Forgot Password</label>
+                            <sort_order>130</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </forgot_password>
+                        <new_account translate="label" module="connector">
+                            <label>New Account</label>
+                            <sort_order>140</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </new_account>
+                        <!--<new_account_key translate="label">-->
+                            <!--<label>New Account Key</label>-->
+                            <!--<sort_order>150</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</new_account_key>-->
+                        <!--<new_account_confirm translate="label">-->
+                            <!--<label>New Account Confirmed</label>-->
+                            <!--<sort_order>160</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</new_account_confirm>-->
+                        <!--<newsletter_subscribtion_confirmation tranlate="label">-->
+                            <!--<label>Newsletter Subscription Confirmation</label>-->
+                            <!--<sort_order>170</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</newsletter_subscribtion_confirmation>-->
+                        <!--<newsletter_subscription_success translate="label">-->
+                            <!--<label>Newsletter Subscription Success</label>-->
+                            <!--<sort_order>180</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</newsletter_subscription_success>-->
+
+                        <!--<website_email_header translate="label">-->
+                            <!--<label>Website Email</label>-->
+                            <!--<sort_order>190</sort_order>-->
+                            <!--<frontend_model>adminhtml/system_config_form_field_heading</frontend_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</website_email_header>-->
+                        <!--<product_price_alert translate="label">-->
+                            <!--<label>Product Price Alert</label>-->
+                            <!--<sort_order>200</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</product_price_alert>-->
+                        <!--<product_stock_alert translate="label">-->
+                            <!--<label>Product Stock Alert</label>-->
+                            <!--<sort_order>210</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</product_stock_alert>-->
+                        <!--<send_to_frend translate="label">-->
+                            <!--<label>Send To A Friend</label>-->
+                            <!--<sort_order>220</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</send_to_frend>-->
+                        <!--<share_wishlist translate="label">-->
+                            <!--<label>Share Wishlist</label>-->
+                            <!--<sort_order>230</sort_order>-->
+                            <!--<frontend_type>select</frontend_type>-->
+                            <!--<source_model>connector/system_config_source_campaigns</source_model>-->
+                            <!--<show_in_default>1</show_in_default>-->
+                            <!--<show_in_website>1</show_in_website>-->
+                            <!--<show_in_store>0</show_in_store>-->
+                        <!--</share_wishlist>-->
+                    </fields>
+                </email_mapping>
+            </groups>
+        </transactional_emails>
+        <connector_advanced_settings translate="label" module="connector">
+            <label><![CDATA[Advanced Settings]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>10000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <sync_limits translate="label" module="connector">
+                    <label>Transactional Sync Limit</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <orders translate="label" module="connector">
+                            <label>Historical Import Limit</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderlimit</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </orders>
+                    </fields>
+                </sync_limits>
+                <external translate="label" module="connector">
+                    <label><![CDATA[External Dynamic Content]]></label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <passcode translate="label comment" module="connector">
+                            <label>Passcode</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Recommended: Set a passcode so that basket contents and coupon codes can only be viewed if the following passcode is sent with the request.]]></comment>
+                        </passcode>
+                        <lost_basket_title translate="label" module="connector">
+                            <label>Lost Baskets</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </lost_basket_title>
+                        <lost_basket_url translate="label" module="connector">
+                            <label>Baskets Content URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_lostbasket</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </lost_basket_url>
+                        <coupon_code_title title="label" module="connector">
+                            <label>Coupon Codes</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </coupon_code_title>
+                        <coupon_code_url translate="label" module="connector">
+                            <label>Coupon Codes URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_couponinfo</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </coupon_code_url>
+                        <dynamic_content_url translate="label" module="connector">
+                            <label>Dynamic Content</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </dynamic_content_url>
+                        <related_products_url translate="label" module="connector">
+                            <label>Related Products URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_related</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related_products_url>
+                        <upsell_products_url translate="label" module="connector">
+                            <label>Up Sell Products URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_upsell</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </upsell_products_url>
+                        <crosssell_products_url translate="label" module="connector">
+                            <label>Cross Sell Products URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_crosssell</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </crosssell_products_url>
+                        <best_sellers_url translate="label" module="connector">
+                            <label>Best Sellers URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_bestsellers</frontend_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </best_sellers_url>
+                        <most_viewed_url translate="label" module="connector">
+                            <label>Most Viewed URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_mostviewed</frontend_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_url>
+                        <product_push_url translate="label" module="connector">
+                            <label>Product Push URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_productpush</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </product_push_url>
+                        <recently_viewed_url translate="label" module="connector">
+                            <label>Recently Viewed</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_recentlyviewed</frontend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed_url>
+                        <transactional_heading translate="label" module="connector">
+                            <label>Transactional Emails</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </transactional_heading>
+                        <transactional_customer_new translate="label" module="connector">
+                            <label>New Customer Registration Email</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_customernew</frontend_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </transactional_customer_new>
+                        <transactional_order_new translate="label" module="connector">
+                            <label>New Order Email Confirmation</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_ordernew</frontend_model>
+                            <sort_order>160</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </transactional_order_new>
+                        <transactional_order_creditmemo_new translate="label" module="connector">
+                            <label>New Creditmemo</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_creditmemonew</frontend_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </transactional_order_creditmemo_new>
+                        <transactional_order_update translate="label" module="connector">
+                            <label>Order Update</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_orderupdate</frontend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </transactional_order_update>
+                        <transactional_invoice_new translate="label" module="connector">
+                            <label>New Invoice</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_form_invoicenew</frontend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>0</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </transactional_invoice_new>
+                    </fields>
+                </external>
+                <admin translate="label" module="connector">
+                    <label>Admin</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_default>1</show_in_default>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <admin_title translate="label" module="connector">
+                            <label><![CDATA[Contacts ID's]]></label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </admin_title>
+                        <count_customers translate="label" module="connector">
+                            <label>Count Customers With ID</label>
+                            <frontend_model>connector/adminhtml_advanced_admin_contactsimported</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </count_customers>
+                        <delete_contact translate="label" module="connector">
+                            <label><![CDATA[Delete All Contact ID's]]></label>
+                            <frontend_model>connector/adminhtml_advanced_admin_deletecontactids</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delete_contact>
+                        <advanced_title translate="label" module="connector">
+                            <label>Advanced</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </advanced_title>
+                        <setup_data_fields translate="label comment" module="connector">
+                            <label>Setup Data Fields</label>
+                            <frontend_model>connector/adminhtml_widget_button_setupdatafields</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>This will create data-fields and map them automatically.</comment>
+                        </setup_data_fields>
+                        <reimport_orders module="connector" translate="label">
+                            <label>Reimport Order Data</label>
+                            <frontend_model>connector/adminhtml_widget_button_reimportorders</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Remport Order Transactional Data</comment>
+                        </reimport_orders>
+                        <suppressed_contacts module="connector" translate="label">
+                            <label>Update Supressed Contacts</label>
+                            <frontend_model>connector/adminhtml_widget_button_suppressedcontacts</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Update All Contacts Who Historically Unsubscribed.</comment>
+                        </suppressed_contacts>
+                        <memory_limit translate="label comment" module="connector">
+                            <label>Memory Limit</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>80</sort_order>
+                            <comment>Set to NO to use system default memory.</comment>
+                        </memory_limit>
+                        <batch_size translate="label comment" module="connector">
+                            <label>Customer Sync Batch Size</label>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>90</sort_order>
+                            <comment>Set the limit size for customers loaded in memory.</comment>
+                        </batch_size>
+                        <debug_enabled translate="label comment" module="connector">
+                            <label>Debug Mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Set to YES to allow debug infomation to be saved in var/log directory.</comment>
+                        </debug_enabled>
+                    </fields>
+                </admin>
+            </groups>
+        </connector_advanced_settings>
+    </sections>
+</config>

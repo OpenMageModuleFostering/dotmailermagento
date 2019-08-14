@@ -3,7 +3,7 @@
     <modules>
         <Dotdigitalgroup_Email>
             <active>true</active>
-            <codePool>local</codePool>
+            <codePool>community</codePool>
         </Dotdigitalgroup_Email>
     </modules>
 </config>

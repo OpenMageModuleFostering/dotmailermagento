@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+					<system>
+						<children>
+							<config>
+                                <children>
+                                    <connector_api_settings translate="title">
+                                        <title><![CDATA[API Credentials]]></title>
+                                    </connector_api_settings>
+                                    <connector_sync_settings translate="title">
+                                        <title><![CDATA[Sync Settings]]></title>
+                                    </connector_sync_settings>
+                                    <connector_data_field_settings translate="title">
+                                        <title><![CDATA[Data Field Mapping]]></title>
+                                    </connector_data_field_settings>
+                                    <connector_roi_page_tracking_settings translate="title">
+                                        <title><![CDATA[ROI & Tracking]]></title>
+                                    </connector_roi_page_tracking_settings>
+                                    <lost_basket_settings translate="title">
+                                        <title><![CDATA[Lost Baskets]]></title>
+                                    </lost_basket_settings>
+                                    <sms_section translate="title">
+                                        <title><![CDATA[SMS Section]]></title>
+                                    </sms_section>
+                                    <dynamic_content translate="title">
+                                        <title><![CDATA[Dynamic Content]]></title>
+                                    </dynamic_content>
+                                    <transactional_emails translate="title">
+                                        <title><![CDATA[Transactional Email]]></title>
+                                    </transactional_emails>
+                                    <connector_advanced_settings translate="title">
+                                        <title><![CDATA[Advanced Settings]]></title>
+                                    </connector_advanced_settings>
+                                </children>
+							</config>
+						</children>				
+					</system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>

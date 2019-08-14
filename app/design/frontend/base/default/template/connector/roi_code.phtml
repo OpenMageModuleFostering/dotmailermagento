@@ -1,23 +1,17 @@
-<?php
-
-if(Mage::getStoreConfig('connector_roi_page_tracking_settings/roi_tracking/enabled')):?>
-
-    <?php
+<?php if(Mage::helper('connector')->getRoiTrackingEnabled()):
     $order = Mage::getModel('sales/order')->loadByIncrementId($this->getOrderId());
     $orderId = $this->getOrderId();
     $items = $order->getAllItems();
     $total = number_format($order->getBaseGrandTotal(), 2);
+?>
+<script type="text/javascript">
+    <?php foreach ($items as $item):?>
 
-    ?>
-    <script type="text/javascript">
-        <?php foreach ($items as $item):?>
+        <?php if($item->getParentItemId() != null)
+            continue;?>
+        _dmTrack("product", <?php echo $item->getName()?>;
 
-            <?php if($item->getParentItemId() != null)
-                continue;?>
-            _dmTrack("product", <?php echo $item->getName()?>;
-
-        <?php endforeach;?>
-        _dmTrack("CheckOutAmount", <?php echo $total;?>);
-    </script>
-
+    <?php endforeach;?>
+    _dmTrack("CheckOutAmount", <?php echo $total;?>);
+</script>
 <?php endif;?>
