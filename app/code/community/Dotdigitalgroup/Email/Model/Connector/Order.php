@@ -70,6 +70,9 @@ class Dotdigitalgroup_Email_Model_Connector_Order
      */
     public  $currency;
 
+
+    public $couponCode;
+
     /**
      * set the order information
      * @param Mage_Sales_Model_Order $orderData
@@ -89,6 +92,7 @@ class Dotdigitalgroup_Email_Model_Connector_Order
         $this->delivery_total = $orderData->getShippingAmount();
         $this->currency = $orderData->getStoreCurrencyCode();
         $this->payment = $orderData->getPayment()->getMethodInstance()->getTitle();
+        $this->couponCode = $orderData->getCouponCode();
 
         /**
          * Billing address.
@@ -137,11 +141,15 @@ class Dotdigitalgroup_Email_Model_Connector_Order
                 }
             }
 
+            $attributeSetModel = Mage::getModel("eav/entity_attribute_set");
+            $attributeSetModel->load($product->getAttributeSetId());
+            $attributeSetName  = $attributeSetModel->getAttributeSetName();
             $this->products[] = array(
                 'name' => $productItem->getName(),
                 'sku' => $productItem->getSku(),
                 'qty' => (int)number_format($productItem->getData('qty_ordered'), 2),
                 'price' => (float)number_format($productItem->getPrice(), 2),
+                'attribute-set' => $attributeSetName
             );
         }
 

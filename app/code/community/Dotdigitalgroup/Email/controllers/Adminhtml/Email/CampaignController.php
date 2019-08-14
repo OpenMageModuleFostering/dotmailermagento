@@ -13,6 +13,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
         $this->_title($this->__('Email'))
             ->_title($this->__('Manage Campaigns'));
         $this->loadLayout();
+        $this->_setActiveMenu('email_connector');
         $this->renderLayout();
     }
 
@@ -171,7 +172,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
     }
 
     protected function _isAllowed(){
-        return Mage::getSingleton('admin/session')->isAllowed('email_connector_campaign');
+        return Mage::getSingleton('admin/session')->isAllowed('newsletter/email_connetor/email_connector_campaign');
     }
 
 }

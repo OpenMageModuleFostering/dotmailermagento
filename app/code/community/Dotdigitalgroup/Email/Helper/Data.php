@@ -136,59 +136,6 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Gets the datafield mapping hash from the system config.
-     * @param $website
-     * @return array
-     */
-    public function getMappingHash($website)
-    {
-        $result = array();
-        $website = Mage::app()->getWebsite($website);
-        $customerFields = $this->getCustomerDataFields();
-        foreach ($customerFields as $field) {
-            $path = 'connector_data_mapping/customer_data/' . $field;
-            $result[] = $website->getConfig($path);
-        }
-
-        return $result;
-    }
-
-    public function getCustomerDataFields(){
-
-        return  array(
-            'title',
-            'firstname',
-            'lastname',
-            'dob',
-            'gender',
-            'website_name',
-            'store_name',
-            'created_at',
-            'last_logged_date',
-            'customer_group',
-            'billing_address_1',
-            'billing_address_2',
-            'billing_city',
-            'billing_country',
-            'billing_postcode',
-            'billing_telephone',
-            'delivery_address_1',
-            'delivery_address_2',
-            'delivery_city',
-            'delivery_country',
-            'delivery_postcode',
-            'delivery_telephone',
-            'number_of_orders',
-            'average_order_value',
-            'total_spend',
-            'last_order_date',
-            'last_order_id',
-            'customer_id',
-        );
-    }
-
-
-    /**
      * @return $this
      */
     public  function allowResourceFullExecution()
@@ -253,5 +200,39 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
                 ->setApiPassword($this->getApiPassword($website));
         
         return $client;
+    }
+
+    /**
+     * Retrieve authorisation code.
+     */
+    public function getCode()
+    {
+        $adminUser = Mage::getSingleton('admin/session')->getUser();
+        $code = $adminUser->getEmailCode();
+
+        return $code;
+    }
+
+    /**
+     * Autorisation url.
+     * @return string
+     */
+    public function getAuthoriseUrl()
+    {
+        $clientId = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_ID);
+        $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
+        $callback    = $baseUrl . 'connector/email/callback';
+        $adminUser = Mage::getSingleton('admin/session')->getUser();
+
+        $params = array(
+            'redirect_uri' => $callback,
+            'scope' => 'Account',
+            'state' => $adminUser->getId(),
+            'response_type' => 'code'
+        );
+        $url = Dotdigitalgroup_Email_Helper_Config::API_CONNECTOR_URL_AUTHORISE . http_build_query($params) . '&client_id=' . $clientId;
+        Mage::helper('connector')->log('Authorization code url : '. $url);
+
+        return $url;
     }
 }

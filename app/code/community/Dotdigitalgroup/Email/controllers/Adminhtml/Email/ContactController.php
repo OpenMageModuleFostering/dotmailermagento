@@ -13,6 +13,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
         $this->_title($this->__('Email'))
             ->_title($this->__('Manage Contacts'));
         $this->loadLayout();
+        $this->_setActiveMenu('email_connector');
         $this->renderLayout();
     }
 
@@ -153,7 +154,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
     }
 
     protected function _isAllowed(){
-        return Mage::getSingleton('admin/session')->isAllowed('email_connector_contact');
+        return Mage::getSingleton('admin/session')->isAllowed('newsletter/email_connector/email_connector_contact');
     }
 
 }

@@ -7,7 +7,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Lostbaskets_Interval
      * available times
      * @var array
      */
-    protected $_times = array(1,2,3,4,5,6,12,36,48,60,72,84,96,108,120);
+    protected $_times = array(1,2,3,4,5,6,12,24,36,48,60,72,84,96,108,120);
 
 
     /**

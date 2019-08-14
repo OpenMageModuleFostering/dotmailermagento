@@ -20,6 +20,17 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
             if($subscriberStatus == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED){
                 $contactEmail->setSubscriberStatus($subscriberStatus)
                     ->setIsSubscriber(1);
+
+                /**
+                 * Resubscribe suppressed contacts.
+                 */
+                $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
+                $apiContact = $client->getContactByEmail($email);
+                if(isset($apiContact->status) && $apiContact->status == 'Suppressed'){
+                    $client->PostContactsResubscribe($email, $apiContact);
+                }
+                $client->PostContactsResubscribe($email, $apiContact);
+                $contactEmail->setSuppressed(null);
             }else{
                 /**
                  * Unsubscribe contact
@@ -39,6 +50,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
                 }
                 $contactEmail->setIsSubscriber(null);
             }
+
             $contactEmail->setStoreId($storeId)
                 ->setContactId($contactId)
                 ->save();

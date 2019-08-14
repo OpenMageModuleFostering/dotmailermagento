@@ -41,4 +41,45 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         ));
         exit();
     }
+
+    public function callbackAction()
+    {
+        $code = $this->getRequest()->getParam('code', false);
+        $userId = $this->getRequest()->getParam('state');
+        $adminUser = Mage::getModel('admin/user')->load($userId);
+        $callback = 'https://dotmailerformagento.co.uk/magentotesting/connector/email/callback';
+
+        if($code){
+            $data = 'client_id='    . Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_ID) .
+                '&client_secret='   . Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID) .
+                '&redirect_uri='    . $callback .
+                '&grant_type=authorization_code' .
+                '&code='            . $code;
+
+
+            $url = Dotdigitalgroup_Email_Helper_Config::API_CONNECTOR_URL_TOKEN;
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POST, count($data));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array ('Content-Type: application/x-www-form-urlencoded'));
+
+
+            $response = json_decode(curl_exec($ch));
+            if($response === false)
+            {
+                echo "Error Number:".curl_errno($ch)."<br>";
+                echo "Error String:".curl_error($ch);
+            }
+
+            $adminUser->setRefreshToken($response->refresh_token)->save();
+        }
+
+        //@todo redirect to settings if the authorisation fails.
+        //$this->_redirectReferer(Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit', array('section' => 'connector_api_credentials')));
+        $this->_redirectReferer(Mage::helper('adminhtml')->getUrl('adminhtml/email_automation/index'));
+    }
 }

@@ -153,21 +153,17 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
             array_map($class_func, glob($path.'/*')) == @rmdir($path);
     }
 
-    /**
-     * Create an array of columns we have chosen to map in our System->Config
-     * @param $website
-     * @return array
-     */
-    public function getCsvHeaderArray($website)
-    {
-        $website = Mage::app()->getWebsite($website);
-        $result = array();
-        $result[] = 'Email';
-        foreach (Mage::helper('connector')->getMappingHash($website) as $header) {
-            if($header != "0") $result[] = $header;
-        }
-        $result[] = 'emailType';
 
-        return $result;
+    public function getWebsiteCustomerMappingDatafields($website)
+    {
+        $store = $website->getDefaultStore();
+        $mappedData = Mage::getStoreConfig('connector_data_mapping/customer_data', $store);
+        unset($mappedData['custom_attributes']);
+        foreach ($mappedData as $key => $value) {
+            if(! $value)
+                unset($mappedData[$key]);
+        }
+
+        return $mappedData;
     }
 }

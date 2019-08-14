@@ -65,6 +65,39 @@
                         </validator>
                     </fields>
                 </api>
+                <oauth translate="label" module="connector">
+                    <label>OAUTH Credentials</label>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <client_id translate="label" module="connector">
+                            <label>Client ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </client_id>
+                        <client_key translate="label" module="connector">
+                            <label>Client Secret Key</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </client_key>
+                        <test_connect translate="label" module="connector">
+                            <label>Connection</label>
+                            <frontend_model>email_connector/adminhtml_system_automation_connect</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <comment>Please Save Client ID and Secret Key Before Test. Generate/Refresh New Token.</comment>
+                        </test_connect>
+                    </fields>
+                </oauth>
             </groups>
         </connector_api_credentials>
         <connector_sync_settings translate="label" module="connector">
@@ -543,6 +576,16 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </last_order_id>
+                        <total_refund translate="label">
+                            <label>Include Total Refund</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>email_connector/adminhtml_source_datafields</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>320</sort_order>
+                            <comment>Include total refunded ammount for customer sync.</comment>
+                        </total_refund>
                         <custom_title translate="label" module="connector">
                             <label>Custom Attributes</label>
                             <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
@@ -1982,7 +2025,7 @@
                         <inline_styling translate="label comment" module="connector">
                             <label>Transactional Emails Styling</label>
                             <frontend_type>textarea</frontend_type>
-                            <sort_order>80</sort_order>
+                            <sort_order>90</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -1991,7 +2034,7 @@
                         <recommended_inline translate="label" module="connector">
                             <label>Dynamic Content Styling</label>
                             <frontend_type>textarea</frontend_type>
-                            <sort_order>90</sort_order>
+                            <sort_order>100</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>

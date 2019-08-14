@@ -1,96 +1,143 @@
 <?xml version="1.0"?>
 <config>
     <menu>
-        <newsletter>
+        <email_connector translate="title">
+            <title>Marketing Automation</title>
+            <sort_order>70</sort_order>
             <children>
-                <email_connector translate="title">
-                    <title>Email Orders</title>
-                    <sort_order>1</sort_order>
+                <email_connector_dashboard translate="title">
+                    <title>Dashboard</title>
+                    <sort_order>10</sort_order>
+                    <action>adminhtml/email_dashboard</action>
+                </email_connector_dashboard>
+                <automation_studio translate="title">
+                    <title>Automation Studio</title>
+                    <sort_order>20</sort_order>
+                    <action>adminhtml/email_automation</action>
+                </automation_studio>
+                <reports translate="title">
+                    <title>Reports</title>
+                    <sort_order>30</sort_order>
                     <children>
-                        <email_connector_dashboard translate="title">
-                            <title>Dashboard</title>
-                            <sort_order>10</sort_order>
-                            <action>adminhtml/email_dashboard</action>
-                        </email_connector_dashboard>
                         <email_connector_order translate="title">
-                            <title>Email Connector Orders</title>
-                            <sort_order>40</sort_order>
+                            <title>Orders Sync</title>
+                            <sort_order>20</sort_order>
                             <action>adminhtml/email_order</action>
                         </email_connector_order>
                         <email_connector_campaign translate="title">
-                            <title>Email Campaigns</title>
+                            <title>Email Send Status</title>
                             <sort_order>30</sort_order>
                             <action>adminhtml/email_campaign</action>
                         </email_connector_campaign>
                         <email_connector_contact translate="title">
-                            <title>Email Contacts</title>
-                            <sort_order>20</sort_order>
+                            <title>Contact Sync</title>
+                            <sort_order>10</sort_order>
                             <action>adminhtml/email_contact</action>
                         </email_connector_contact>
                     </children>
-                </email_connector>
+                </reports>
+                <email_configuration translate="title">
+                    <title>Configuration</title>
+                    <sort_order>40</sort_order>
+                    <children>
+                        <api_credentials translate="title">
+                            <title>Api Credentials</title>
+                            <sort_order>10</sort_order>
+                            <action>adminhtml/system_config/edit/section/connector_api_credentials</action>
+                        </api_credentials>
+                        <data_mapping translate="title">
+                            <title>Data Mapping</title>
+                            <sort_order>20</sort_order>
+                            <action>adminhtml/system_config/edit/section/connector_data_mapping</action>
+                        </data_mapping>
+                        <sync_settings translate="title">
+                            <title>Sync Settings</title>
+                            <sort_order>30</sort_order>
+                            <action>adminhtml/system_config/edit/section/connector_sync_settings</action>
+                        </sync_settings>
+                    </children>
+                </email_configuration>
             </children>
-        </newsletter>
+        </email_connector>
     </menu>
     <acl>
         <resources>
-            <newsetter>
-                <children>
-                    <email_connector>
-                        <childrend>
-                            <email_connector_dashboard translate="title">
-                                <title>Dashboard</title>
-                            </email_connector_dashboard>
-                            <email_connector_order translate="title">
-                                <title>Email Connector Orders</title>
-                            </email_connector_order>
-                            <email_connector_campaign translate="title">
-                                <title>Email Connector Campaigns</title>
-                            </email_connector_campaign>
-                            <email_connector_contact translate="title">
-                                <title>Email Connector Contacts</title>
-                            </email_connector_contact>
-                        </childrend>
-                    </email_connector>
-                </children>
-            </newsetter>
             <admin>
                 <children>
-					<system>
-						<children>
-							<config>
+                    <email_connector>
+                        <title>Email Connector</title>
+                        <children>
+                            <email_connector_dashboard translate="title">
+                            <title>Dashboard</title>
+                            </email_connector_dashboard>
+                            <automation_studio translate="title">
+                                <title>Automation Studio</title>
+                            </automation_studio>
+                            <reports>
+                                <title>Reports</title>
+                                <children>
+                                    <email_connector_order translate="title">
+                                        <title>Email Connector Orders</title>
+                                    </email_connector_order>
+                                    <email_connector_campaign translate="title">
+                                        <title>Email Connector Campaigns</title>
+                                    </email_connector_campaign>
+                                    <email_connector_contact translate="title">
+                                        <title>Email Connector Contacts</title>
+                                    </email_connector_contact>
+                                </children>
+                            </reports>
+                            <email_configuration translate="title">
+                                <title>Email Configuration</title>
+                                <children>
+                                    <api_credentials translate="title">
+                                        <title>Api Credentials</title>
+                                    </api_credentials>
+                                    <data_mapping translate="title">
+                                        <title>Data Mapping</title>
+                                    </data_mapping>
+                                    <sync_settings translate="title">
+                                    <title>Sync Settings</title>
+                                    </sync_settings>
+                                </children>
+                            </email_configuration>
+                        </children>
+                    </email_connector>
+                    <system>
+                        <children>
+                            <config>
                                 <children>
                                     <connector_api_credentials translate="title">
-                                        <title><![CDATA[API Credentials]]></title>
+                                        <title><![CDATA[Email API Credentials]]></title>
                                     </connector_api_credentials>
                                     <connector_sync_settings translate="title">
-                                        <title><![CDATA[Sync Settings]]></title>
+                                        <title><![CDATA[Email Sync Settings]]></title>
                                     </connector_sync_settings>
                                     <connector_data_mapping translate="title">
-                                        <title><![CDATA[Data Field Mapping]]></title>
+                                        <title><![CDATA[Email Data Field Mapping]]></title>
                                     </connector_data_mapping>
                                     <connector_roi_tracking translate="title">
-                                        <title><![CDATA[ROI & Tracking]]></title>
+                                        <title><![CDATA[Email ROI & Tracking]]></title>
                                     </connector_roi_tracking>
                                     <connector_lost_baskets translate="title">
-                                        <title><![CDATA[Lost Baskets]]></title>
+                                        <title><![CDATA[Email Lost Baskets]]></title>
                                     </connector_lost_baskets>
                                     <connector_sms translate="title">
-                                        <title><![CDATA[SMS Section]]></title>
+                                        <title><![CDATA[Email SMS Section]]></title>
                                     </connector_sms>
                                     <connector_dynamic_content translate="title">
-                                        <title><![CDATA[Dynamic Content]]></title>
+                                        <title><![CDATA[Email Dynamic Content]]></title>
                                     </connector_dynamic_content>
                                     <connector_transactional_emails translate="title">
-                                        <title><![CDATA[Transactional Email]]></title>
+                                        <title><![CDATA[Email Transactional Email]]></title>
                                     </connector_transactional_emails>
                                     <connector_advanced_settings translate="title">
-                                        <title><![CDATA[Advanced Settings]]></title>
+                                        <title><![CDATA[Email Advanced Settings]]></title>
                                     </connector_advanced_settings>
                                 </children>
-							</config>
-						</children>				
-					</system>
+                            </config>
+                        </children>
+                    </system>
                 </children>
             </admin>
         </resources>

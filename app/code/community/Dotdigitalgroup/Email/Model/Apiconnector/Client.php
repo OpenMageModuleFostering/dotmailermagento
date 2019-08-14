@@ -17,6 +17,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     const REST_CONTACTS_SUPPRESSED_SINCE        = 'https://apiconnector.com/v2/contacts/suppressed-since/';
     const REST_DATA_FIELDS_CAMPAIGNS            = 'https://apiconnector.com/v2/campaigns';
     const REST_SMS_MESSAGE_SEND_TO              = 'https://apiconnector.com/v2/sms-messages/send-to/';
+    const REST_CONTACTS_RESUBSCRIBE             = 'https://apiconnector.com/v2/contacts/resubscribe';
     //rest error responces
     const REST_CONTACT_NOT_FOUND                = 'Error: ERROR_CONTACT_NOT_FOUND';
     const REST_SEND_MULTI_TRANSACTIONAL_DATA    = 'Error: ERROR_FEATURENOTACTIVE';
@@ -341,6 +342,25 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         return $response;
     }
 
+    /**
+     * Deletes a contact.
+     * @param $contactId
+     * @return null
+     */
+    public function DeleteContact($contactId)
+    {
+        $url = self::REST_CONTACTS . $contactId;
+        $this->setUrl($url)
+            ->setVerb('DELETE');
+
+        $response = $this->execute();
+
+        if(isset($response->message)){
+            Mage::helper('connector')->log('DELETE CONTACT : ' . $url . ', ' . $response->message);
+        }
+        return $response;
+    }
+
     public function updateContactDatafieldsByEmail($email, $dataFields)
     {
         $contactId = $this->postContacts($email)->id;
@@ -648,5 +668,28 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
         }
         return $result;
+    }
+
+    /**
+     * Resubscribes a previously unsubscribed contact.
+     * @param $email
+     * @param $apiContact
+     */
+    public function PostContactsResubscribe($email, $apiContact)
+    {
+        $url = self::REST_CONTACTS_RESUBSCRIBE;
+        $data = array(
+          'UnsubscribedContact' => $apiContact
+        );
+
+        $this->setUrl($url)
+            ->setVerb("POST")
+            ->buildPostBody($data);
+
+        $response = $this->execute();
+        if(isset($response->message)){
+            Mage::helper('connector')->log('Resubscribe : ' . $url . ', message :' .  $response->message);
+            Mage::helper('connector')->log($data);
+        }
     }
 }

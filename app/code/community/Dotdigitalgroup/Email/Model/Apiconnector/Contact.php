@@ -28,7 +28,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
 
     private function _exportCustomersForWebsite(Mage_Core_Model_Website $website){
         $updated = 0;
-        $customers = array();
+        $customers = $headers = $allMappedHash = array();
         $helper = Mage::helper('connector');
         $pageSize = $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_LIMIT, $website);
         //skip if the mapping field is missing
@@ -96,33 +96,51 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $customerCollection->getSelect()
             ->joinLeft(array($alias => $subselect), "{$alias}.s_customer_id = e.entity_id");
 
-        $headers = $fileHelper->getCsvHeaderArray($website);
+        /**
+         * HEADERS.
+         */
+        $mappedHash = $fileHelper->getWebsiteCustomerMappingDatafields($website);
+        $headers = $mappedHash;
+        //custom customer attributes
         $customAttributes = $helper->getCustomAttributes($website);
         foreach ($customAttributes as $data) {
             $headers[] = $data['datafield'];
+            $allMappedHash[$data['attribute']] = $data['datafield'];
         }
-        //write the csv headers
+        $headers[] = 'Email';
+        $headers[] = 'EmailType';
         $fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $headers);
+        /**
+         * END HEADERS.
+         */
+
+
         foreach($customerCollection as $customer){
-            $connectorCustomer =  Mage::getModel('email_connector/connector_customer', $customer);
             $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerId($customer->getId());
             //skip contacts without customer id
             if(!$contactModel->getId())
                 continue;
+            /**
+             * DATA.
+             */
+            $connectorCustomer =  Mage::getModel('email_connector/apiconnector_customer', $mappedHash);
+            $connectorCustomer->setCustomerData($customer);
+            //count number of customers
             $customers[] = $connectorCustomer;
-            //Send wishlist as transactional data
-            if($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $website)){
-                $this->_setCustomerWishList($customer, $website);
-            }
-            $customerData = $connectorCustomer->toCSVArray();
             foreach ($customAttributes as $data) {
                 $attribute = $data['attribute'];
                 $value = $customer->getData($attribute);
-                $connectorCustomer->$attribute = $value;
-                $customerData[] = $value;
+                $connectorCustomer->setData($value);
             }
+            //contact email and email type
+            $connectorCustomer->setData($customer->getEmail());
+            $connectorCustomer->setData('Html');
             // save csv file data for customers
-            $fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $customerData);
+            $fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $connectorCustomer->toCSVArray());
+
+            /**
+             * END DATA.
+             */
 
             //mark the contact as imported
             $contactModel->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED);
@@ -133,6 +151,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             }
 
             $contactModel->save();
+
+            //Send wishlist as transactional data
+            if($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $website)){
+                $this->_setCustomerWishList($customer, $website);
+            }
             $updated++;
         }
         //send wishlist as transactional data
@@ -158,7 +181,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             //archive file on success
             $fileHelper->archiveCSV($customersFile);
         }
-        $this->_countCustomers = $updated;
+        $this->_countCustomers += $updated;
         return;
     }
 

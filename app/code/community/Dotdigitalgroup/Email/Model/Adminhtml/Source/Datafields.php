@@ -11,12 +11,8 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Datafields
         $fields = array();
         $helper = Mage::helper('connector');
 
-        $website = Mage::app()->getRequest()->getParam('website');
-        $client = Mage::getModel('email_connector/apiconnector_client');
-
-        $client->setApiUsername($helper->getApiUsername($website));
-        $client->setApiPassword($helper->getApiPassword($website));
-
+        $website = Mage::app()->getRequest()->getParam('website', 0);
+        $client = $helper->getWebsiteApiClient($website);
 
         /**
          * api get all datafields
