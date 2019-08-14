@@ -2,7 +2,13 @@
 
 class Dotdigitalgroup_Email_Model_Adminhtml_Source_Customer_Attributes_Select
 {
-    public function toOptionArray()
+
+	/**
+	 * customer custom attributes.
+	 *
+	 * @return array
+	 */
+	public function toOptionArray()
     {
 
         $options = array();
@@ -12,8 +18,8 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Customer_Attributes_Select
                 'group_id', 'password_hash', 'prefix', 'rp_token', 'rp_token_create_at', 'website_id');
         $attributes = Mage::getModel('customer/customer')->getAttributes();
 
-        foreach($attributes as $attribute){
-            if($attribute->getFrontendLabel()){
+        foreach ($attributes as $attribute) {
+            if ($attribute->getFrontendLabel()) {
                 $code = $attribute->getAttributeCode();
                 if(!in_array($code, $excluded))
                     $options[] = array(

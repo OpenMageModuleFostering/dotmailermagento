@@ -97,7 +97,4 @@ class Dotdigitalgroup_Email_Model_Connector_Campaign
         return $this->id;
     }
 
-
-
-
 }

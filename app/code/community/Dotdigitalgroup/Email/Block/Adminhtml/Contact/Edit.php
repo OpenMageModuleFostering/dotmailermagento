@@ -2,7 +2,8 @@
 
 class Dotdigitalgroup_Email_Block_Adminhtml_Contact_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
 {
-    public function __construct(){
+    public function __construct()
+    {
         parent::__construct();
         $this->_blockGroup = 'email_connector';
         $this->_controller = 'adminhtml_contact';
@@ -19,10 +20,16 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Contact_Edit extends Mage_Adminhtml_
             }
         ";
     }
-    public function getHeaderText(){
-        if( Mage::registry('contact_data') && Mage::registry('contact_data')->getId() ) {
+
+    /**
+	 * HEader text.
+	 * @return string
+	 */
+    public function getHeaderText()
+    {
+        if ( Mage::registry('contact_data') && Mage::registry('contact_data')->getId() ) {
             return Mage::helper('connnector')->__("Edit Contact '%s'", $this->htmlEscape(Mage::registry('contact_data')->getContact()));
-        }else {
+        } else {
             return Mage::helper('connector')->__('Add Contact');
         }
     }

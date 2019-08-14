@@ -2,7 +2,11 @@
 
 class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Edit extends Mage_Adminhtml_Block_Widget_Form_Container
 {
-    public function __construct(){
+    /**
+	 *   Construct.
+	 */
+    public function __construct()
+    {
         parent::__construct();
         $this->_blockGroup = 'email_connector';
         $this->_controller = 'adminhtml_campaign';
@@ -17,13 +21,18 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Edit extends Mage_Adminhtml
         $this->_formScripts[] = "
             function saveAndContinueEdit(){
                 editForm.submit($('edit_form').action+'back/edit/');
-            }
-        ";
+            }";
     }
-    public function getHeaderText(){
-        if( Mage::registry('email_campaign') && Mage::registry('email_campaign')->getId() ) {
+
+	/**
+	 * Header text for the campaign.
+	 * @return string
+	 */
+    public function getHeaderText()
+    {
+        if ( Mage::registry('email_campaign') && Mage::registry('email_campaign')->getId() ) {
             return Mage::helper('connector')->__("Edit Campaign '%s'", $this->htmlEscape(Mage::registry('email_campaign')->getContact()));
-        }else {
+        } else {
             return Mage::helper('connector')->__('Add Contact');
         }
     }

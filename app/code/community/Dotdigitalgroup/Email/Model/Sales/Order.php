@@ -2,9 +2,18 @@
 
 class Dotdigitalgroup_Email_Model_Sales_Order
 {
-    protected $accounts = array();
-    private $_apiUsername;
-    private $_apiPassword;
+	/**
+	 * @var array
+	 */
+	protected $accounts = array();
+	/**
+	 * @var string
+	 */
+	private $_apiUsername;
+	/**
+	 * @var string
+	 */
+	private $_apiPassword;
 
     /**
      * initial sync the transactional data
@@ -16,9 +25,9 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         // Initialise a return hash containing results of our sync attempt
         $this->_searchAccounts();
 
-        foreach($this->accounts as $account){
+        foreach ($this->accounts as $account) {
             $orders = $account->getOrders();
-            if(count($orders)){
+            if (count($orders)) {
                 $client->setApiUsername($account->getApiUsername())
                     ->setApiPassword($account->getApiPassword());
                 Mage::helper('connector')->log('--------- Order sync ----------');
@@ -36,13 +45,13 @@ class Dotdigitalgroup_Email_Model_Sales_Order
     private function _searchAccounts()
     {
         $helper = Mage::helper('connector');
-        foreach (Mage::app()->getWebsites(true) as $website){
-            if($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, $website)){
+        foreach (Mage::app()->getWebsites(true) as $website) {
+            if ($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED, $website)) {
                 $this->_apiUsername = $helper->getApiUsername($website);
                 $this->_apiPassword = $helper->getApiPassword($website);
                 // limit for orders included to sync
                 $limit = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT, $website);
-                if(!isset($this->accounts[$this->_apiUsername])){
+                if (!isset($this->accounts[$this->_apiUsername])) {
                     $account = Mage::getModel('email_connector/connector_account')
                         ->setApiUsername($this->_apiUsername)
                         ->setApiPassword($this->_apiPassword);
@@ -75,10 +84,10 @@ class Dotdigitalgroup_Email_Model_Sales_Order
                 /**
                  * Add guest to contacts table.
                  */
-                if($salesOrder->getCustomerIsGuest()){
+                if ($salesOrder->getCustomerIsGuest()) {
                     $this->_createGuestContact($salesOrder->getCustomerEmail(), $websiteId, $storeId);
                 }
-                if($salesOrder->getId()){
+                if ($salesOrder->getId()) {
                     $connectorOrder = Mage::getModel('email_connector/connector_order', $salesOrder);
                     $orders[] = $connectorOrder;
                 }
@@ -91,14 +100,22 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         return $orders;
     }
 
-    private function _createGuestContact($email, $websiteId, $storeId){
+	/**
+	 * Create a guest contact.
+	 * @param $email
+	 * @param $websiteId
+	 * @param $storeId
+	 *
+	 * @return bool
+	 */
+	private function _createGuestContact($email, $websiteId, $storeId){
         try{
             $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
             $contactApi = $client->getContactByEmail($email);
-            if(isset($contactApi->message) && $contactApi->message == Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_CONTACT_NOT_FOUND){
+            if (isset($contactApi->message) && $contactApi->message == Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_CONTACT_NOT_FOUND) {
                 //create a new contact.
                 $contactApi = $client->postContacts($email);
-            }elseif(isset($contactApi->message)){
+            } elseif (isset($contactApi->message)) {
                 return false;
             }
             // Add guest to address book
@@ -109,7 +126,7 @@ class Dotdigitalgroup_Email_Model_Sales_Order
                 ->setContactId($contactApi->id)
                 ->setEmailImported(1);
 
-            if(isset($response->message) && $response->message == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED')
+            if (isset($response->message) && $response->message == 'Contact is suppressed. ERROR_CONTACT_SUPPRESSED')
                 $contactModel->setSuppressed(1);
 
             $contactModel->save();

@@ -72,9 +72,9 @@ class Dotdigitalgroup_Email_Model_Connector_Account
      */
     public function setContacts($contacts)
     {
-        if(!empty($this->_contacts)){
+        if (!empty($this->_contacts)) {
             $this->_contacts += $contacts;
-        }else{
+        } else {
             $this->_contacts[] = $contacts;
         }
     }
@@ -216,6 +216,5 @@ class Dotdigitalgroup_Email_Model_Connector_Account
     {
         return $this->_websites;
     }
-
 
 }

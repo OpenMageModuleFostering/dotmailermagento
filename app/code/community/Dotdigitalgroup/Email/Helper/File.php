@@ -13,8 +13,8 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
     private $delimiter; // set in _construct
     private $enclosure; // set in _construct
 
-    public function __construct() {
-
+    public function __construct()
+    {
         $this->_output_folder = Mage::getBaseDir('var') . DS . 'export' . DS . 'email';
         $this->_output_archive_folder = $this->_output_folder . DS . 'archive';
 
@@ -23,23 +23,26 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
     } // end
 
 
-    public function getOutputFolder() {
+    public function getOutputFolder()
+    {
         $this->pathExists($this->_output_folder);
         return $this->_output_folder;
     } // end
 
-    public function getArchiveFolder() {
+    public function getArchiveFolder()
+    {
         $this->pathExists($this->_output_archive_folder);
         return $this->_output_archive_folder;
     } // end
 
     /* Return the full filepath */
-    public  function getFilePath($filename) {
+    public  function getFilePath($filename)
+    {
         return $this->getOutputFolder() . DS . $filename;
     }
 
-    public  function archiveCSV($filename) {
-
+    public  function archiveCSV($filename)
+    {
         $this->moveFile($this->getOutputFolder(), $this->getArchiveFolder(), $filename);
     }
 
@@ -49,8 +52,8 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
      * @param $dest_folder
      * @param $filename
      */
-    public function moveFile($source_folder, $dest_folder, $filename ){
-
+    public function moveFile($source_folder, $dest_folder, $filename )
+    {
         // generate the full file paths
         $source_filepath = $source_folder . DS . $filename;
         $dest_filepath = $dest_folder . DS . $filename;
@@ -66,15 +69,15 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
      * @param $filepath
      * @param $csv
      */
-    public function outputForceQuotesCSV($filepath, $csv) {
-
+    public function outputForceQuotesCSV($filepath, $csv)
+    {
         $fqCsv = $this->arrayToCsv($csv,chr(9),'"',true,false);
         // Open for writing only; place the file pointer at the end of the file. If the file does not exist, attempt to create it.
         $fp = fopen($filepath, "a");
 
         // for some reason passing the preset delimiter/enclosure variables results in error
-        if (fwrite($fp, $fqCsv) == 0 ) //$this->delimiter $this->enclosure
-        {
+	    // $this->delimiter $this->enclosure
+        if (fwrite($fp, $fqCsv) == 0 ) {
             Mage::throwException('Problem writing CSV file');
         }
         fclose($fp);
@@ -87,14 +90,14 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
      * @param $filepath
      * @param $csv
      */
-    public function outputCSV($filepath, $csv) {
-
+    public function outputCSV($filepath, $csv)
+    {
         // Open for writing only; place the file pointer at the end of the file. If the file does not exist, attempt to create it.
         $handle = fopen($filepath, "a");
 
         // for some reason passing the preset delimiter/enclosure variables results in error
-        if (fputcsv($handle, $csv, ',', '"') == 0 ) //$this->delimiter $this->enclosure
-        {
+	    //$this->delimiter $this->enclosure
+        if (fputcsv($handle, $csv, ',', '"') == 0 ) {
             Mage::throwException('Problem writing CSV file');
         }
 
@@ -107,8 +110,9 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
      * If the path does not exist then create it
      * @param string $path
      */
-    public function pathExists($path) {
-        if (!is_dir( $path ) ) {
+    public function pathExists($path)
+    {
+        if (!is_dir($path)) {
             mkdir($path, 0777, true);
         } // end
 
@@ -117,7 +121,8 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
     } // end
 
 
-    protected function arrayToCsv( array &$fields, $delimiter, $enclosure, $encloseAll = false, $nullToMysqlNull = false ) {
+    protected function arrayToCsv( array &$fields, $delimiter, $enclosure, $encloseAll = false, $nullToMysqlNull = false )
+    {
         $delimiter_esc = preg_quote($delimiter, '/');
         $enclosure_esc = preg_quote($enclosure, '/');
 
@@ -129,10 +134,9 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
             }
 
             // Enclose fields containing $delimiter, $enclosure or whitespace
-            if ( $encloseAll || preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field ) ) {
+            if ($encloseAll || preg_match( "/(?:${delimiter_esc}|${enclosure_esc}|\s)/", $field )) {
                 $output[] = $enclosure . str_replace($enclosure, $enclosure . $enclosure, $field) . $enclosure;
-            }
-            else {
+            } else {
                 $output[] = $field;
             }
         }
@@ -160,7 +164,7 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
         $mappedData = Mage::getStoreConfig('connector_data_mapping/customer_data', $store);
         unset($mappedData['custom_attributes']);
         foreach ($mappedData as $key => $value) {
-            if(! $value)
+            if (! $value)
                 unset($mappedData[$key]);
         }
 

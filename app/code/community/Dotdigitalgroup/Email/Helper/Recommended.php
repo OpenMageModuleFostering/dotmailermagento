@@ -106,7 +106,7 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
     public function getDisplayLimitByMode($mode)
     {
         $result = 0;
-        if($mode){
+        if ($mode) {
             switch($mode){
                 case 'related':
                     $result = Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_ITEMS);
@@ -134,9 +134,10 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
         return $result;
     }
 
-    public function getFallbackIds(){
+    public function getFallbackIds()
+    {
         $fallbackIds = Mage::getStoreConfig(self::XML_PATH_FALLBACK_PRODUCTS_ITEMS);
-        if($fallbackIds)
+        if ($fallbackIds)
             return explode(',', Mage::getStoreConfig(self::XML_PATH_FALLBACK_PRODUCTS_ITEMS));
         return array();
     }
@@ -145,22 +146,22 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
     {
         $now = new Zend_Date();
         $period = '';
-        if($config == 'mostviewed')
+        if ($config == 'mostviewed')
             $period = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
         elseif($config == 'bestsellers')
             $period = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_TIME_PERIOD);
         elseif($config == 'recentlyviewed')
             $period = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_TIME_PERIOD);
 
-        if($period == 'week'){
+        if ($period == 'week') {
             $sub = Zend_Date::WEEK;
-        }elseif($period == 'month'){
+        } elseif ($period == 'month') {
             $sub = Zend_Date::MONTH;
-        }elseif($period == 'year'){
+        } elseif ($period == 'year') {
             $sub = Zend_Date::YEAR;
         }
 
-        if(isset($sub)){
+        if (isset($sub)) {
             $period = $now->sub(1, $sub);
 
             return $period->tostring(Zend_Date::ISO_8601);

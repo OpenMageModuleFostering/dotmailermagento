@@ -25,8 +25,8 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Edit_Form extends Mage_Admi
         $form = new Varien_Data_Form(array(
             'id'        => 'edit_form',
             'action'    => $this->getUrl('*/*/save', array('id' => $this->getRequest()->getParam('id'))),
-            'method'    => 'post'
-        ));
+            'method'    => 'post')
+        );
 
         $fieldset = $form->addFieldset('base_fieldset', array(
             'legend'    => Mage::helper('connector')->__('Campaign Information')
@@ -37,8 +37,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Edit_Form extends Mage_Admi
                 'name' => 'id',
             ));
         }
-
-
 
         $fieldset->addField('name', 'text', array(
             'name'      => 'name',
@@ -53,6 +51,4 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Campaign_Edit_Form extends Mage_Admi
 
         return parent::_prepareForm();
     }
-
-
 }

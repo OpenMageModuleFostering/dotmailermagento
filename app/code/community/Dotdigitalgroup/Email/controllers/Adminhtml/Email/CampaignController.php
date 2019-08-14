@@ -5,11 +5,16 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
     /**
      * constructor - set the used module name
      */
-    protected function _construct(){
+    protected function _construct()
+    {
         $this->setUsedModuleName('Dotdigitalgroup_Email');
     }
 
-    public function indexAction(){
+    /**
+	 * Email campaigns.
+	 */
+    public function indexAction()
+    {
         $this->_title($this->__('Email'))
             ->_title($this->__('Manage Campaigns'));
         $this->loadLayout();
@@ -17,6 +22,9 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
         $this->renderLayout();
     }
 
+    /**
+	 * New campaings.
+	 */
     public function newAction()
     {
         // We just forward the new action to a blank edit form
@@ -24,6 +32,9 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
     }
 
 
+    /**
+	 * Edit campign.
+	 */
     public function editAction()
     {
         $contactId  = (int) $this->getRequest()->getParam('id');
@@ -33,28 +44,31 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
             $this->_redirect('*/*/');
             return;
         }
-        if ($data = Mage::getSingleton('adminhtml/session')->getCampaignData(true)){
+        if ($data = Mage::getSingleton('adminhtml/session')->getCampaignData(true)) {
             $contact->setData($data);
         }
         Mage::dispatchEvent('email_campaign_controller_edit_action', array('contact' => $contact));
         $this->loadLayout();
-        if ($contact->getId()){
+        if ($contact->getId()) {
             if (!Mage::app()->isSingleStoreMode() && ($switchBlock = $this->getLayout()->getBlock('store_switcher'))) {
                 $switchBlock->setDefaultStoreName(Mage::helper('connector')->__('Default Values'))
                     ->setSwitchUrl($this->getUrl('*/*/*', array('_current'=>true, 'active_tab'=>null, 'tab' => null, 'store'=>null)));
             }
-        }else{
+        } else {
             $this->getLayout()->getBlock('left')->unsetChild('store_switcher');
         }
         $this->getLayout()->getBlock('head')->setCanLoadExtJs(true);
         $this->renderLayout();
     }
 
-    public function saveAction(){
+    /**
+	 * Save campaign.
+	 */
+    public function saveAction()
+    {
         $storeId        = $this->getRequest()->getParam('store');
         $redirectBack   = $this->getRequest()->getParam('back', false);
         $contactId      = $this->getRequest()->getParam('id');
-
         $data = $this->getRequest()->getPost();
         if ($data) {
             $campaign    = $this->_initAction();
@@ -64,15 +78,13 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
 
             try {
                 $campaign->save();
-                $campaignId = $campaign->getId();
                 $this->_getSession()->addSuccess(Mage::helper('connector')->__('Campaign was saved.'));
             }catch (Mage_Core_Exception $e) {
                 Mage::logException($e);
                 $this->_getSession()->addError($e->getMessage())
                     ->setContactData($campaignData);
                 $redirectBack = true;
-            }
-            catch (Exception $e){
+            }catch (Exception $e){
                 Mage::logException($e);
                 $this->_getSession()->addError(Mage::helper('connector')->__('Error saving campaign'))
                     ->setContactData($campaignData);
@@ -84,12 +96,16 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
                 'id'    => $contactId,
                 '_current'=>true
             ));
-        }else {
+        } else {
             $this->_redirect('*/*/', array('store'=>$storeId));
         }
     }
 
-    public function deleteAction(){
+    /**
+	 * Delete campaign.
+	 */
+    public function deleteAction()
+	{
         if ($id = $this->getRequest()->getParam('id')) {
             $campaign = Mage::getModel('email_connector/campaign')->load($id);
             try {
@@ -103,11 +119,15 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
         $this->getResponse()->setRedirect($this->getUrl('*/*/', array('store'=>$this->getRequest()->getParam('store'))));
     }
 
-    public function massDeleteAction() {
+    /**
+	 * Delete mass campaigns.
+	 */
+    public function massDeleteAction()
+	{
         $campaignIds = $this->getRequest()->getParam('campaign');
         if (!is_array($campaignIds)) {
             $this->_getSession()->addError($this->__('Please select campaigns.'));
-        }else {
+        } else {
             try {
                 foreach ($campaignIds as $campaignId) {
                     $campaign = Mage::getSingleton('email_connector/campaign')->load($campaignId);
@@ -123,11 +143,16 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
         }
         $this->_redirect('*/*/index');
     }
-    public function massResendAction() {
+
+    /**
+	 * Mass mark for resend campaings.
+	 */
+    public function massResendAction()
+    {
         $campaignIds = $this->getRequest()->getParam('campaign');
         if (!is_array($campaignIds)) {
             $this->_getSession()->addError($this->__('Please select campaigns.'));
-        }else {
+        } else {
             try {
                 foreach ($campaignIds as $campaignId) {
                     $campaign = Mage::getSingleton('email_connector/campaign')->load($campaignId);
@@ -145,12 +170,22 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
     }
 
 
-    public function gridAction(){
+    /**
+	 * main page.
+	 */
+    public function gridAction()
+    {
         $this->loadLayout();
         $this->renderLayout();
     }
 
-    protected function _initAction(){
+    /**
+	 * manage the campaigns.
+	 *
+	 * @return Dotdigitalgroup_Email_Model_Campaign
+	 */
+    protected function _initAction()
+    {
         $this->_title($this->__('Newsletter'))
             ->_title($this->__('Manage Campaigns'));
 
@@ -164,14 +199,19 @@ class Dotdigitalgroup_Email_Adminhtml_Email_CampaignController extends Mage_Admi
         return $campaign;
     }
 
-    public function exportCsvAction(){
+    /**
+	 * Export campaigns to CSV file.
+	 */
+    public function exportCsvAction()
+    {
         $fileName   = 'campaign.csv';
-        $content    = $this->getLayout()->createBlock('email_connector/adminhtml_campaign_grid')
+        $content  = $this->getLayout()->createBlock('email_connector/adminhtml_campaign_grid')
             ->getCsvFile();
         $this->_prepareDownloadResponse($fileName, $content);
     }
 
-    protected function _isAllowed(){
+    protected function _isAllowed()
+    {
         return Mage::getSingleton('admin/session')->isAllowed('newsletter/email_connetor/email_connector_campaign');
     }
 

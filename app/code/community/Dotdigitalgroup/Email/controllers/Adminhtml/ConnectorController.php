@@ -13,19 +13,19 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 
         // get all possible datatifileds
         $datafields = Mage::getModel('email_connector/connector_datafield')->getContactDatafields();
-        foreach ($datafields as $key => $datafield){
+        foreach ($datafields as $key => $datafield) {
             $response = $apiModel->postDataFields($datafield);
 
             //ignore existing datafields message
-            if(isset($response->message) && $response->message != Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_API_DATAFILEDS_EXISTS){
+            if (isset($response->message) && $response->message != Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_API_DATAFILEDS_EXISTS) {
                 $result['errors'] = true;
                 $result['message'] .=  ' Datafield ' . $datafield['name'] . ' - '. $response->message . '</br>';
-            }else{
+            } else {
                 $website = $this->getRequest()->getParam('website', false);
-                if($website){
+                if ($website) {
                     $scope = 'website';
                     $scopeId = Mage::app()->getWebsite($website)->getId();
-                }else{
+                } else {
                     $scope = 'default';
                     $scopeId = '0';
                 }
@@ -37,9 +37,9 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
                 Mage::helper('connector')->log('successfully connected : ' . $datafield['name']);
             }
         }
-        if($result['errors']){
+        if ($result['errors']) {
             Mage::getSingleton('adminhtml/session')->addNotice($result['message']);
-        }else{
+        } else {
             Mage::getConfig()->cleanCache();
             Mage::getSingleton('adminhtml/session')->addSuccess('All Datafields Created And Mapped.');
         }
@@ -117,7 +117,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
         $params = $this->getRequest()->getParams();
         $website = $this->getRequest()->getParam('website', 0);
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
-        if(strlen($params['name'])) {
+        if (strlen($params['name'])) {
             $response = $client->postDataFields($params['name'], $params['type']);
             if (isset($response->message)) {
                 Mage::getSingleton('adminhtml/session')->addError($response->message);
@@ -125,7 +125,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
             } else {
                 Mage::getSingleton('adminhtml/session')->addSuccess('Datafield created : ' . $params['name']);
             }
-        }else{
+        } else {
             Mage::getSingleton('adminhtml/session')->addError('Datafield cannot be empty.');
         }
     }
@@ -135,7 +135,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
         $addressBookName = $this->getRequest()->getParam('name');
         $website  = $this->getRequest()->getParam('website', 0);
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
-        if(strlen($addressBookName)) {
+        if (strlen($addressBookName)) {
             $response = $client->PostAddressBooks($addressBookName);
             if(isset($response->message))
                 Mage::getSingleton('adminhtml/session')->addError($response->message);
@@ -148,9 +148,9 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
     public function reimoprtsubscribersAction()
     {
         $updated = Mage::getModel('email_connector/contact')->resetSubscribers();
-        if($updated){
+        if ($updated) {
             Mage::getSingleton('adminhtml/session')->addSuccess('Subscribers updated : ' . $updated);
-        }else{
+        } else {
             Mage::getSingleton('adminhtml/session')->addNotice('No subscribers imported!');
         }
         $this->_redirectReferer();

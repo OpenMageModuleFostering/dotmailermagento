@@ -3,7 +3,14 @@
 class Dotdigitalgroup_Email_Model_Newsletter_Observer
 {
 
-    public function handleNewsletterSubscriberSave(Varien_Event_Observer $observer)
+	/**
+	 * Newslleter subsciber event.
+	 *
+	 * @param Varien_Event_Observer $observer
+	 *
+	 * @return $this
+	 */
+	public function handleNewsletterSubscriberSave(Varien_Event_Observer $observer)
     {
         $subscriber = $observer->getEvent()->getSubscriber();
         $storeId = $subscriber->getStoreId();
@@ -17,7 +24,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
             /**
              * Subscribe a contact
              */
-            if($subscriberStatus == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED){
+            if ($subscriberStatus == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED) {
                 $contactEmail->setSubscriberStatus($subscriberStatus)
                     ->setIsSubscriber(1);
 
@@ -26,26 +33,26 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
                  */
                 $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
                 $apiContact = $client->getContactByEmail($email);
-                if(isset($apiContact->status) && $apiContact->status == 'Suppressed'){
-                    $client->PostContactsResubscribe($email, $apiContact);
+                if (isset($apiContact->status) && $apiContact->status == 'Suppressed') {
+                    $client->PostContactsResubscribe($apiContact);
                 }
-                $client->PostContactsResubscribe($email, $apiContact);
+                $client->PostContactsResubscribe($apiContact);
                 $contactEmail->setSuppressed(null);
-            }else{
+            } else {
                 /**
                  * Unsubscribe contact
                  */
                 $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
-                if(!$contactEmail->getContactId()){
+                if (!$contactEmail->getContactId()) {
                     //if contact id is not set get the contact_id
                     $result = $client->postContacts($email);
                     $contactId = $result->id;
-                }else{
+                } else {
                     $contactId = $contactEmail->getContactId();
                 }
-                if(is_numeric($contactId)){
+                if (is_numeric($contactId)) {
                     $client->deleteAddressBookContact($helper->getSubscriberAddressBook($websiteId), $contactId);
-                }else{
+                } else {
                     Mage::helper('connector')->log('CONTACT ID IS EMPTY : ' . $contactId . ' email : ' . $email);
                 }
                 $contactEmail->setIsSubscriber(null);

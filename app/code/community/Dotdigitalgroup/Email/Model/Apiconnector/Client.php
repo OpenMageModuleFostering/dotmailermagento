@@ -42,8 +42,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     public $result = array('error' => false, 'message' => '');
 
 
-
-    public function __construct(){
+    /**
+	 * constructor.
+	 */
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -54,11 +57,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
      */
     public function validate($apiUsername, $apiPassword)
     {
-        if($apiUsername && $apiPassword){
+        if ($apiUsername && $apiPassword) {
             $this->setApiUsername($apiUsername)
                 ->setApiPassword($apiPassword);
             $accountInfo = $this->getAccountInfo();
-            if(isset($accountInfo->message)){
+            if (isset($accountInfo->message)) {
                 Mage::getSingleton('adminhtml/session')->addError($accountInfo->message);
                 Mage::helper('connector')->log('VALIDATION ERROR :  ' . $accountInfo->message);
                 return false;
@@ -113,7 +116,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         // send contacts to address book
         $result = curl_exec($ch);
         $result = json_decode($result);
-        if(isset($result->message)){
+        if (isset($result->message)) {
             $helper->log('POST ADDRESS BOOK ' . $addressBookId . ', CONTACT IMPORT : ' . ' filename '  . $filename .  ' Username ' . $this->getApiUsername() . $result->message);
             Mage::helper('connector')->log($result);
         }
@@ -135,7 +138,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->buildPostBody($apiContact);
 
         $response = $this->execute();
-        if(isset($response->message)){
+        if (isset($response->message)) {
             Mage::helper('connector')->log('POST ADDRESS BOOK CONTACTS ' . $url . ', ' . $response->message);
             Mage::helper('connector')->log($apiContact->email);
         }
@@ -155,7 +158,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         $this->setUrl($url)
             ->setVerb('DELETE');
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('DELETE ADDRESS BOOK CONTACT ' . $url . ', ' . $response->message);
 
         return $response;
@@ -172,7 +175,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         $this->setUrl($url)
             ->setVerb('GET');
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET CONTACTS IMPORT REPORT  . ' . $url . ' message : ' . $response->message);
         return $response;
     }
@@ -189,7 +192,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb('GET');
 
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET CONTACT BY EMAIL : ' . $email . ' ' . $response->message);
 
         return $response;
@@ -206,7 +209,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb("GET");
 
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET ALL ADDRESS BOOKS : '  . $url . ', ' .  $response->message);
         return $response;
     }
@@ -229,7 +232,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
         $response = $this->execute();
 
-        if(isset($response->message)) {
+        if (isset($response->message)) {
             Mage::helper('connector')->log('POSTADDRESSBOOK ' . $url);
             Mage::helper('connector')->log($response->message);
         }
@@ -248,7 +251,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
         $response = $this->execute();
 
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET CAMPAINGS ' . $response->message . ' api user : '  . $this->getApiUsername());
 
         return $response;
@@ -267,7 +270,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         $url = self::REST_DATA_FILEDS;
         if($type == 'numeric' && !$defaultValue)
             $defaultValue = 0;
-        if(is_string($data)){
+        if (is_string($data)) {
             $data = array(
                 'Name' => $data,
                 'Type' => $type,
@@ -282,9 +285,9 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
         $response = $this->execute();
 
-        if(isset($response->message)){
-            Mage::helper('connector')->log('POST CREATE DATAFIELDS ' . $response->message);
-            Mage::helper('connector')->log($data);
+        if (isset($response->message)) {
+	        Mage::helper('connector')->log('POST CREATE DATAFIELDS ' . $response->message);
+	        Mage::helper('connector')->log($data);
         }
 
         return $response;
@@ -314,7 +317,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb('GET');
 
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET ALL DATAFIELDS ' . $response->message);
 
         return $response;
@@ -355,7 +358,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
         $response = $this->execute();
 
-        if(isset($response->message)){
+        if (isset($response->message)) {
             Mage::helper('connector')->log('DELETE CONTACT : ' . $url . ', ' . $response->message);
         }
         return $response;
@@ -373,7 +376,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb('PUT')
             ->buildPostBody($data);
         $response = $this->execute();
-        if(isset($response->message)){
+        if (isset($response->message)) {
             Mage::helper('connector')->log('ERROR: UPDATE CONTACT DATAFIELD ' . $url . ' message : ' . $response->message);
             Mage::helper('connector')->log($data);
         }
@@ -402,7 +405,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->buildPostBody($data);
 
         $response = $this->execute();
-        if(isset($response->message)){
+        if (isset($response->message)) {
             $helper->log('SENDING CAMPAIGN ' .  $response->message);
             $helper->log($data);
         }
@@ -427,7 +430,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->buildPostBody($data);
 
         $response = $this->execute();
-        if(isset($response->message)){
+        if (isset($response->message)) {
             Mage::helper('connector')->log('CREATE A NEW CONTACT : ' . $email . ' , url ' . $url . ', ' . $response->message);
         }
 
@@ -497,7 +500,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb("GET");
 
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET CONTACTS SUPPRESSED SINSE : ' . $dateString . ' select ' . $select . ' skip : ' . $skip . '   response : ' . $response->message);
 
         return $response;
@@ -512,8 +515,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     public function postContactsTransactionalDataImport($transactionalData, $collectionName = 'Orders')
     {
         $orders = array();
-        foreach($transactionalData as $one){
-            if(isset($one->email)){
+        foreach ($transactionalData as $one) {
+            if (isset($one->email)) {
                 $orders[] = array(
                     'Key' => $one->id,
                     'ContactIdentifier' => $one->email,
@@ -528,9 +531,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
         $result = $this->execute();
 
-        if(isset($result->message)){
+        if (isset($result->message)) {
             Mage::helper('connector')->log(' SEND MULTI TRANSACTIONAL DATA ' . $result->message);
-            //Mage::helper('connector')->log($orders);
         }
 
         return $result;
@@ -538,13 +540,13 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
 
     /**
      *  Adds a single piece of transactional data to a contact.
+     *
      * @param $data
      * @param string $name
      * @return null
      */
     public function postContactsTransactionalData($data, $name = 'Orders')
     {
-
         $getData = $this->getContactsTransactionalDataByKey($name, $data->id);
         if(isset($getData->message) && $getData->message == self::REST_TRANSACTIONAL_DATA_NOT_EXISTS){
             $url  = self::REST_TRANSACTIONAL_DATA . $name;
@@ -580,9 +582,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         $url = self::REST_TRANSACTIONAL_DATA . $name . '/' . $key;
         $this->setUrl($url)
             ->setVerb('GET');
-
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('GET CONTACTS TRANSACTIONAL DATA  name: ' . $name . ' key: ' . $key . ' ' .  $response->message);
 
         return $response;
@@ -599,9 +600,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
         $url =  'https://apiconnector.com/v2/contacts/' . $email . '/transactional-data/' . $collectionName ;
         $this->setUrl($url)
             ->setVerb('DELETE');
-
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('DELETE CONTACT TRANSACTIONAL DATA : ' . $url . ' ' . $response->message);
 
         return $response;
@@ -618,7 +618,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb('GET');
         $response = $this->execute();
 
-        if(isset($response->message)){
+        if (isset($response->message)) {
             Mage::helper('connector')->log('GET ACCOUNT INFO for api user : ' . $this->getApiUsername() . ' ' . $response->message);
         }
 
@@ -639,7 +639,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
             ->setVerb('POST')
             ->buildPostBody($data);
         $response = $this->execute();
-        if(isset($response->message))
+        if (isset($response->message))
             Mage::helper('connector')->log('POST SMS MESSAGE SEND to ' . $telephoneNumber . ' message: ' . $message . ' error: ' . $response->message);
 
         return $response;
@@ -655,39 +655,35 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Client extends Dotdigitalgroup_Em
     public function deleteAddressBookContactsInbulk($addressBookId, $contactIds)
     {
         $url = 'https://apiconnector.com/v2/address-books/' . $addressBookId . '/contacts/inbulk';
-
         $data = array('ContactIds' => array($contactIds[0]));
-
         $this->setUrl($url)
             ->setVerb('DELETE')
             ->buildPostBody($data);
 
         $result = $this->execute();
-        if(isset($result->message)){
+        if (isset($result->message)) {
             Mage::helper('connector')->log('DELETE BULK ADDRESS BOOK CONTACTS ' . $result->message . ' address book ' . $addressBookId);
-
         }
         return $result;
     }
 
     /**
      * Resubscribes a previously unsubscribed contact.
-     * @param $email
+     *
      * @param $apiContact
      */
-    public function PostContactsResubscribe($email, $apiContact)
+    public function PostContactsResubscribe($apiContact)
     {
         $url = self::REST_CONTACTS_RESUBSCRIBE;
         $data = array(
           'UnsubscribedContact' => $apiContact
         );
-
         $this->setUrl($url)
             ->setVerb("POST")
             ->buildPostBody($data);
 
         $response = $this->execute();
-        if(isset($response->message)){
+        if (isset($response->message)) {
             Mage::helper('connector')->log('Resubscribe : ' . $url . ', message :' .  $response->message);
             Mage::helper('connector')->log($data);
         }

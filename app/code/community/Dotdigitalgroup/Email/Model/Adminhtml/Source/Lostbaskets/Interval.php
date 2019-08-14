@@ -18,9 +18,9 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Lostbaskets_Interval
     {
         $result = $row = array();
         $i = 0;
-        foreach($this->_times as $one){
+        foreach ($this->_times as $one) {
 
-            if($i == 0)
+            if ($i == 0)
                 $row = array(
                     'value' => $one,
                     'label' => Mage::helper('connector')->__($one . ' Hour')

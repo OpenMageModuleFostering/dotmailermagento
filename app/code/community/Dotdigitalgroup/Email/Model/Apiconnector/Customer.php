@@ -9,16 +9,31 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
     protected $_mapping_hash;
 
 
-    // class constructor - takes
-    public function __construct( $mappingHash){
+	/**
+	 * constructor, mapping hash to map.
+	 *
+	 * @param $mappingHash
+	 */
+	public function __construct( $mappingHash)
+	{
         $this->setMappigHash($mappingHash);
     }
 
-    public function setData($data)
+	/**
+	 * Set key value data.
+	 *
+	 * @param $data
+	 */
+	public function setData($data)
     {
         $this->customerData[] = $data;
     }
 
+    /**
+	 * Set customer data.
+	 *
+	 * @param Mage_Customer_Model_Customer $customer
+	 */
     public function setCustomerData(Mage_Customer_Model_Customer $customer)
     {
         $this->customer = $customer;
@@ -42,166 +57,338 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
         }
     }
 
-    public function getCustomerId()
+	/**
+	 * get customer id.
+	 *
+	 * @return mixed
+	 */
+	public function getCustomerId()
     {
         return $this->customer->getId();
     }
 
-    public function getFirstname(){
+	/**
+	 * get first name.
+	 *
+	 * @return mixed
+	 */
+	public function getFirstname(){
         return $this->customer->getFirstname();
     }
 
-    public function getLastname()
+	/**
+	 * get last name.
+	 *
+	 * @return mixed
+	 */
+	public function getLastname()
     {
         return $this->customer->getLastname();
     }
 
-    public function getDob()
+	/**
+	 * get date of birth.
+	 *
+	 * @return mixed
+	 */
+	public function getDob()
     {
         return $this->customer->getDob();
     }
-    public function getGender(){
+
+	/**
+	 * get customer gender.
+	 *
+	 * @return bool|string
+	 */
+	public function getGender(){
         return $this->_getCustomerGender();
     }
 
-    public function getPrefix()
+	/**
+	 * get customer prefix.
+	 *
+	 * @return mixed
+	 */
+	public function getPrefix()
     {
         return $this->customer->getPrefix();
     }
 
-    public function getSuffix()
+	/**
+	 * get customer suffix.
+	 *
+	 * @return mixed
+	 */
+	public function getSuffix()
     {
         return $this->customer->getSuffix();
     }
 
-    public function getWebsiteName()
+	/**
+	 * get website name.
+	 *
+	 * @return string
+	 */
+	public function getWebsiteName()
     {
         return $this->_getWebsiteName();
     }
 
-    public function getStoreName()
+	/**
+	 * get store name.
+	 *
+	 * @return null|string
+	 */
+	public function getStoreName()
     {
         return $this->_getStoreName();
     }
 
-    public function getCreatedAt()
+	/**
+	 * get customer created at date.
+	 *
+	 * @return mixed
+	 */
+	public function getCreatedAt()
     {
         return $this->customer->getCreatedAt();
     }
 
-    public function getLastLoggedDate()
+	/**
+	 * get customer last logged in date.
+	 *
+	 * @return mixed
+	 */
+	public function getLastLoggedDate()
     {
         return $this->customer->getLastLoggedDate();
     }
 
-    public function getCustomerGroup()
+	/**
+	 * get cutomer group.
+	 *
+	 * @return string
+	 */
+	public function getCustomerGroup()
     {
         return $this->_getCustomerGroup();
     }
 
-    public function getBillingAddress1()
+	/**
+	 * get billing address line 1.
+	 *
+	 * @return string
+	 */
+	public function getBillingAddress1()
     {
         return $this->_getStreet($this->customer->getBillingStreet(), 1);
     }
 
-    public function getBillingAddress2()
+	/**
+	 * get billing address line 2.
+	 *
+	 * @return string
+	 */
+	public function getBillingAddress2()
     {
         return $this->_getStreet($this->customer->getBillingStreet(), 2);
     }
 
-    public function getBillingCity()
+	/**
+	 * get billing city.
+	 *
+	 * @return mixed
+	 */
+	public function getBillingCity()
     {
         return $this->customer->getBillingCity();
     }
 
-    public function getBillingCountry()
+	/**
+	 * get billing country.
+	 *
+	 * @return mixed
+	 */
+	public function getBillingCountry()
     {
         return $this->customer->getBillingCountryCode();
     }
 
-    public function getBillingState()
+	/**
+	 * get billing state.
+	 *
+	 * @return mixed
+	 */
+	public function getBillingState()
     {
         return $this->customer->getBillingRegion();
     }
 
-    public function getBillingPostcode()
+	/**
+	 * get billing postcode.
+	 *
+	 * @return mixed
+	 */
+	public function getBillingPostcode()
     {
         return $this->customer->getBillingPostcode();
     }
 
-    public function getBillingTelephone()
+	/**
+	 * get billing phone.
+	 *
+	 * @return mixed
+	 */
+	public function getBillingTelephone()
     {
         return $this->customer->getBillingTelephone();
     }
 
-    public function getDeliveryAddress1()
+	/**
+	 * get delivery address line 1.
+	 *
+	 * @return string
+	 */
+	public function getDeliveryAddress1()
     {
         return $this->_getStreet($this->customer->getShippingStreet(), 1);
     }
 
-    public function getDeliveryAddress2()
+	/**
+	 * get delivery addrss line 2.
+	 *
+	 * @return string
+	 */
+	public function getDeliveryAddress2()
     {
         return $this->_getStreet($this->customer->getShippingStreet(), 2);
     }
 
-    public function getDeliveryCity()
+	/**
+	 * get delivery city.
+	 *
+	 * @return mixed
+	 */
+	public function getDeliveryCity()
     {
         return $this->customer->getShippingCity();
     }
 
-    public function getDeliveryCountry(){
+	/**
+	 * get delivery country.
+	 *
+	 * @return mixed
+	 */
+	public function getDeliveryCountry(){
         return $this->customer->getShippingCountryCode();
     }
 
-    public function getDeliveryState()
+	/**
+	 * get delivery state.
+	 *
+	 * @return mixed
+	 */
+	public function getDeliveryState()
     {
         return $this->customer->getShippingRegion();
     }
 
-    public function getDeliveryPostcode()
+	/**
+	 * get delivery postcode.
+	 *
+	 * @return mixed
+	 */
+	public function getDeliveryPostcode()
     {
         return $this->customer->getShippingPostcode();
     }
 
-    public function getDeliveryTelephone(){
+	/**
+	 * get delivery phone.
+	 *
+	 * @return mixed
+	 */
+	public function getDeliveryTelephone(){
         return $this->customer->getShippingTelephone();
     }
 
-    public function getNumberOfOrders()
+	/**
+	 * get numbser of orders.
+	 *
+	 * @return mixed
+	 */
+	public function getNumberOfOrders()
     {
         return $this->customer->getNumberOfOrders();
     }
 
-    public function getAverageOrderValue()
+	/**
+	 * get average order value.
+	 *
+	 * @return mixed
+	 */
+	public function getAverageOrderValue()
     {
         return $this->customer->getAverageOrderValue();
     }
 
-    public function getTotalSpend()
+	/**
+	 * get total spend.
+	 *
+	 * @return mixed
+	 */
+	public function getTotalSpend()
     {
         return $this->customer->getTotalSpend();
     }
 
-    public function getLastOrderDate()
+	/**
+	 * get last order date.
+	 *
+	 * @return mixed
+	 */
+	public function getLastOrderDate()
     {
         return $this->customer->getLastOrderDate();
     }
 
-    public function getLastOrderId()
+	/**
+	 * get last order date.
+	 *
+	 * @return mixed
+	 */
+	public function getLastOrderId()
     {
         return $this->customer->getLastOrderId();
     }
-    public function getId()
+
+	/**
+	 * get cutomer id.
+	 *
+	 * @return mixed
+	 */
+	public function getId()
     {
         return $this->customer->getId();
     }
 
-    public function getTitle()
+	/**
+	 * get customer title.
+	 *
+	 * @return mixed
+	 */
+	public function getTitle()
     {
         return $this->customer->getPrefix();
     }
 
-    public function getTotalRefund()
+	/**
+	 * get total refund value.
+	 *
+	 * @return float|int
+	 */
+	public function getTotalRefund()
     {
         $orders = Mage::getResourceModel('sales/order_collection')
             ->addAttributeToFilter('customer_id', $this->customer->getId())
@@ -215,15 +402,27 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
         return $totalRefunded;
     }
 
-    public function toCSVArray()
+	/**
+	 * export to CSV.
+	 *
+	 * @return mixed
+	 */
+	public function toCSVArray()
     {
         $result = $this->customerData;
         return $result;
     }
 
-    private function _getCustomerGender(){
+	/**
+	 * customer gender.
+	 *
+	 * @return bool|string
+	 * @throws Mage_Core_Exception
+	 */
+	private function _getCustomerGender()
+    {
         $genderId = $this->customer->getGender();
-        if(is_numeric($genderId)){
+        if (is_numeric($genderId)) {
             $gender = Mage::getResourceModel('customer/customer')
                 ->getAttribute('gender')
                 ->getSource()
@@ -286,7 +485,14 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
         return '';
     }
 
-    public function setMappigHash( $value)
+	/**
+	 * mapping hash value.
+	 *
+	 * @param $value
+	 *
+	 * @return $this
+	 */
+	public function setMappigHash($value)
     {
         $this->_mapping_hash = $value;
         return $this;

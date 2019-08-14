@@ -31,12 +31,16 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
     //error messages
     const SEND_EMAIL_CONTACT_ID_MISSING = 'Error : missing contact id - will try later to send ';
 
-    public $transactionalClient;
+	/**
+	 * @var object
+	 */
+	public $transactionalClient;
 
     /**
      * constructor
      */
-    public function _construct(){
+    public function _construct()
+    {
         parent::_construct();
         $this->_init('email_connector/campaign');
 
@@ -46,10 +50,11 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
     /**
      * @return $this|Mage_Core_Model_Abstract
      */
-    protected function _beforeSave(){
+    protected function _beforeSave()
+    {
         parent::_beforeSave();
         $now = Mage::getSingleton('core/date')->gmtDate();
-        if ($this->isObjectNew()){
+        if ($this->isObjectNew()) {
             $this->setCreatedAt($now);
         }
         $this->setUpdatedAt($now);
@@ -67,9 +72,9 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
             ->addFieldToFilter('quote_id', $quoteId)
             ->addFieldToFilter('store_id', $storeId);
 
-        if($collection->count()){
+        if ($collection->count()) {
             return $collection->getFirstItem();
-        }else{
+        } else {
             $this->setQuoteId($quoteId)
                 ->setStoreId($storeId);
         }
@@ -93,23 +98,23 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
             $storeName = $store->getName();
             $websiteName = $store->getWebsite()->getName();
             $campaignId = $campaign->getCampaignId();
-            if(!$campaignId){
+            if (!$campaignId) {
                 $campaign->setMessage('Missing campaign id: ' . $campaignId)
                     ->setIsSent(1)
                     ->save();
                 continue;
-            }elseif(!$email){
+            } elseif (!$email) {
                 $campaign->setMessage('Missing email : ' . $email)
                     ->setIsSent(1)
                     ->save();
             }
             try{
-                if($campaign->getEventName() == 'Lost Basket'){
+                if ($campaign->getEventName() == 'Lost Basket') {
                     $client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
                     $contactId = Mage::helper('connector')->getContactId($campaign->getEmail(), $websiteId);
                     Mage::helper('connector')->log($contactId);
                     $response = $client->postCampaignsSend($campaignId, array($contactId));
-                    if(isset($response->message)){
+                    if (isset($response->message)) {
                         //update  the failed to send email message
                         $campaign->setMessage($response->message)->setIsSent(1)->save();
                     }
@@ -121,7 +126,7 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
                         ->save();
 
                     continue;
-                }elseif($campaign->getEventName() == 'New Customer Account'){
+                } elseif ($campaign->getEventName() == 'New Customer Account') {
 
                     $contactId = Mage::helper('connector/transactional')->getContactId($campaign->getEmail(), $websiteId);
                     $customerId = $campaign->getCustomerId();
@@ -147,10 +152,10 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
                     );
                     $this->transactionalClient->updateContactDatafieldsByEmail($email, $data);
                     $response = $this->transactionalClient->postCampaignsSend($campaignId, array($contactId));
-                    if(isset($response->message)){
+                    if (isset($response->message)) {
                         //update  the failed to send email message
                         $campaign->setMessage($response->message)->setIsSent(1)->save();
-                    }else{
+                    } else {
                         $now = Mage::getSingleton('core/date')->gmtDate();
                         //record suscces
                         $campaign->setIsSent(1)
@@ -158,15 +163,15 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
                             ->setSentAt($now)
                             ->save();
                     }
-                }else{
+                } else {
                     // transactional
                     $orderModel = Mage::getModel("sales/order")->loadByIncrementId($campaign->getOrderIncrementId());
                     $contactId = Mage::helper('connector/transactional')->getContactId($campaign->getEmail(), $websiteId);
-                    if(is_numeric($contactId)){
-                        if($orderModel->getCustomerId()){
+                    if (is_numeric($contactId)) {
+                        if ($orderModel->getCustomerId()) {
                             $firstname = $orderModel->getCustomerFirstname();
                             $lastname = $orderModel->getCustomerLastname();
-                        }else{
+                        } else {
                             $billing = $orderModel->getBillingAddress();
                             $firstname = $billing->getFirstname();
                             $lastname = $billing->getLastname();
@@ -191,10 +196,10 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
                         $this->transactionalClient->updateContactDatafieldsByEmail($email, $data);
                     }
                     $response = $this->transactionalClient->postCampaignsSend($campaignId, array($contactId));
-                    if(isset($response->message)){
+                    if (isset($response->message)) {
                         //update  the failed to send email message
                         $campaign->setMessage($response->message)->save();
-                    }else{
+                    } else {
                         $now = Mage::getSingleton('core/date')->gmtDate();
                         //record suscces
                         $campaign->setIsSent(1)
@@ -214,11 +219,11 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
     /**
      * @return mixed
      */
-    private function _getEmailCampaigns(){
+    private function _getEmailCampaigns()
+    {
         $emailCollection = $this->getCollection();
         $emailCollection->addFieldToFilter('is_sent', array('null' => true))
-            ->addFieldToFilter('campaign_id', array('notnull' => true))
-        ;
+            ->addFieldToFilter('campaign_id', array('notnull' => true));
         $emailCollection->getSelect()->order('campaign_id');
 
         return $emailCollection;

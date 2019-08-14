@@ -18,9 +18,9 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Datafields
          * api get all datafields
          */
         $savedDatafields = Mage::registry('datafields');
-        if($savedDatafields){
+        if ($savedDatafields) {
             $datafields = $savedDatafields;
-        }else{
+        } else {
             $datafields = $client->getDataFields();
             Mage::register('datafields',  $datafields);
         }
@@ -28,7 +28,7 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Datafields
         // Add a "Do Not Map" Option
         $fields[] = array('value' => 0, 'label' => Mage::helper('connector')->__('-- Please Select --'));
 
-        if(isset($datafields->message)){
+        if (isset($datafields->message)) {
             $fields[] = array('value' => 0, 'label' => $datafields->message);
         }
 

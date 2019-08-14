@@ -51,7 +51,7 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME     = 'connector_data_mapping/customer_data/store_name';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_TOTALREFUND   = 'connector_data_mapping/customer_data/total_refund';
     // Dynamic
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE       = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
 
     /**
      * ADVANCED SECTION.

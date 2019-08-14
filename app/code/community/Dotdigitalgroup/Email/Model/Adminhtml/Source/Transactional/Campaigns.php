@@ -3,16 +3,21 @@
 class Dotdigitalgroup_Email_Model_Adminhtml_Source_Transactional_Campaigns
 {
 
-    // Returns the account's datafields
-    public function toOptionArray()
+	/**
+	 * Returns the account's datafields.
+	 *
+	 * @return array
+	 * @throws Mage_Core_Exception
+	 */
+	public function toOptionArray()
     {
         $fields = array();
         $client = Mage::getModel('email_connector/apiconnector_client');
 
         $websiteName = Mage::app()->getRequest()->getParam('website', false);
-        if($websiteName){
+        if ($websiteName) {
             $website = Mage::app()->getWebsite($websiteName);
-        }else{
+        } else {
             $website = 0;
         }
         $client->setApiUsername(Mage::helper('connector/transactional')->getApiUsername($website));
@@ -20,15 +25,15 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Transactional_Campaigns
 
         $savedCampaigns = Mage::registry('savedcampigns');
 
-        if($savedCampaigns){
+        if ($savedCampaigns) {
             $campaigns = $savedCampaigns;
-        }else{
+        } else {
             $campaigns = $client->getCampaigns();
             Mage::register('savedcampigns', $campaigns);
         }
 
         $fields[] = array('value' => '0', 'label' => Mage::helper('connector')->__('-- Use system default --'));
-        foreach ($campaigns as $one){
+        foreach ($campaigns as $one) {
             if(isset($one->id))
                 $fields[] = array('value' => $one->id, 'label' => Mage::helper('connector')->__($one->name));
         }

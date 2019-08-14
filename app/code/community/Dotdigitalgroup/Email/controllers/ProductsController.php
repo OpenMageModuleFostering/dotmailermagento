@@ -5,17 +5,17 @@ class Dotdigitalgroup_Email_ProductsController extends Mage_Core_Controller_Fron
     public function preDispatch()
     {
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
-        if($this->getRequest()->getActionName() != 'push'){
+        if ($this->getRequest()->getActionName() != 'push') {
             $orderId = $this->getRequest()->getParam('order_id', false);
-            if($orderId){
+            if ($orderId) {
                 $order = Mage::getModel('sales/order')->load($orderId);
-                if($order->getId()){
+                if ($order->getId()) {
                     Mage::app()->setCurrentStore($order->getStoreId());
-                }else{
+                } else {
                     Mage::helper('connector')->log('Dynamic : order not found: ' . $orderId);
                     exit;
                 }
-            }else{
+            } else {
                 Mage::helper('connector')->log('Dynamic : order_id missing :' . $orderId);
                 exit;
             }

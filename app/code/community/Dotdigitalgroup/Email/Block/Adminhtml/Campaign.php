@@ -2,7 +2,11 @@
 
 class Dotdigitalgroup_Email_Block_Adminhtml_Campaign extends Mage_Adminhtml_Block_Widget_Grid_Container
 {
-    public function __construct(){
+    /**
+	 * Set the template.
+	 */
+    public function __construct()
+    {
         $this->_controller         = 'adminhtml_campaign';
         $this->_blockGroup         = 'email_connector';
         parent::__construct();

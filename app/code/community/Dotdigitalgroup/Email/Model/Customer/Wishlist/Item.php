@@ -9,7 +9,12 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
     protected   $total_value_of_product;
 
 
-    public function __construct($product)
+	/**
+	 * construnctor.
+	 *
+	 * @param $product
+	 */
+	public function __construct($product)
     {
         $this->setSku($product->getSku());
         $this->setName($product->getName());

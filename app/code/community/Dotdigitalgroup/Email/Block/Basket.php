@@ -4,11 +4,18 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
 {
     protected $_quote;
 
+    /**
+	 * Basket itmes.
+	 *
+	 * @return mixed
+	 * @throws Exception
+	 * @throws Mage_Core_Exception
+	 */
     public function getBasketItems()
     {
         $params = $this->getRequest()->getParams();
 
-        if(!isset($params['email']) && !isset($params['code']))
+        if (!isset($params['email']) && !isset($params['code']))
             exit();
         Mage::helper('connector')->auth($params['code']);
 
@@ -17,7 +24,7 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $customer = Mage::getModel('customer/customer');
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId())->loadByEmail($email);
 
-        if(! $customer->getId()){
+        if (! $customer->getId()) {
             Mage::helper('connector')->log('Lost basket : customer not found : ' . $email);
             exit();
         }
@@ -26,19 +33,23 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
             ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('items_count', array('gt' => 0))
             ->addFieldToFilter('customer_email', $email)
-            ->setOrder('updated_at' , 'DESC')
-            ->setPageSize(1)
-        ;
+            ->setOrder('updated_at', 'DESC')
+            ->setPageSize(1);
 
         $quoteModel = $quoteModel->getFirstItem();
         $this->_quote = $quoteModel;
 
-        $store_id = $quoteModel->getStoreId();
-        Mage::app()->setCurrentStore($store_id);
+        $storeId = $quoteModel->getStoreId();
+        Mage::app()->setCurrentStore($storeId);
 
         return $quoteModel->getAllItems();
     }
 
+    /**
+	 * Grand total.
+	 *
+	 * @return mixed
+	 */
     public function getGrandTotal()
     {
         return $this->_quote->getGrandTotal();

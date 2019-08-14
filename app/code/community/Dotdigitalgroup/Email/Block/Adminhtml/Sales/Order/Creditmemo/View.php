@@ -2,10 +2,6 @@
 class Dotdigitalgroup_Email_Block_Adminhtml_Sales_Order_Creditmemo_View extends Mage_Adminhtml_Block_Widget_Form_Container
 {
 
-    /**
-     * Add & remove control buttons
-     *
-     */
     public function __construct()
     {
         $this->_objectId    = 'creditmemo_id';
@@ -161,10 +157,12 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Sales_Order_Creditmemo_View extends 
     }
 
     /**
-     * Update 'back' button url
-     *
-     * @return Mage_Adminhtml_Block_Widget_Container | Mage_Adminhtml_Block_Sales_Order_Creditmemo_View
-     */
+	 * Update 'back' button url.
+	 *
+	 * @param $flag
+	 *
+	 * @return $this|Mage_Adminhtml_Block_Widget_Container
+	 */
     public function updateBackButtonUrl($flag)
     {
         if ($flag) {

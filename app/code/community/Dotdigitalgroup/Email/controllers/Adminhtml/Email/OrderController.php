@@ -2,7 +2,10 @@
 
 class Dotdigitalgroup_Email_Adminhtml_Email_OrderController extends Mage_Adminhtml_Controller_Action
 {
-    public function indexAction()
+	/**
+	 * main page.
+	 */
+	public function indexAction()
     {
         $this->loadLayout();
         $this->_setActiveMenu('email_connector');
@@ -10,7 +13,6 @@ class Dotdigitalgroup_Email_Adminhtml_Email_OrderController extends Mage_Adminht
         $this->getLayout()->getBlock('head')->setTitle('Connector Orders');
         $this->renderLayout();
     }
-
 
     /**
      * Check currently called action by permissions for current user

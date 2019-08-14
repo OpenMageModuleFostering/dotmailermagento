@@ -3,14 +3,24 @@
 class Dotdigitalgroup_Email_Block_Recommended_Recentlyviewed extends Mage_Core_Block_Template
 {
 
-    protected function _prepareLayout()
+	/**
+	 * Prepare layout, set template.
+	 * @return Mage_Core_Block_Abstract|void
+	 */
+	protected function _prepareLayout()
     {
         if ($root = $this->getLayout()->getBlock('root')) {
             $root->setTemplate('page/blank.phtml');
         }
     }
 
-    public function getLoadedProductCollection()
+	/**
+	 * Products collection.
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getLoadedProductCollection()
     {
         $productsToDisplay = array();
         $mode = $this->getRequest()->getActionName();
@@ -37,13 +47,24 @@ class Dotdigitalgroup_Email_Block_Recommended_Recentlyviewed extends Mage_Core_B
     }
 
 
-    public function getMode()
+	/**
+	 * Display mode type.
+	 *
+	 * @return mixed|string
+	 */
+	public function getMode()
     {
         return Mage::helper('connector/recommended')->getDisplayType();
 
     }
 
-    public function getPriceHtml($product)
+	/**
+	 * Price html.
+	 * @param $product
+	 *
+	 * @return string
+	 */
+	public function getPriceHtml($product)
     {
         $this->setTemplate('connector/product/price.phtml');
         $this->setProduct($product);

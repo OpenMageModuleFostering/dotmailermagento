@@ -1,13 +1,20 @@
 <?php
 class Dotdigitalgroup_Email_Block_Adminhtml_System_Url_Orderupdate extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
-    /** label */
-    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
+	/**
+	 * Generate the urls.
+	 *
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 * @throws Mage_Core_Exception
+	 */
+	protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
         $website = Mage::app()->getRequest()->getParam('website', false);
 
-        if($website){
+        if ($website) {
             $website = Mage::app()->getWebsite($website);
             $baseUrl  = $website->getConfig('web/secure/base_url');
         }

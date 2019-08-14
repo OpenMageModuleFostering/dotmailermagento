@@ -2,7 +2,10 @@
 
 class Dotdigitalgroup_Email_Adminhtml_Email_AutomationController extends Mage_Adminhtml_Controller_Action
 {
-    public function indexAction()
+	/**
+	 * Main page for automation studio. Must be authinticated.
+	 */
+	public function indexAction()
     {
 
         $this->_title($this->__('Automation Studio'));
@@ -23,20 +26,20 @@ class Dotdigitalgroup_Email_Adminhtml_Email_AutomationController extends Mage_Ad
         $this->renderLayout();
     }
 
-    protected function _isAllowed(){
-
+    protected function _isAllowed()
+    {
         return Mage::getSingleton('admin/session')->isAllowed('email_connector/automation_studio');
     }
 
     /**
      * Generate new token and connect from the admin.
      *
-        POST httpsː//my.dotmailer.com/OAuth2/Tokens.ashx HTTP/1.1
-        Content-Type: application/x-www-form-urlencoded
-        client_id=QVNY867m2DQozogTJfUmqA%253D%253D&
-        redirect_uri=https%3a%2f%2flocalhost%3a10999%2fcallback.aspx
-        &client_secret=SndpTndiSlhRawAAAAAAAA%253D%253D
-        &grant_type=authorization_code
+     *   POST httpsː//my.dotmailer.com/OAuth2/Tokens.ashx HTTP/1.1
+     *   Content-Type: application/x-www-form-urlencoded
+     *   client_id=QVNY867m2DQozogTJfUmqA%253D%253D&
+     *   redirect_uri=https%3a%2f%2flocalhost%3a10999%2fcallback.aspx
+     *   &client_secret=SndpTndiSlhRawAAAAAAAA%253D%253D
+     *   &grant_type=authorization_code
      */
     public function generatetokenAction()
     {
@@ -44,7 +47,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_AutomationController extends Mage_Ad
         $adminUser = Mage::getSingleton('admin/session')->getUser();
         $refreshToken = Mage::getSingleton('admin/user')->load($adminUser->getId())->getRefreshToken();
 
-        if($refreshToken){
+        if ($refreshToken) {
             $code = Mage::helper('connector')->getCode();
             $params = 'client_id=' . Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_ID) .
                 '&client_secret=' . Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID) .
@@ -77,14 +80,17 @@ class Dotdigitalgroup_Email_Adminhtml_Email_AutomationController extends Mage_Ad
             $token = $response->access_token;
             return $token;
 
-        }else{
+        } else {
             Mage::getSingleton('adminhtml/session')->addNotice('Please Connect To Access The Page.');
         }
 
         $this->_redirect('*/system_config/edit', array('section' => 'connector_api_credentials'));
     }
 
-    public function disconnectAction()
+	/**
+	 * Disconnect and remote the refresh token.
+	 */
+	public function disconnectAction()
     {
         try {
             $adminUser = Mage::getSingleton('admin/session')->getUser();

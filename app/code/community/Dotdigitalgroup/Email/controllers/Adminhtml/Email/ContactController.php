@@ -9,7 +9,11 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
         $this->setUsedModuleName('Dotdigitalgroup_Email');
     }
 
-    public function indexAction(){
+	/**
+	 * main page.
+	 */
+	public function indexAction()
+    {
         $this->_title($this->__('Email'))
             ->_title($this->__('Manage Contacts'));
         $this->loadLayout();
@@ -17,14 +21,10 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
         $this->renderLayout();
     }
 
-    public function newAction()
-    {
-        // We just forward the new action to a blank edit form
-        $this->_forward('edit');
-    }
-
-
-    public function editAction()
+	/**
+	 * Edit contact.
+	 */
+	public function editAction()
     {
         $contactId  = (int) $this->getRequest()->getParam('id');
         $contact = $this->_initAction();
@@ -33,24 +33,19 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
             $this->_redirect('*/*/');
             return;
         }
-        if ($data = Mage::getSingleton('adminhtml/session')->getContactData(true)){
-            $contact->setData($data);
-        }
+        $contactEmail = Mage::getModel('email_connector/apiconnector_contact')->syncContact();
+        if ($contactEmail)
+            Mage::getSingleton('adminhtml/session')->addSuccess('Successfully synced : ' . $contactEmail);
+
         Mage::dispatchEvent('email_contact_controller_edit_action', array('contact' => $contact));
-        $this->loadLayout();
-        if ($contact->getId()){
-            if (!Mage::app()->isSingleStoreMode() && ($switchBlock = $this->getLayout()->getBlock('store_switcher'))) {
-                $switchBlock->setDefaultStoreName(Mage::helper('connector')->__('Default Values'))
-                    ->setSwitchUrl($this->getUrl('*/*/*', array('_current'=>true, 'active_tab'=>null, 'tab' => null, 'store'=>null)));
-            }
-        }else{
-            $this->getLayout()->getBlock('left')->unsetChild('store_switcher');
-        }
-        $this->getLayout()->getBlock('head')->setCanLoadExtJs(true);
-        $this->renderLayout();
+
+        $this->_redirect('*/*');
     }
 
-    public function saveAction(){
+	/**
+	 * Save contact.
+	 */
+	public function saveAction(){
         $storeId        = $this->getRequest()->getParam('store');
         $redirectBack   = $this->getRequest()->getParam('back', false);
         $contactId      = $this->getRequest()->getParam('id');
@@ -71,8 +66,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
                 $this->_getSession()->addError($e->getMessage())
                     ->setContactData($contactData);
                 $redirectBack = true;
-            }
-            catch (Exception $e){
+            }catch (Exception $e){
                 Mage::logException($e);
                 $this->_getSession()->addError(Mage::helper('connector')->__('Error saving contact'))
                     ->setContactData($contactData);
@@ -84,13 +78,16 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
                 'id'    => $contactId,
                 '_current'=>true
             ));
-        }
-        else {
+        } else {
             $this->_redirect('*/*/', array('store'=>$storeId));
         }
     }
 
-    public function deleteAction(){
+	/**
+	 * Delete a contact.
+	 */
+	public function deleteAction()
+    {
         if ($id = $this->getRequest()->getParam('id')) {
             $contact = Mage::getModel('email_connector/contact')->load($id);
             try {
@@ -104,7 +101,11 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
         $this->getResponse()->setRedirect($this->getUrl('*/*/', array('store'=>$this->getRequest()->getParam('store'))));
     }
 
-    public function massDeleteAction() {
+	/**
+	 * Mass delete contacts.
+	 */
+	public function massDeleteAction()
+    {
         $contactIds = $this->getRequest()->getParam('contact');
         if (!is_array($contactIds)) {
             $this->_getSession()->addError($this->__('Please select contacts.'));
@@ -125,13 +126,42 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
         $this->_redirect('*/*/index');
     }
 
+	/**
+	 * Mark a contact to be resend.
+	 */
+	public function massResendAction()
+    {
+        $contactIds = $this->getRequest()->getParam('contact');
 
-    public function gridAction(){
+        if (!is_array($contactIds)) {
+            $this->_getSession()->addError($this->__('Please select contacts.'));
+        }else {
+            try {
+                foreach ($contactIds as $contactId) {
+                    $contact = Mage::getSingleton('email_connector/contact')->load($contactId);
+                    $contact->setEmailImported(null)->save();
+                }
+                $this->_getSession()->addSuccess(
+                    Mage::helper('connector')->__('Total of %d record(s) set for resend.', count($contactIds))
+                );
+            } catch (Exception $e) {
+                $this->_getSession()->addError($e->getMessage());
+            }
+        }
+        $this->_redirect('*/*/index');
+    }
+
+
+	/**
+	 * main grid.
+	 */
+	public function gridAction(){
         $this->loadLayout();
         $this->renderLayout();
     }
 
-    protected function _initAction(){
+    protected function _initAction()
+    {
         $this->_title($this->__('Newsletter'))
             ->_title($this->__('Manage Contacts'));
 
@@ -146,14 +176,16 @@ class Dotdigitalgroup_Email_Adminhtml_Email_ContactController extends Mage_Admin
         return $contact;
     }
 
-    public function exportCsvAction(){
+    public function exportCsvAction()
+    {
         $fileName   = 'contacts.csv';
         $content    = $this->getLayout()->createBlock('email_connector/adminhtml_contact_grid')
             ->getCsvFile();
         $this->_prepareDownloadResponse($fileName, $content);
     }
 
-    protected function _isAllowed(){
+    protected function _isAllowed()
+    {
         return Mage::getSingleton('admin/session')->isAllowed('newsletter/email_connector/email_connector_contact');
     }
 

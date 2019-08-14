@@ -1,9 +1,5 @@
 <?php
 
-
-/**
- * Contact model.
- */
 class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
 {
 
@@ -13,7 +9,8 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
     /**
      * constructor
      */
-    public function _construct(){
+    public function _construct()
+    {
         parent::_construct();
         $this->_init('email_connector/contact');
     }
@@ -22,10 +19,11 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
     /**
      * @return $this|Mage_Core_Model_Abstract
      */
-    protected function _beforeSave(){
+    protected function _beforeSave()
+    {
         parent::_beforeSave();
         $now = Mage::getSingleton('core/date')->gmtDate();
-        if ($this->isObjectNew()){
+        if ($this->isObjectNew()) {
             $this->setCreatedAt($now);
         }
         return $this;
@@ -46,7 +44,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
 
         try{
             $num = $conn->update($coreResource->getTableName('email_connector/contact'),
-                array('email_imported' => new Zend_Db_Expr('null')),
+	            array('email_imported' => new Zend_Db_Expr('null')),
                 $conn->quoteInto('email_imported is ?', new Zend_Db_Expr('not null'))
             );
         }catch (Exception $e){
@@ -81,8 +79,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
         $collection =  $this->getCollection()
             ->addFieldToFilter('website_id', $websiteId)
             ->addFieldToFilter('email_imported', array('null' => true))
-            ->addFieldToFilter('customer_id', array('notnull' => true))
-        ;
+            ->addFieldToFilter('customer_id', array('notnull' => true));
 
         $collection->getSelect()->limit($pageSize);
 
@@ -117,11 +114,10 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('email', $email)
-            ->addFieldToFilter('website_id', $websiteId)
-        ;
-        if($collection->count()){
+            ->addFieldToFilter('website_id', $websiteId);
+        if ($collection->count()) {
             return $collection->getFirstItem();
-        }else{
+        } else {
             $this->setEmail($email)
                 ->setWebsiteId($websiteId);
         }
@@ -134,8 +130,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
         $collection = $this->getCollection()
             ->addFieldToFilter('is_subscriber', array('notnull' => true))
             ->addFieldToFilter('subscriber_imported', array('null' => true))
-            ->addFieldToFilter('store_id', array('in' => $storeIds))
-        ;
+            ->addFieldToFilter('store_id', array('in' => $storeIds));
 
         $collection->getSelect()->limit($limit);
 
@@ -147,8 +142,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
         $guestCollection = $this->getCollection()
             ->addFieldToFilter('is_guest', array('notnull' => true))
             ->addFieldToFilter('email_imported', self::EMAIL_CONTACT_NOT_IMPORTED)
-            ->addFieldToFilter('website_id', $website->getId())
-        ;
+            ->addFieldToFilter('website_id', $website->getId());
 
         return $guestCollection->load();
     }

@@ -4,11 +4,16 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Sms_Smsmessagethree extends M
 {
     const DEFAULT_TEXT = 'Default SMS Text';
 
-    protected function _getElementHtml(Varien_Data_Form_Element_Abstract$element){
-
-
+    /**
+	 * SMS insert links.
+	 *
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 */
+    protected function _getElementHtml(Varien_Data_Form_Element_Abstract$element)
+    {
         $element->setData('placeholder', self::DEFAULT_TEXT);
-
         $element->setData('after_element_html',
 
             "<a href='#' onclick=\"injectText('connector_sms_sms_three_message', '{{var order_number}}');return false;\">Insert Order Number</a>

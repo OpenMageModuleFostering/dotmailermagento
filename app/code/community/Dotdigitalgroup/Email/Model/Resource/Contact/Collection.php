@@ -2,7 +2,11 @@
 
 class Dotdigitalgroup_Email_Model_Resource_Contact_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
-    protected function _construct(){
+	/**
+	 * constructor.
+	 */
+	protected function _construct()
+	{
         parent::_construct();
         $this->_init('email_connector/contact');
     }
@@ -17,7 +21,5 @@ class Dotdigitalgroup_Email_Model_Resource_Contact_Collection extends Mage_Core_
         $this->addFilter('website_id', $website);
         return $this;
     }
-
-
 
 }

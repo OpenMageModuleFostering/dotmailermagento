@@ -17,6 +17,7 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
         return $this;
     }
     /**
+     * save/reset the order as transactional data.
      *
      * @param Varien_Event_Observer $observer
      * @return $this
@@ -36,7 +37,7 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
             // check for order status change
             $statusBefore = Mage::registry('sales_order_status_before');
             Mage::helper('connector')->log('Order status : '. $status . ', before : '. $statusBefore);
-            if( $status!= $statusBefore){
+            if ( $status!= $statusBefore) {
                 $smsCampaign = Mage::getModel('email_connector/sms_campaign', $order);
                 $smsCampaign->setStatus($status);
                 $smsCampaign->sendSms();
@@ -50,14 +51,20 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
     }
 
 
-
-    public function handleSalesOrderPlaceAfter(Varien_Event_Observer $observer)
+	/**
+	 * Create new order event.
+	 * @param Varien_Event_Observer $observer
+	 *
+	 * @return $this
+	 * @throws Mage_Core_Exception
+	 */
+	public function handleSalesOrderPlaceAfter(Varien_Event_Observer $observer)
     {
         $data = new Varien_Object();
         $order = $observer->getEvent()->getOrder();
         $website = Mage::app()->getWebsite($order->getWebsiteId());
         $websiteName = $website->getName();
-        if(Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED, $website)){
+        if (Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED, $website)) {
             $storeName = Mage::app()->getStore($order->getStoreId())->getName();
             $data->setCustomerId($order->getCustomerId())
                 ->setCustomerEmail($order->getCustomerEmail())
@@ -74,7 +81,14 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
         return $this;
     }
 
-    public function handleSalesOrderRefund(Varien_Event_Observer $observer)
+	/**
+	 * Sales order refund event.
+	 *
+	 * @param Varien_Event_Observer $observer
+	 *
+	 * @return $this
+	 */
+	public function handleSalesOrderRefund(Varien_Event_Observer $observer)
     {
         Mage::helper('connector')->log('observer sales order refund');
         $creditmemo = $observer->getEvent()->getCreditmemo();
@@ -88,7 +102,7 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
              * Reimport transactional data.
              */
             $emailOrder = Mage::getModel('email_connector/order')->loadByOrderId($orderId, $quoteId, $storeId);
-            if(!$emailOrder->getId()){
+            if (!$emailOrder->getId()) {
                 Mage::helper('connector')->log('ERROR Creditmemmo Order not found :' . $orderId . ', quote id : ' . $quoteId . ', store id ' . $storeId);
                 return $this;
             }
@@ -100,14 +114,21 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
         return $this;
     }
 
-    public function hangleSalesOrderCancel(Varien_Event_Observer $observer)
+	/**
+	 * Sales cancel order event, remove transactional data.
+	 *
+	 * @param Varien_Event_Observer $observer
+	 *
+	 * @return $this
+	 */
+	public function hangleSalesOrderCancel(Varien_Event_Observer $observer)
     {
         $order = $observer->getEvent()->getOrder();
         $storeId = $order->getStoreId();
         $websiteId = Mage::app()->getStore($storeId)->getWebsiteId();
         $customerEmail = $order->getCustomerEmail();
         $helper = Mage::helper('connector');
-        if($helper->isEnabled($websiteId)){
+        if ($helper->isEnabled($websiteId)) {
             $client = Mage::getModel('email_connector/apiconnector_client');
             $client->setApiUsername($helper->getApiUsername($websiteId));
             $client->setApiPassword($helper->getApiPassword($websiteId));

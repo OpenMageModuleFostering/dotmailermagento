@@ -47,9 +47,10 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         $code = $this->getRequest()->getParam('code', false);
         $userId = $this->getRequest()->getParam('state');
         $adminUser = Mage::getModel('admin/user')->load($userId);
-        $callback = 'https://dotmailerformagento.co.uk/magentotesting/connector/email/callback';
+        $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
+        $callback    = $baseUrl . 'connector/email/callback';
 
-        if($code){
+        if ($code) {
             $data = 'client_id='    . Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_ID) .
                 '&client_secret='   . Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CLIENT_SECRET_ID) .
                 '&redirect_uri='    . $callback .
@@ -69,17 +70,12 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
 
 
             $response = json_decode(curl_exec($ch));
-            if($response === false)
-            {
-                echo "Error Number:".curl_errno($ch)."<br>";
-                echo "Error String:".curl_error($ch);
+            if ($response === false) {
+	            Mage::helper('connector')->log("Error Number: " . curl_errno($ch));
             }
 
             $adminUser->setRefreshToken($response->refresh_token)->save();
         }
-
-        //@todo redirect to settings if the authorisation fails.
-        //$this->_redirectReferer(Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit', array('section' => 'connector_api_credentials')));
         $this->_redirectReferer(Mage::helper('adminhtml')->getUrl('adminhtml/email_automation/index'));
     }
 }

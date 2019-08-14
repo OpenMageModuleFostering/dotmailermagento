@@ -2,6 +2,12 @@
 
 class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Waitingfield extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
+    /**
+	 * Unscope the website level.
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 */
     public function render(Varien_Data_Form_Element_Abstract $element)
     {
 
@@ -10,6 +16,12 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Waitingfield extends M
 
     }
 
+    /**
+	 * Loading background on save.
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 */
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         // Get the default HTML for this option

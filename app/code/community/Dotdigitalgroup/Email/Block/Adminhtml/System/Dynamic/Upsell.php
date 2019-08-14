@@ -6,7 +6,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Dynamic_Upsell extends Mage_A
         $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
         $website = Mage::app()->getRequest()->getParam('website', false);
 
-        if($website){
+        if ($website) {
             $website = Mage::app()->getWebsite($website);
             $baseUrl  = $website->getConfig('web/secure/base_url');
         }

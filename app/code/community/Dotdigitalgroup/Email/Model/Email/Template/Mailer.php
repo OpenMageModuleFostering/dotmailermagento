@@ -2,7 +2,12 @@
 
 class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_Email_Template_Mailer
 {
-    private $_registered = array(
+	/**
+	 * Registred sales emails that can be mapped as transactional emails.
+	 *
+	 * @var array
+	 */
+	private $_registered = array(
         'sales_email_order_template'                    => 'New Order',
         'sales_email_order_guest_template'              => 'New Order Guest',
         'sales_email_order_comment_template'            => 'Order Update',
@@ -20,12 +25,22 @@ class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_
         'sales_email_shipment_comment_template'         => 'Shipment Update',
         'sales_email_shipment_comment_guest_template'   => 'Shipment Update for Guest',
     );
-    private $_registeredCustomer = array(
+	/**
+	 * customer emails that can be mapped as transactional emails.
+	 *
+	 * @var array
+	 */
+	private $_registeredCustomer = array(
         'customer_create_account_email_template'         => 'New Customer Account'
     );
 
 
-    public function send()
+	/**
+	 * Send transactional emails.
+	 *
+	 * @return $this|Mage_Core_Model_Email_Template_Mailer
+	 */
+	public function send()
     {
         Mage::helper('connector')->log('template id : ' . $this->getTemplateId());
         $templateParams = $this->getTemplateParams();
@@ -33,12 +48,12 @@ class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_
         $transEnabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
         //Disable the emails if the transactional data is mapped
         if (Mage::helper('connector/transactional')->isMapped($this->getTemplateId()) && $transEnabled) {
-            if(array_key_exists($this->getTemplateId(), $this->_registered)){
+            if (array_key_exists($this->getTemplateId(), $this->_registered)) {
                 $this->_registerOrderCampaign($templateParams);
                 return $this;
 
             }
-            if(array_key_exists($this->getTemplateId(), $this->_registeredCustomer)){
+            if (array_key_exists($this->getTemplateId(), $this->_registeredCustomer)) {
                 $this->_registerCustomer($templateParams);
                 return $this;
             }
@@ -68,12 +83,17 @@ class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_
     }
 
 
-    public function _registerOrderCampaign($data)
+	/**
+	 * register sales order campaign.
+	 *
+	 * @param $data
+	 */
+	protected function _registerOrderCampaign($data)
     {
         $order = $data['order'];
         $storeId = $order->getStoreId();
         $campaignId = Mage::helper('connector/transactional')->getTransactionalCampaignId($this->getTemplateId(), $storeId);
-        if($campaignId){
+        if ($campaignId) {
             Mage::helper('connector')->log('-- Sales Order :'  . $campaignId);
             try{
                 $now = Mage::getSingleton('core/date')->gmtDate();
@@ -95,11 +115,16 @@ class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_
         }
     }
 
-    private function _registerCustomer($data){
+	/**
+	 * register customer campaign.
+	 *
+	 * @param $data
+	 */
+	protected function _registerCustomer($data){
         $customer = $data['customer'];
         $storeId = $customer->getStoreId();
         $campaignId = Mage::helper('connector/transactional')->getTransactionalCampaignId($this->getTemplateId(), $storeId);
-        if($campaignId){
+        if ($campaignId) {
             Mage::helper('connector')->log('-- Customer campaign: '  . $campaignId);
             try{
                 $now = Mage::getSingleton('core/date')->gmtDate();
@@ -110,10 +135,9 @@ class Dotdigitalgroup_Email_Model_Email_Template_Mailer extends Mage_Core_Model_
                     ->setStoreId($customer->getStoreId())
                     ->setCampaignId($campaignId)
                     ->setEventName($this->_registeredCustomer[$this->getTemplateId()])
-                    ->setCreatedAt($now)
-                ;
+                    ->setCreatedAt($now);
                 $emailCampaign->save();
-            }catch (Exception $e){
+            }catch (Exception $e) {
                 Mage::logException($e);
             }
         }

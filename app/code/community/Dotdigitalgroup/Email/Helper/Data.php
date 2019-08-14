@@ -29,7 +29,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function auth($authRequest)
     {
-        if($authRequest != Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)){
+        if ($authRequest != Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)) {
             $this->log('Authenication failed : ' . $authRequest);
             exit();
         }
@@ -59,7 +59,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
 
     public function log($data, $level = Zend_Log::DEBUG, $filename = 'api.log')
     {
-        if($this->getDebugEnabled()){
+        if ($this->getDebugEnabled()) {
             $filename = 'connector_' . $filename;
 
             Mage::log($data, $level, $filename, $force = true);
@@ -74,7 +74,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     public function getConnectorVersion()
     {
         $modules = (array) Mage::getConfig()->getNode('modules')->children();
-        if(isset($modules['Dotdigitalgroup_Email'])){
+        if (isset($modules['Dotdigitalgroup_Email'])) {
             $moduleName = $modules['Dotdigitalgroup_Email'];
             return $moduleName->version;
         }
@@ -108,7 +108,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      * Get the contact id for the custoemer based on website id.
      * @param $email
      * @param $websiteId
-     * @return bool
+     * @return string contact_id
      */
     public function getContactId($email, $websiteId)
     {
@@ -140,7 +140,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public  function allowResourceFullExecution()
     {
-        if($this->getResourceAllocationEnabled()){
+        if ($this->getResourceAllocationEnabled()) {
 
             /* it may be needed to set maximum execution time of the script to longer,
              * like 60 minutes than usual */

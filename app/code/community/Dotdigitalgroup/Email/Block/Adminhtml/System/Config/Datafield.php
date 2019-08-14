@@ -3,6 +3,12 @@
 class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Datafield extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
 
+    /**
+	 * Ajax Create the datafields.
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 */
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $url = Mage::helper('adminhtml')->getUrl('*/connector/createnewdatafield');

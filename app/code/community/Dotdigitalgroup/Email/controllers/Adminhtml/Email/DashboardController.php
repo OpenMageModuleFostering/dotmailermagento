@@ -2,7 +2,10 @@
 
 class Dotdigitalgroup_Email_Adminhtml_Email_DashboardController extends Mage_Adminhtml_Controller_Action
 {
-    public function indexAction()
+	/**
+	 * main page.
+	 */
+	public function indexAction()
     {
         $this->_title($this->__('Dashboard'));
 

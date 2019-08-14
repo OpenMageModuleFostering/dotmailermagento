@@ -2,25 +2,34 @@
 
 class Dotdigitalgroup_Email_CreditmemoController extends Mage_Core_Controller_Front_Action
 {
-    public function preDispatch()
+	/**
+	 * predispatch
+	 *
+	 * @return Mage_Core_Controller_Front_Action|void
+	 */
+	public function preDispatch()
     {
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
         $orderId = $this->getRequest()->getParam('order_id', false);
-        if($orderId){
+        if ($orderId) {
             $order = Mage::getModel('sales/order')->load($orderId);
-            if($order->getId()){
+            if ($order->getId()) {
                 Mage::app()->setCurrentStore($order->getStoreId());
-            }else{
+            } else {
                 Mage::helper('connector')->log('TE : order not found: ' . $orderId);
                 exit;
             }
-        }else{
+        } else {
             Mage::helper('connector')->log('TE : order_id missing :' . $orderId);
             exit;
         }
         parent::preDispatch();
     }
-    public function newAction()
+
+	/**
+	 * New creditmemo.
+	 */
+	public function newAction()
     {
         $this->loadLayout();
         $newOrder = $this->getLayout()->createBlock('email_connector/order_creditmemo', 'connector_creditmemo_new', array(
@@ -34,7 +43,10 @@ class Dotdigitalgroup_Email_CreditmemoController extends Mage_Core_Controller_Fr
         $this->renderLayout();
     }
 
-    public function newguestAction()
+	/**
+	 * New guest action.
+	 */
+	public function newguestAction()
     {
         $this->loadLayout();
         $invoice = $this->getLayout()->createBlock('email_connector/order_invoice', 'connector_creditmemo_guest', array(
@@ -50,7 +62,10 @@ class Dotdigitalgroup_Email_CreditmemoController extends Mage_Core_Controller_Fr
 
     }
 
-    public function updateAction()
+	/**
+	 * update creditmemo.
+	 */
+	public function updateAction()
     {
         $this->loadLayout();
         $newOrder = $this->getLayout()->createBlock('email_connector/order_creditmemo', 'connector_creditmemo_update', array(
@@ -61,7 +76,10 @@ class Dotdigitalgroup_Email_CreditmemoController extends Mage_Core_Controller_Fr
         $this->renderLayout();
     }
 
-    public function updateguestAction()
+	/**
+	 * update guest.
+	 */
+	public function updateguestAction()
     {
         $this->loadLayout();
         $newOrder = $this->getLayout()->createBlock('email_connector/order_creditmemo', 'connector_creditmemo_update_guest', array(

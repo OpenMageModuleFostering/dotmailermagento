@@ -2,15 +2,37 @@
 
 class Dotdigitalgroup_Email_Model_Customer_Wishlist
 {
-    public  $id;
-    public  $customer_id;
-    public $email;
+	/**
+	 * @var int
+	 */
+	public  $id;
+	/**
+	 * @var int
+	 */
+	public  $customer_id;
+	/**
+	 * @var string
+	 */
+	public $email;
 
-    public $items = array();
+	/**
+	 * wishlist items.
+	 * @var array
+	 */
+	public $items = array();
 
-    protected $total_wishlist_value;
+	/**
+	 * @var float
+	 */
+	protected $total_wishlist_value;
 
-    public function __construct(Mage_Customer_Model_Customer $customer){
+	/**
+	 * constructor.
+	 *
+	 * @param Mage_Customer_Model_Customer $customer
+	 */
+	public function __construct(Mage_Customer_Model_Customer $customer)
+    {
 
         $this->setCustomerId($customer->getId());
         $this->email = $customer->getEmail();
@@ -23,7 +45,6 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
     {
         $this->customer_id = $customer_id;
     }
-
 
     /**
      * @return mixed
@@ -51,17 +72,23 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
         return $this->id;
     }
 
-    public function setItem($item)
+	/**
+	 * set wishlist item.
+	 *
+	 * @param $item
+	 */
+	public function setItem($item)
     {
-
         $this->items[] = $item->expose();
 
         $this->total_wishlist_value += $item->getTotalValueOfProduct();
     }
 
-    public function expose() {
-
+	/**
+	 * @return array
+	 */
+	public function expose()
+	{
         return get_object_vars($this);
-
     }
 }

@@ -24,8 +24,7 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         $this->responseBody		= null;
         $this->responseInfo		= null;
 
-        if ($this->requestBody !== null)
-        {
+        if ($this->requestBody !== null) {
             $this->buildPostBody();
         }
     }
@@ -39,18 +38,18 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         $ends_line_level = NULL;
         $json_length = strlen( $json );
 
-        for( $i = 0; $i < $json_length; $i++ ) {
+        for ($i = 0; $i < $json_length; $i++) {
             $char = $json[$i];
             $new_line_level = NULL;
             $post = "";
-            if( $ends_line_level !== NULL ) {
+            if ($ends_line_level !== NULL) {
                 $new_line_level = $ends_line_level;
                 $ends_line_level = NULL;
             }
-            if( $char === '"' && $prev_char != '\\' ) {
+            if ($char === '"' && $prev_char != '\\') {
                 $in_quotes = !$in_quotes;
-            } else if( ! $in_quotes ) {
-                switch( $char ) {
+            } elseif (! $in_quotes) {
+                switch ($char) {
                     case '}': case ']':
                     $level--;
                     $ends_line_level = NULL;
@@ -74,7 +73,7 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
                     break;
                 }
             }
-            if( $new_line_level !== NULL ) {
+            if ($new_line_level !== NULL) {
                 $result .= "\n".str_repeat( "\t", $new_line_level );
             }
             $result .= $char.$post;
@@ -84,25 +83,40 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         return $result;
     }
 
-    // returns the object as JSON
-    public function toJSON($pretty=false){
+    /**
+	 * returns the object as JSON.
+	 *
+	 * @param bool $pretty
+	 *
+	 * @return string
+	 */
+    public function toJSON($pretty=false)
+    {
 
         if (!$pretty) {
             return json_encode($this->expose());
-        }
-        else {
+        } else {
             return $this->prettyPrint(json_encode($this->expose()));
         }
     }
 
-    // exposes the class as an array of objects
-    public function expose() {
+    /**
+	 * exposes the class as an array of objects
+	 * @return array
+	 */
+    public function expose()
+    {
 
         return get_object_vars($this);
 
     }
 
 
+    /**
+	 * Reset the client.
+	 *
+	 * @return $this
+	 */
     public function flush ()
     {
         $this->_apiUsername = '';
@@ -115,6 +129,12 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         return $this;
     }
 
+    /**
+	 * Execute the curl request.
+	 *
+	 * @return null
+	 * @throws Exception
+	 */
     public function execute()
     {
         $ch = curl_init();
@@ -138,14 +158,10 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
                 default:
                     throw new InvalidArgumentException('Current verb (' . $this->verb . ') is an invalid REST verb.');
             }
-        }
-        catch (InvalidArgumentException $e)
-        {
+        }catch (InvalidArgumentException $e){
             curl_close($ch);
             throw $e;
-        }
-        catch (Exception $e)
-        {
+        }catch (Exception $e){
             curl_close($ch);
             throw $e;
         }
@@ -153,22 +169,37 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         return $this->responseBody;
     }
 
+    /**
+	 * Post data.
+	 *
+	 * @param null $data
+	 *
+	 * @return $this
+	 */
     public function buildPostBody($data = null)
     {
-
         $this->requestBody = json_encode($data);
         return $this;
     }
 
+    /**
+	 * Execute curl get request.
+	 *
+	 * @param $ch
+	 */
     protected function executeGet($ch)
     {
         $this->doExecute($ch);
     }
 
+    /**
+	 * Execute post request.
+	 *
+	 * @param $ch
+	 */
     protected function executePost($ch)
     {
-        if (!is_string($this->requestBody))
-        {
+        if (!is_string($this->requestBody)) {
             $this->buildPostBody();
         }
 
@@ -177,17 +208,27 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
 
         $this->doExecute($ch);
     }
-    protected function buildPostBodyFromFile($filename){
 
+	/**
+	 * Post from the file.
+	 *
+	 * @param $filename
+	 */
+	protected function buildPostBodyFromFile($filename)
+	{
         $this->requestBody = array (
             'file' => '@'.$filename
         );
-
     }
 
-    protected function executePut($ch)
+	/**
+	 * Execute put.
+	 *
+	 * @param $ch
+	 */
+	protected function executePut($ch)
     {
-        if (!is_string($this->requestBody)){
+        if (!is_string($this->requestBody)) {
             $this->buildPostBody();
         }
 
@@ -206,14 +247,24 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         fclose($fh);
     }
 
-    protected function executeDelete($ch)
+	/**
+	 * Ececute delete.
+	 *
+	 * @param $ch
+	 */
+	protected function executeDelete($ch)
     {
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
         $this->doExecute($ch);
     }
 
-    protected function doExecute(&$ch)
+	/**
+	 * Execute request.
+	 *
+	 * @param $ch
+	 */
+	protected function doExecute(&$ch)
     {
         $this->setCurlOpts($ch);
         $this->responseBody = json_decode(curl_exec($ch));
@@ -222,7 +273,12 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         curl_close($ch);
     }
 
-    protected function setCurlOpts(&$ch)
+	/**
+	 * curl options.
+	 *
+	 * @param $ch
+	 */
+	protected function setCurlOpts(&$ch)
     {
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_URL, $this->url);
@@ -232,7 +288,12 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         curl_setopt($ch, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType ,'Content-Type: application/json'));
     }
 
-    protected function setAuth(&$ch)
+	/**
+	 * basic auth.
+	 *
+	 * @param $ch
+	 */
+	protected function setAuth(&$ch)
     {
         if ($this->_apiUsername !== null && $this->_apiPassword !== null)
         {
@@ -241,65 +302,132 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         }
     }
 
-    public function getAcceptType()
+	/**
+	 * Get accept type.
+	 *
+	 * @return string
+	 */
+	public function getAcceptType()
     {
         return $this->acceptType;
     }
 
-    public function setAcceptType($acceptType)
+	/**
+	 * set accept type.
+	 *
+	 * @param $acceptType
+	 */
+	public function setAcceptType($acceptType)
     {
         $this->acceptType = $acceptType;
     }
 
-    public function getApiPassword()
+
+	/**
+	 * get api username.
+	 *
+	 * @return string
+	 */
+	public function getApiUsername()
+	{
+		return $this->_apiUsername;
+	}
+
+	/**
+	 * set api username.
+	 *
+	 * @param $apiUsername
+	 *
+	 * @return $this
+	 */
+	public function setApiUsername($apiUsername)
+	{
+		$this->_apiUsername = $apiUsername;
+		return $this;
+	}
+	/**
+	 * Get api password.
+	 *
+	 * @return string
+	 */
+	public function getApiPassword()
     {
         return $this->_apiPassword;
     }
 
-    public function setApiPassword($apiPassword)
+	/**
+	 * set api password.
+	 * @param $apiPassword
+	 *
+	 * @return $this
+	 */
+	public function setApiPassword($apiPassword)
     {
         $this->_apiPassword = $apiPassword;
         return $this;
     }
 
-    public function getResponseBody()
+	/**
+	 * get response body.
+	 *
+	 * @return string/object
+	 */
+	public function getResponseBody()
     {
         return $this->responseBody;
     }
 
-    public function getResponseInfo()
+	/**
+	 * get response info.
+	 *
+	 * @return null
+	 */
+	public function getResponseInfo()
     {
         return $this->responseInfo;
     }
 
-    public function getUrl()
+	/**
+	 * get url.
+	 *
+	 * @return string
+	 */
+	public function getUrl()
     {
         return $this->url;
     }
 
-    public function setUrl($url)
+	/**
+	 * set url.
+	 *
+	 * @param $url
+	 *
+	 * @return $this
+	 */
+	public function setUrl($url)
     {
         $this->url = $url;
         return $this;
     }
 
-    public function getApiUsername()
-    {
-        return $this->_apiUsername;
-    }
-
-    public function setApiUsername($apiUsername)
-    {
-        $this->_apiUsername = $apiUsername;
-        return $this;
-    }
-
-    public function getVerb ()
+	/**
+	 * get the verb.
+	 *
+	 * @return string
+	 */
+	public function getVerb ()
     {
         return $this->verb;
     }
 
-    public function setVerb ($verb)
+	/**
+	 * set the verb.
+	 *
+	 * @param $verb
+	 *
+	 * @return $this
+	 */
+	public function setVerb ($verb)
     {
         $this->verb = $verb;
         return $this;

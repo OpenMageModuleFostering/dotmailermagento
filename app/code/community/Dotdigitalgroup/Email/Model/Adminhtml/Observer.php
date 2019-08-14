@@ -6,10 +6,9 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
     /**
      * API Sync and Data Mapping.
      * Reset contacts for reimport.
-     * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function actionConfigResetContacts(Varien_Event_Observer $observer)
+    public function actionConfigResetContacts()
     {
         $contactModel = Mage::getModel('email_connector/contact');
         $numImported = $contactModel->getNumberOfImportedContacs();
@@ -22,10 +21,9 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
     /**
      * API Transactional Section.
      * Default data fields for transactional account.
-     * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function actionConfigTransactional(Varien_Event_Observer $observer)
+    public function actionConfigTransactional()
     {
         $client = Mage::getModel('email_connector/apiconnector_client');
         $username = Mage::helper('connector/transactional')->getApiUsername();
@@ -43,27 +41,27 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
     /**
      * API Credentials.
      * Installation and validation confirmation.
-     * @param Varien_Event_Observer $observer
      * @return $this
      */
-    public function actionConfigSaveApi(Varien_Event_Observer $observer)
+    public function actionConfigSaveApi()
     {
         $groups = Mage::app()->getRequest()->getPost('groups');
-        if(isset($groups['api']['fields']['username']['inherit']) || isset($groups['api']['fields']['password']['inherit']))
+        if (isset($groups['api']['fields']['username']['inherit']) || isset($groups['api']['fields']['password']['inherit']))
             return $this;
 
         $apiUsername =  isset($groups['api']['fields']['username']['value'])? $groups['api']['fields']['username']['value'] : false;
         $apiPassword =  isset($groups['api']['fields']['password']['value'])? $groups['api']['fields']['password']['value'] : false;
         //skip if the inherit option is selected
-        if($apiUsername && $apiPassword){
+        if ($apiUsername && $apiPassword) {
             Mage::helper('connector')->log('----VALIDATING ACCOUNT---');
             $testModel = Mage::getModel('email_connector/apiconnector_test');
             $isValid = $testModel->validate($apiUsername, $apiPassword);
-            if($isValid){
+            if ($isValid) {
                 /**
                  * Create account contact datafields
                  */
-                $client = Mage::getModel('email_connector/apiconnector_client')->setApiUsername($apiUsername)
+                $client = Mage::getModel('email_connector/apiconnector_client');
+	            $client->setApiUsername($apiUsername)
                     ->setApiPassword($apiPassword);
                 $datafields = Mage::getModel('email_connector/connector_datafield')->getDefaultDataFields();
                 foreach ($datafields as $datafield) {
@@ -73,15 +71,15 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Observer
                  * Send install info
                  */
                 $testModel->sendInstallConfirmation();
-            }else{
+            } else {
                 /**
                  * Disable invalid Api credentials
                  */
                 $scopeId = 0;
-                if($website = Mage::app()->getRequest()->getParam('website')) {
+                if ($website = Mage::app()->getRequest()->getParam('website')) {
                     $scope = 'websites';
                     $scopeId = Mage::app()->getWebsite($website)->getId();
-                }else {
+                } else {
                     $scope = "default";
                 }
                 $config = Mage::getConfig();

@@ -25,32 +25,43 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
     const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3          = 'connector_lost_baskets/guests/campaign_3';
 
 
-    public $lostBasketCustomers = array(1, 2, 3);
-    public $lostBasketGuests = array(1, 2, 3);
+	/**
+	 * number of lost baskets available.
+	 * @var array
+	 */
+	public $lostBasketCustomers = array(1, 2, 3);
+	/**
+	 * number of guest lost baskets available.
+	 * @var array
+	 */
+	public $lostBasketGuests = array(1, 2, 3);
 
 
+    /**
+	 * Proccess lost baskets.
+	 */
     public function proccessLostBaskets()
     {
         /**
          * Save lost baskets to be send in Send table.
          */
-        foreach (Mage::app()->getStores() as $store){
+        foreach (Mage::app()->getStores() as $store) {
             $storeId = $store->getId();
             $sendModel = Mage::getModel('email_connector/campaign');
             /**
              * Customers campaings
              */
             foreach ($this->lostBasketCustomers as $num) {
-                if($this->_getLostBasketCustomerEnabled($num, $storeId)){
+                if ($this->_getLostBasketCustomerEnabled($num, $storeId)) {
 
-                    if($num == 1)
+                    if ($num == 1)
                         $from = Zend_Date::now()->subMinute($this->_getLostBasketCustomerInterval($num, $storeId));
                     else
                         $from = Zend_Date::now()->subHour($this->_getLostBasketCustomerInterval($num, $storeId));
                     $to = clone($from);
                     $from->sub('5', Zend_Date::MINUTE);
                     $quoteCollection = $this->_getStoreQuotes($from->toString('YYYY-MM-dd HH:mm'), $to->toString('YYYY-MM-dd HH:mm'), $guest = false, $storeId);
-                    if($quoteCollection->getSize())
+                    if ($quoteCollection->getSize())
                         Mage::helper('connector')->log('Customer lost baskets : ' . $num  . ', from : ' . $from->toString('YYYY-MM-dd HH:mm') . ':' . $to->toString('YYYY-MM-dd HH:mm'));
                     $campaignId = $this->_getLostBasketCustomerCampaignId($num, $storeId);
                     foreach ($quoteCollection as $quote) {
@@ -70,15 +81,15 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
              * Guests campaigns
              */
             foreach ($this->lostBasketGuests as $num) {
-                if($this->_getLostBasketGuestEnabled($num, $storeId)){
-                    if($num == 1)
+                if ($this->_getLostBasketGuestEnabled($num, $storeId)) {
+                    if ($num == 1)
                         $from = Zend_Date::now()->subMinute($this->_getLostBasketGuestIterval($num, $storeId));
                     else
                         $from = Zend_Date::now()->subHour($this->_getLostBasketGuestIterval($num, $storeId));
                     $to = clone($from);
                     $from->sub('5', Zend_Date::MINUTE);
                     $quoteCollection = $this->_getStoreQuotes($from->toString('YYYY-MM-dd HH:mm'), $to->toString('YYYY-MM-dd HH:mm'), $guest = true, $storeId);
-                    if($quoteCollection->getSize())
+                    if ($quoteCollection->getSize())
                         Mage::helper('connector')->log('Guest lost baskets : ' . $num  . ', from : ' . $from->toString('YYYY-MM-dd HH:mm') . ':' . $to->toString('YYYY-MM-dd HH:mm'));
                     $guestCampaignId = $this->_getLostBasketGuestCampaignId($num, $storeId);
                     foreach ($quoteCollection as $quote) {
@@ -97,28 +108,30 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
         }
     }
 
-    private function _getLostBasketCustomerCampaignId($num, $storeId){
+    private function _getLostBasketCustomerCampaignId($num, $storeId)
+    {
         $store = Mage::app()->getStore($storeId);
         return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num));
     }
-    private function _getLostBasketGuestCampaignId($num, $storeId){
+    private function _getLostBasketGuestCampaignId($num, $storeId)
+    {
         $store = Mage::app()->getStore($storeId);
         return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_'. $num));
     }
 
-    private function _getLostBasketCustomerInterval($num, $storeId){
-
+    private function _getLostBasketCustomerInterval($num, $storeId)
+    {
         $store = Mage::app()->getstore($storeId);
         return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num));
     }
 
-    private function _getLostBasketGuestIterval($num, $storeId){
+    private function _getLostBasketGuestIterval($num, $storeId)
+    {
         $store = Mage::app()->getStore($storeId);
         return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num));
     }
 
-
-    public function _getLostBasketCustomerEnabled($num, $storeId)
+    protected function _getLostBasketCustomerEnabled($num, $storeId)
     {
         $store = Mage::app()->getStore($storeId);
         $enabled = $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_' . $num));
@@ -126,12 +139,11 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 
     }
 
-    public function _getLostBasketGuestEnabled($num, $storeId)
+    protected function _getLostBasketGuestEnabled($num, $storeId)
     {
         $store = Mage::app()->getStore($storeId);
         return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_' . $num));
     }
-
 
     /**
      * @param string $from
@@ -140,7 +152,8 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
      * @param int $storeId
      * @return Mage_Eav_Model_Entity_Collection_Abstract
      */
-    private function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0){
+    private function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0)
+    {
 
         $updated = array(
             'from' => $from,
@@ -153,7 +166,7 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
             ->addFieldToFilter('customer_email', array('neq' => ''))
             ->addFieldToFilter('store_id', $storeId)
             ->addFieldToFilter('updated_at', $updated);
-        if($guest)
+        if ($guest)
             $salesCollection->addFieldToFilter('checkout_method' , Mage_Checkout_Model_Type_Onepage::METHOD_GUEST);
         return $salesCollection;
     }

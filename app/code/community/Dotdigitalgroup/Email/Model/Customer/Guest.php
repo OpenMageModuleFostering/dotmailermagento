@@ -5,24 +5,27 @@ class Dotdigitalgroup_Email_Model_Customer_Guest
     protected $_countGuests = 0;
     protected $_start;
 
-    public function sync()
+	/**
+	 * GUEST SYNC.
+	 */
+	public function sync()
     {
         /** @var Dotdigitalgroup_Email_Helper_Data $helper */
         $helper = Mage::helper('connector');
         $helper->log('----------- Start guest sync ----------');
         $this->_start = microtime(true);
         foreach(Mage::app()->getWebsites() as $website)
-            $this->_exportGuestPerWebsite($website);
+            $this->exportGuestPerWebsite($website);
         $helper->log('---- End Guest total time for guest sync : ' . gmdate("H:i:s", microtime(true) - $this->_start));
         return;
     }
 
-    public function _exportGuestPerWebsite(Mage_Core_Model_Website $website)
+    public function exportGuestPerWebsite(Mage_Core_Model_Website $website)
     {
         $helper = Mage::helper('connector');
         $fileHelper = Mage::helper('connector/file');
         $guests = Mage::getModel('email_connector/contact')->getGuests($website);
-        if($guests->getSize()){
+        if ($guests->getSize()) {
             $client = Mage::helper('connector')->getWebsiteApiClient($website);
             $guestFilename = strtolower($website->getCode() . '_guest_' . date('d_m_Y_Hi') . '.csv');
             $helper->log('Guest file: ' . $guestFilename);
@@ -41,7 +44,7 @@ class Dotdigitalgroup_Email_Model_Customer_Guest
                     Mage::logException($e);
                 }
             }
-            if($this->_countGuests){
+            if ($this->_countGuests) {
                 //Add to guest address book
                 $client->postAddressBookContactsImport($guestFilename, $helper->getGuestAddressBook($website));
             }

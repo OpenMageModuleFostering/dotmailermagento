@@ -35,7 +35,7 @@ class Dotdigitalgroup_Email_ReportController extends Mage_Core_Controller_Front_
     public function recentlyviewedAction()
     {
         $customerId = $this->getRequest()->getParam('customer_id');
-        if(!$customerId){
+        if (!$customerId) {
             Mage::helper('connector')->log('Recentlyviewed : no customer id : ' . $customerId);
             exit;
         }

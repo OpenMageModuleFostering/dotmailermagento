@@ -1,6 +1,10 @@
 <?php
 class Dotdigitalgroup_Email_Block_Order_Invoice extends Mage_Sales_Block_Order_Invoice_Items
 {
+    /**
+	 * Prepare layout.
+	 * @return Mage_Core_Block_Abstract|void
+	 */
     protected function _prepareLayout()
     {
         if ($root = $this->getLayout()->getBlock('root')) {
@@ -8,19 +12,23 @@ class Dotdigitalgroup_Email_Block_Order_Invoice extends Mage_Sales_Block_Order_I
         }
     }
 
+    /**
+	 * Get current order.
+	 * @return Mage_Core_Model_Abstract|Mage_Sales_Model_Order|mixed
+	 */
     public function getOrder()
     {
         $orderId = Mage::registry('order_id');
         $order = Mage::registry('current_order');
-        if(! $orderId){
+        if (! $orderId) {
             $orderId = Mage::app()->getRequest()->getParam('order_id');
             Mage::register('order_id', $orderId);
         }
-        if(! $order){
+        if (! $order) {
             $order = Mage::getModel('sales/order')->load($orderId);
             Mage::register('current_order', $order);
         }
-        if(! $order->hasInvoices()){
+        if (! $order->hasInvoices()) {
             Mage::helper('connector')->log('TE - no invoice for order : '. $orderId);
             exit;
         }

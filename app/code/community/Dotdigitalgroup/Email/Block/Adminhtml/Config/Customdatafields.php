@@ -14,6 +14,9 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Customdatafields  extends Mag
     protected $_getDatafieldRenderer;
 
 
+    /**
+	 * Construct.
+	 */
     public function __construct()
     {
         $this->_addAfter = false;
@@ -22,16 +25,21 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Customdatafields  extends Mag
 
     }
 
-    public function _prepareToRender()
+    protected function _prepareToRender()
     {
         $this->_getDatafieldRenderer = null;
         $this->_getAttributeRenderer = null;
-        $this->addColumn('attribute', array('label' => Mage::helper('adminhtml')->__('Attribute'),
+        $this->addColumn('attribute',
+	        array(
+	            'label' => Mage::helper('adminhtml')->__('Attribute'),
+                'style' => 'width:120px',
+            )
+        );
+        $this->addColumn('datafield', array(
+	        'label' => Mage::helper('adminhtml')->__('DataField'),
             'style' => 'width:120px',
-        ));
-        $this->addColumn('datafield', array('label' => Mage::helper('adminhtml')->__('DataField'),
-            'style' => 'width:120px',
-        ));
+			)
+        );
     }
 
     protected function _renderCellTemplate($columnName)
@@ -43,18 +51,15 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Customdatafields  extends Mag
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
                 ->setOptions(
-                    $this->getElement()->getValues())
-
+                    $this->getElement()->getValues()
+                )
                 ->toHtml();
-        } else if($columnName == "datafield") {
+        } elseif ($columnName == "datafield") {
             return $this->_getDatafieldRenderer()
                 ->setName($inputName)
                 ->setTitle($columnName)
                 ->setExtraParams('style="width:160px"')
-                ->setOptions(
-                    // The source model defined in system config XML!
-                    Mage::getModel('email_connector/adminhtml_source_datafields')->toOptionArray()
-                )
+                ->setOptions(Mage::getModel('email_connector/adminhtml_source_datafields')->toOptionArray())
                 ->toHtml();
         }
         return parent::_renderCellTemplate($columnName);
@@ -98,7 +103,8 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Customdatafields  extends Mag
         return $this->_getDatafieldRenderer;
     }
 
-    public function _toHtml(){
+    public function _toHtml()
+    {
         return '<input type="hidden" id="'.$this->getElement()->getHtmlId().'"/>'.parent::_toHtml();
 
     }

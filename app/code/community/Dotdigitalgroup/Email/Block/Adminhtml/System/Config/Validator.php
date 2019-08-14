@@ -4,9 +4,14 @@
 class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
 
+    /**
+	 * Ajax Validate the duplicate selection.
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 */
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
-
         // Get the default HTML for this option
         $html = parent::_getElementHtml($element);
 

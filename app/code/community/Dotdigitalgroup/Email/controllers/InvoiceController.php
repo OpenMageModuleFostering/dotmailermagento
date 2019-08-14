@@ -6,15 +6,15 @@ class Dotdigitalgroup_Email_InvoiceController extends Mage_Core_Controller_Front
     {
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
         $orderId = $this->getRequest()->getParam('order_id', false);
-        if($orderId){
+        if ($orderId) {
             $order = Mage::getModel('sales/order')->load($orderId);
-            if($order->getId()){
+            if ($order->getId()) {
                 Mage::app()->setCurrentStore($order->getStoreId());
-            }else{
+            } else {
                 Mage::helper('connector')->log('TE : order not found: ' . $orderId);
                 exit;
             }
-        }else{
+        } else {
             Mage::helper('connector')->log('TE : order_id missing :' . $orderId);
             exit;
         }

@@ -2,23 +2,28 @@
 
 class Dotdigitalgroup_Email_Model_Connector_Datafield
 {
-    /**
-     * Datafield entities
-     */
-    public $name;
-    public $type;
-    public $visibility;
-    public $defaultValue;
+	/**
+	 * @var string
+	 */
+	public $name;
+	/**
+	 * @var string
+	 */
+	public $type;
+	/**
+	 * @var string
+	 */
+	public $visibility;
+	/**
+	 * @var string
+	 */
+	public $defaultValue;
+	/**
+	 * Contact datafields.
+	 * @var array
+	 */
+	public $datafields = array();
 
-    public $datafields = array();
-
-    public $data;
-
-    public function getData()
-    {
-        $this->data = Mage::getConfig()->loadModulesConfiguration('umc_source.xml')->applyExtends();
-
-    }
     /**
      * Default datafields
      * @return array
@@ -39,7 +44,12 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
         )
     );
 
-    private $_contactDatafields = array(
+	/**
+	 * Contact default datafields.
+	 *
+	 * @var array
+	 */
+	private $_contactDatafields = array(
         'customer_id' => array(
             'name' => 'CUSTOMER_ID',
             'type' => 'numeric',
@@ -190,7 +200,12 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
         )
     );
 
-    private $_transactionalDefaultDatafields = array(
+	/**
+	 * transactional data default datafields.
+	 *
+	 * @var array
+	 */
+	private $_transactionalDefaultDatafields = array(
         array(
             'name' => 'CUSTOMER_ID',
             'type' => 'string',
@@ -220,8 +235,6 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
             'visibility' => 'private',
         )
     );
-
-
 
     /**
      * @param array $contactDatafields
@@ -271,7 +284,17 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
         return $this->_defaultDataFields;
     }
 
-    public function setDatafield($name, $value, $type = 'string', $visibility = 'public')
+	/**
+	 * set a single datafield.
+	 *
+	 * @param $name
+	 * @param $value
+	 * @param string $type
+	 * @param string $visibility
+	 *
+	 * @return array
+	 */
+	public function setDatafield($name, $value, $type = 'string', $visibility = 'public')
     {
         $this->datafields[] = array(
             'name' => $name,

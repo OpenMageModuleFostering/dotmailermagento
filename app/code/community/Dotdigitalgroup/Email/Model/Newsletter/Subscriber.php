@@ -20,21 +20,27 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
         $helper->log('---------------------- Start subscriber sync -------------------');
         $this->_start = microtime(true);
 
-        foreach(Mage::app()->getWebsites(true) as $website){
-            if(Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED, $website))
-                $this->_exportSubscribersPerWebsite($website);
+        foreach (Mage::app()->getWebsites(true) as $website) {
+            if (Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED, $website))
+                $this->exportSubscribersPerWebsite($website);
         }
 
         return $this;
     }
 
-    private function _exportSubscribersPerWebsite($website){
+	/**
+	 * Export subscriber per website.
+	 *
+	 * @param $website
+	 */
+	public function exportSubscribersPerWebsite($website)
+    {
         $updated = 0;
         $helper = Mage::helper('connector');
         $fileHelper = Mage::helper('connector/file');
         $limit = $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_LIMIT, $website);
         $subscribers = Mage::getModel('email_connector/contact')->getSubscribersToImport($website, $limit);
-        if(count($subscribers)){
+        if (count($subscribers)) {
             $client = Mage::helper('connector')->getWebsiteApiClient($website);
             $subscribersFilename = strtolower($website->getCode() . '_subscribers_' . date('d_m_Y_Hi') . '.csv');
             //get mapped storename
@@ -83,13 +89,13 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
          * 1. Sync all suppressed for each store
          */
             foreach (Mage::app()->getWebsites(true) as $website) {
-                if(! Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $website))
+                if (! Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $website))
                     continue;
                 $contacts = array();
                 $skip = $i = 0;
                 $client = Mage::helper('connector')->getWebsiteApiClient($website);
                 //there is a maximum of request we need to loop to get more suppressed contacts
-                for($i=0; $i<= $limit;$i++){
+                for ($i=0; $i<= $limit;$i++) {
                     $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $max_to_select , $skip);
                     // skip no more contacts
                     if(empty($apiContacts))
@@ -99,8 +105,8 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
                 }
                 $subscriberBookId = $helper->getSubscriberAddressBook($website);
                 // suppressed contacts to unsubscibe
-                foreach ($contacts as $apiContact){
-                    if(isset($apiContact->suppressedContact)){
+                foreach ($contacts as $apiContact) {
+                    if (isset($apiContact->suppressedContact)) {
                         $suppressedContact = $apiContact->suppressedContact;
                         $email = $suppressedContact->email;
                         $contactId = $suppressedContact->id;
@@ -109,7 +115,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
                              * 2. Unsubscribe customer.
                              */
                             $subscriber = Mage::getModel('newsletter/subscriber')->loadByEmail($email);
-                            if($subscriber->getStatus() == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED){
+                            if ($subscriber->getStatus() == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED) {
                                 $subscriber->setStatus(Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED);
                                 $subscriber->save();
                                 // remove from subscriber address-book
@@ -118,8 +124,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
                             //mark contact as suppressed and unsubscribe
                             $contactCollection = Mage::getModel('email_connector/contact')->getCollection()
                                 ->addFieldToFilter('email', $email)
-                                ->addFieldToFilter('website_id', $website->getId())
-                            ;
+                                ->addFieldToFilter('website_id', $website->getId());
                             //unsubscribe from the email contact table.
                             foreach ($contactCollection as $contact) {
                                 $contact->setIsSubscriber(null)

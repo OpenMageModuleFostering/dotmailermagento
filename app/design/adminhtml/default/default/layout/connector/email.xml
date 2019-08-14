@@ -11,14 +11,13 @@
         </reference>
         <reference name="content">
             <block type="email_connector/adminhtml_dashboard_content" template="connector/dashboard/content.phtml">
-
             </block>
         </reference>
     </adminhtml_email_dashboard_index>
     <adminhtml_email_contact_index>
         <reference name="menu">
             <action method="setActive">
-                <menupath>newsletter/email_contact/email_connector_contact</menupath>
+                <menupath>email_contact/email_connector_contact</menupath>
             </action>
         </reference>
         <reference name="content">
@@ -37,17 +36,18 @@
     <adminhtml_email_contact_edit>
         <reference name="menu">
             <action method="setActive">
-                <menupath>newsletter/email_contact/email_conector_contact</menupath>
+                <menupath>email_contact</menupath>
             </action>
         </reference>
         <reference name="content">
-            <block type="email_connector/adminhtml_contact_edit" name="email_contact_edit"></block>
+            <block type="email_connector/adminhtml_contact_edit" name="email_contact_edit">
+            </block>
         </reference>
     </adminhtml_email_contact_edit>
     <adminhtml_email_campaign_index>
         <reference name="menu">
             <action method="setActive">
-                <menupath>newsletter/email_contact/email_connector_campaign</menupath>
+                <menupath>email_contact/email_connector_campaign</menupath>
             </action>
         </reference>
         <reference name="content">
@@ -66,11 +66,12 @@
     <adminhtml_email_campaign_edit>
         <reference name="menu">
             <action method="setActive">
-                <menupath>newsletter/email_contact/email_conector_campaign</menupath>
+                <menupath>email_contact/email_conector_campaign</menupath>
             </action>
         </reference>
         <reference name="content">
-            <block type="email_connector/adminhtml_campaign_edit" name="email_campaign_edit"></block>
+            <block type="email_connector/adminhtml_campaign_edit" name="email_campaign_edit">
+            </block>
         </reference>
     </adminhtml_email_campaign_edit>
 

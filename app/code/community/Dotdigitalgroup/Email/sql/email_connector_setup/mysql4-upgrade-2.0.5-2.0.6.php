@@ -92,7 +92,7 @@ $installer->getConnection()->dropColumn($installer->getTable('email_connector/co
  * Cleaning
  */
 $entityTypeId     = $installer->getEntityTypeId('customer');
-if($installer->attributeExists($entityTypeId, 'dotmailer_contact_id'))
+if ($installer->attributeExists($entityTypeId, 'dotmailer_contact_id'))
     $installer->removeAttribute($entityTypeId, 'dotmailer_contact_id');
 
 $entityTypeId     = $installer->getEntityTypeId('order');

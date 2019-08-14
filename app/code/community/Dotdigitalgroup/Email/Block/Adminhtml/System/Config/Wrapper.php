@@ -3,6 +3,13 @@
 class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Wrapper extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
 
+    /**
+	 * Ajax Validate the api credentials.
+	 *
+	 * @param Varien_Data_Form_Element_Abstract $element
+	 *
+	 * @return string
+	 */
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $element->setData('onchange', "apiValidation(this.form, this);");

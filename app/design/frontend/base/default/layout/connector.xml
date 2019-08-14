@@ -26,5 +26,4 @@
             <block type="email_connector/order_update" name="connector.order.update" as="connector.order.update" template="connector/sales/order/update.phtml"/>
         </reference>
     </connector_order_update>
-
 </layout>

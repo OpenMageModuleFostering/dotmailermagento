@@ -97,11 +97,11 @@ class Dotdigitalgroup_Email_Model_Connector_Order
         /**
          * Billing address.
          */
-        if($orderData->getBillingAddress()){
+        if ($orderData->getBillingAddress()) {
             $billingData  = $orderData->getBillingAddress()->getData();
             $this->billing_address = array(
-                'billing_address_1' => $this->getStreet($billingData['street'], 1),
-                'billing_address_2' => $this->getStreet($billingData['street'], 2),
+                'billing_address_1' => $this->_getStreet($billingData['street'], 1),
+                'billing_address_2' => $this->_getStreet($billingData['street'], 2),
                 'billing_city'      => $billingData['city'],
                 'billing_region'    => $billingData['region'],
                 'billing_country'   => $billingData['country_id'],
@@ -111,12 +111,12 @@ class Dotdigitalgroup_Email_Model_Connector_Order
         /**
          * Shipping address.
          */
-        if($orderData->getShippingAddress()){
+        if ($orderData->getShippingAddress()) {
             $shippingData = $orderData->getShippingAddress()->getData();
 
             $this->delivery_address = array(
-                'delivery_address_1' => $this->getStreet($shippingData['street'], 1),
-                'delivery_address_2' => $this->getStreet($shippingData['street'], 2),
+                'delivery_address_1' => $this->_getStreet($shippingData['street'], 1),
+                'delivery_address_2' => $this->_getStreet($shippingData['street'], 2),
                 'delivery_city'      => $shippingData['city'],
                 'delivery_region'    => $shippingData['region'],
                 'delivery_country'   => $shippingData['country_id'],
@@ -129,7 +129,7 @@ class Dotdigitalgroup_Email_Model_Connector_Order
          */
         foreach ($orderData->getAllItems() as $productItem) {
             $product = $productItem->getProduct();
-            if($product){
+            if ($product) {
                 // category names
                 $categoryCollection = $product->getCategoryCollection()
                     ->addAttributeToSelect('name');
@@ -166,23 +166,27 @@ class Dotdigitalgroup_Email_Model_Connector_Order
      * @param $line
      * @return string
      */
-    private  function getStreet($street, $line)
+    private  function _getStreet($street, $line)
     {
         $street = explode("\n", $street);
-        if($line == 1){
+        if ($line == 1) {
             return $street[0];
         }
-        if(isset($street[$line -1])){
+        if (isset($street[$line -1])) {
 
             return $street[$line - 1];
-        }else{
+        } else {
 
             return '';
         }
     }
-    // exposes the class as an array of objects
-    public function expose() {
 
+    /**
+	 * exposes the class as an array of objects.
+	 * @return array
+	 */
+    public function expose()
+    {
         return get_object_vars($this);
 
     }

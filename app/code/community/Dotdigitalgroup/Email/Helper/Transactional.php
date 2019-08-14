@@ -8,12 +8,24 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     const XML_PATH_TRANSACTIONAL_MAPPING                        = 'connector_transactional_emails/email_mapping/';
 
 
-
+    /**
+	 * Get the api enabled.
+	 *
+	 * @return mixed
+	 */
     public function isEnabled()
     {
         return Mage::getStoreConfig(self::XML_PATH_TRANSACTIONAL_API_ENABLED);
     }
 
+    /**
+	 * Get api username.
+	 *
+	 * @param int $website
+	 *
+	 * @return mixed
+	 * @throws Mage_Core_Exception
+	 */
     public function getApiUsername($website = 0)
     {
         $website = Mage::app()->getWebsite($website);
@@ -21,6 +33,14 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
         return $website->getConfig(self::XML_PATH_TRANSACTIONAL_API_USERNAME);
     }
 
+    /**
+	 * Get api password.
+	 *
+	 * @param int $website
+	 *
+	 * @return mixed
+	 * @throws Mage_Core_Exception
+	 */
     public function getApiPassword($website = 0)
     {
         $website = Mage::app()->getWebsite($website);
@@ -28,6 +48,12 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
         return $website->getConfig(self::XML_PATH_TRANSACTIONAL_API_PASSWORD);
     }
 
+    /**
+	 * Website by name.
+	 * @param $websiteName
+	 *
+	 * @return Varien_Object
+	 */
     public function getWebsiteByName($websiteName)
     {
         $website = Mage::getModel('core/website')->getCollection()
@@ -65,17 +91,22 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
      * Get the contact id for the custoemer based on website id.
      * @param $email
      * @param $websiteId
-     * @return bool
+     * @return string contact_id
      */
     public function getContactId($email, $websiteId)
     {
         $client = $this->getWebsiteApiClient($websiteId);
         $response = $client->postContacts($email);
-        if(isset($response->message))
+        if (isset($response->message))
             return $response->message;
         return $response->id;
     }
 
+    /**
+	 * Update contact default datafields.
+	 *
+	 * @param $contacData
+	 */
     public function updateContactData($contacData)
     {
         $client = $this->getWebsiteApiClient($contacData->getWebsite());
@@ -103,8 +134,6 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
                 'Key' => 'LAST_ORDER_DATE',
                 'Value' => $contacData->getOrderDate())
         );
-
-
         $client->updateContactDatafieldsByEmail($email, $data);
     }
 
@@ -117,12 +146,11 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
     {
         $client = Mage::getModel('email_connector/apiconnector_client');
         $website = Mage::app()->getWebsite($website);
-        if($website) {
+        if ($website) {
             $client->setApiUsername($this->getApiUsername($website))
                 ->setApiPassword($this->getApiPassword($website));
         }
         return $client;
     }
-
 
 }
