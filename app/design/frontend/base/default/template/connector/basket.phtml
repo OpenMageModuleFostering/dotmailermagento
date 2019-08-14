@@ -1,0 +1,63 @@
+<?php
+
+$items = $this->getBasketItems();
+$helper = Mage::helper('core');
+
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<head>
+
+    <title>Basket</title>
+
+</head>
+<body class="csv" style="background:#fff; font: 12px/1.5em Arial, Helvetica, sans-serif;">
+
+<table style ='float:left; width:600px; border: 1px solid #cbd3d4; font-family:arial; border-collapse: collapse; font-size:12; padding: 5px;' class='data'>
+    <tr>
+        <th style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Image</th>
+        <th style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Description</th>
+        <th style="border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Quantity</th>
+        <th style="border-bottom: 1px solid #cbd3d4;">Total</th>
+    </tr>
+
+    <?php foreach($items as $one):?>
+        <?php
+        if($one->getParentItemId() != null)
+            continue;
+        $_product = Mage::getModel('catalog/product')->load($one->getProductId());
+
+        $name = $_product->getName();
+        $stock = $_product->getStockItem()->getIsInStock();
+        $inStock = ($stock)? 'In Stock' : 'Out of stock';
+        $img = $_product->getImageUrl();
+        $total = $helper->currency($one->getBaseRowTotalInclTax());
+        $productUrl = Mage::getBaseUrl() . $_product->getUrlPath();
+        $grandTotal = $helper->currency($this->getGrandTotal());
+
+        ?>
+        <tr>
+            <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">
+                <img alt="" src="<?php echo $img;?>" width="85" align="absmiddle" border="0" height="85">
+            </td>
+            <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;">Product Name : <a href="<?php echo $productUrl;?>"><?php echo  $name  . '</a></br>'. $inStock;?></td>
+            <td style="padding: 1px; border-bottom: 1px solid #cbd3d4; border-right: 1px solid #cbd3d4;"><?php echo (int)$one->getQty();?></td>
+            <td style="padding: 1px; border-bottom: 1px solid #cbd3d4;"><?php echo $total;?></td>
+        </tr>
+
+    <?php endforeach;?>
+    <tr>
+        <td style="padding: 1px; border-right: 1px solid #cbd3d4;"></td>
+        <td style="padding: 1px; border-right: 1px solid #cbd3d4;"></td>
+
+        <td style="padding: 1px; border-right: 1px solid #cbd3d4;">Order Total</td>
+        <td style="padding: 1px;">
+            <?php echo $grandTotal;?>
+        </td>
+    </tr>
+
+</table>
+
+
+</body>

@@ -1,0 +1,1610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <tabs>
+        <connector translate="label">
+            <label>EMAIL</label>
+            <sort_order>1000</sort_order>
+        </connector>
+    </tabs>
+    <sections>
+        <connector_api_settings translate="label">
+            <label><![CDATA[API Credentials]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <api_credentials>
+                    <label>API Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <username>
+                            <label>API Username</label>
+                            <frontend_type>text</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_wrapper</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <validate>validate-length minimum-length-36</validate>
+                        </username>
+                        <password>
+                            <label>API Password</label>
+                            <frontend_type>password</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_password</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </password>
+                        <initialsync translate="label">
+                            <label>Test API Credentials</label>
+                            <frontend_model>connector/debug_testcredentials</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>*Please save your settings before clicking here! Use this button to test the account.</comment>
+                        </initialsync>
+                        <validator>
+                            <label></label>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_waitingfield</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+                </api_credentials>
+            </groups>
+        </connector_api_settings>
+        <connector_sync_settings translate="label">
+            <!-- you can put anything inbetween the CDATA tags (including image tags) -->
+            <label><![CDATA[Sync Settings]]></label>
+            <!-- this relates to the value in tab -->
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>3000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <sync_customer_schedule>
+                    <label>Customer Data and Subscribers Sync Schedule</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <time translate="label">
+                            <label>Start Time</label>
+                            <frontend_type>time</frontend_type>
+                            <backend_model>connector/system_config_backend_syncschedule_customer</backend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </time>
+                        <frequency translate="label">
+                            <label>Frequency</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_syncfrequency</source_model>
+                            <backend_model>connector/system_config_backend_syncschedule_customer</backend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Note: For Weekly and Monthly frequency, the day of the week/month will be today</comment>
+                            <depends><enabled>1</enabled></depends>
+                        </frequency>
+                        <force_sync translate="label">
+                            <label></label>
+                            <frontend_model>connector/debug_forcecustomersync</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use this button force the data synchronization to run now</comment>
+                        </force_sync>
+                        <validator>
+                            <label></label>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_waitingfield</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+                </sync_customer_schedule>
+                <sync_suppressed_schedule>
+                    <label>Suppressed Data Sync Schedule</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                        <time translate="label">
+                            <label>Start Time</label>
+                            <frontend_type>time</frontend_type>
+                            <backend_model>connector/system_config_backend_syncschedule_suppressed</backend_model>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <depends><enabled>1</enabled></depends>
+                        </time>
+                        <frequency translate="label">
+                            <label>Frequency</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_syncfrequency</source_model>
+                            <backend_model>connector/system_config_backend_syncschedule_suppressed</backend_model>
+                            <sort_order>4</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Note: For Weekly and Monthly frequency, the day of the week/month will be today</comment>
+                            <depends><enabled>1</enabled></depends>
+                        </frequency>
+                        <force_sync translate="label">
+                            <label></label>
+                            <frontend_model>connector/debug_forcesuppressedsync</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use this button force the suppressed data synchronization to run now</comment>
+                        </force_sync>
+                    </fields>
+                </sync_suppressed_schedule>
+                <transactional_data translate="label">
+                    <label><![CDATA[ Transactional data settings]]></label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <order_info_title translate="label">
+                            <label>Order/Basket Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_info_title>
+                        <order_enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </order_enabled>
+                        <wishlist_tile translate="label">
+                            <label>Wish List Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </wishlist_tile>
+                        <wishlist_enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </wishlist_enabled>
+                    </fields>
+                </transactional_data>
+            </groups>
+        </connector_sync_settings>
+        <connector_data_field_settings translate="label">
+            <label><![CDATA[Data Mapping]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>2000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <customer_data>
+                    <label>Data Field Mapping</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <customer_title translate="label">
+                            <label>Customer Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_title>
+
+                        <customer_id translate="label">
+                            <label>Customer ID</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Please map the customer id, if you want to use the dynamic content.</comment>
+                        </customer_id>
+                        <title>
+                            <label>Title</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </title>
+
+                        <firstname>
+                            <label>First Name</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </firstname>
+                        <lastname>
+                            <label>Last Name</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </lastname>
+                        <dob>
+                            <label>D.O.B.</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </dob>
+                        <gender>
+                            <label>Gender</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </gender>
+                        <website_created_on>
+                            <label>Website Created On</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </website_created_on>
+                        <store_created_on>
+                            <label>Store Created On</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </store_created_on>
+                        <account_created>
+                            <label>Account Created Date</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </account_created>
+                        <last_logged_in>
+                            <label>Last Logged In Date</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_logged_in>
+                        <customer_group>
+                            <label>Customer Group</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customer_group>
+                        <address_title translate="label">
+                            <label>Address Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </address_title>
+                        <billing_address_1>
+                            <label>Billing Address Line 1</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_address_1>
+                        <billing_address_2>
+                            <label>Billing Address Line 2</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_address_2>
+                        <billing_city>
+                            <label>Billing City</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>160</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_city>
+                        <billing_country>
+                            <label>Billing Country</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_country>
+                        <billing_postcode>
+                            <label>Billing Zip/Postcode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_postcode>
+                        <billing_telephone>
+                            <label>Billing Telephone</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </billing_telephone>
+                        <delivery_address_1>
+                            <label>Delivery Address Line 1</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_address_1>
+                        <delivery_address_2>
+                            <label>Delivery Address Line 2</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_address_2>
+                        <delivery_city>
+                            <label>Delivery City</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>220</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_city>
+                        <delivery_country>
+                            <label>Delivery Country</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>230</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_country>
+                        <delivery_postcode>
+                            <label>Delivery Zip/Postcode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>240</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_postcode>
+                        <delivery_telephone>
+                            <label>Delivery Telephone</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>250</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delivery_telephone>
+                        <sales_title translate="label">
+                            <label>Sales Information</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>260</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sales_title>
+                        <total_orders>
+                            <label>Total Number of Orders</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>270</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </total_orders>
+                        <average_order_value>
+                            <label>Average Order Value</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>280</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </average_order_value>
+                        <total_spend>
+                            <label>Total Spend</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>290</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </total_spend>
+                        <last_order translate="label">
+                            <label>Last Purchase Date</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>300</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_order>
+                        <last_order_no translate="label">
+                            <label>Last Order No</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <sort_order>310</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </last_order_no>
+                        <validator>
+                            <label>Validation Block</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_datafields</source_model>
+                            <frontend_model>connector/adminhtml_system_config_validator</frontend_model>
+                            <sort_order>320</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                            <expanded>1</expanded>
+                        </validator>
+                    </fields>
+                </customer_data>
+                <address_book translate="label">
+                    <label>Address Book Mapping</label>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <customers>
+                            <label>Add Customers to</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_addressbooks</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </customers>
+                        <subscribers>
+                            <label>Add Subscribers to</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_addressbooks</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </subscribers>
+                        <guest>
+                            <label>Add Guests to</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_addressbooks</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </guest>
+                    </fields>
+                </address_book>
+            </groups>
+        </connector_data_field_settings>
+        <connector_roi_page_tracking_settings translate="label">
+            <label><![CDATA[ROI & Tracking]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>4000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <page_tracking>
+                    <label>Page Tracking</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                    </fields>
+                </page_tracking>
+                <roi_tracking>
+                    <label>ROI Tracking</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </enabled>
+                    </fields>
+                </roi_tracking>
+            </groups>
+        </connector_roi_page_tracking_settings>
+        <lost_basket_settings translate="label">
+            <label><![CDATA[Lost Baskets]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>6000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <active>
+                    <label>Lost Baskets Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>100</sort_order>
+                    <show_in_default>0</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <active translate="label">
+                            <label>Consider Order complete for lost baskets</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_activebasket</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </active>
+                    </fields>
+                </active>
+                <customers>
+                    <label>Customers</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <heading_1 translate="label">
+                            <label>Lost basket 1</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_1>
+                        <enabled_1 translate="label">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/customers/enabled_1</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_1>
+                        <send_after_1>
+                            <label>Send after (min)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_lostbasket</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_1>
+                        <campaign_1>
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_1>
+                        <heading_2 translate="label">
+                            <label>Lost basket 2</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_2>
+                        <enabled_2 translate="label">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/customers/enabled_2</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_2>
+                        <send_after_2>
+                            <label>Send after (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampain</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_2>
+                        <campaign_2>
+                            <label>Campaign to send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_2>
+                        <heading_3 translate="label">
+                            <label>Lost basket 3 </label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_3>
+                        <enabled_3 translate="label">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/customers/enabled_3</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_3>
+                        <send_after_3>
+                            <label>Send after (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampain</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_3>
+                        <campaign_3>
+                            <label>Campaign to send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_3>
+                    </fields>
+                </customers>
+                <guests>
+                    <label>Guests</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <heading_1 translate="label">
+                            <label>Lost basket 1</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_1>
+                        <enabled_1 translate="label">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/guests/enabled_1</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_1>
+                        <send_after_1>
+                            <label>Send after (min)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_lostbasket</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_1>
+                        <campaign_1>
+                            <label>Campaign To Send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_1>
+
+                        <heading_2 translate="label">
+                            <label>Lost basket 2</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_2>
+                        <enabled_2 translate="label">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/guests/enabled_2</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_2>
+                        <send_after_2>
+                            <label>Send after (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampain</source_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_2>
+                        <campaign_2>
+                            <label>Campaign to send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_2>
+
+                        <heading_3 translate="label">
+                            <label>Lost basket 3 </label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </heading_3>
+                        <enabled_3 translate="label">
+                            <label>Enabled/Disabled</label>
+                            <frontend_type>select</frontend_type>
+                            <config_path>lostbaskets/guests/enabled_3</config_path>
+                            <source_model>adminhtml/system_config_source_enabledisable</source_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled_3>
+                        <send_after_3>
+                            <label>Send after (hrs)</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_sendcampain</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </send_after_3>
+                        <campaign_3>
+                            <label>Campaign to send</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_campaigns</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </campaign_3>
+                    </fields>
+                </guests>
+                <test>
+                    <label>Test</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <email translate="label">
+                            <label>Test Email</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Enter the email for customer to test lost basket, with the first lost basket campaign.</comment>
+                        </email>
+                        <force_test translate="label">
+                            <label></label>
+                            <frontend_model>connector/debug_forcelostbasketsync</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment>Use this button force the data synchronization to run now</comment>
+                        </force_test>
+                    </fields>
+                </test>
+            </groups>
+        </lost_basket_settings>
+        <sms_section translate="label">
+            <label><![CDATA[SMS]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>7000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <sms_message_one translate="label">
+                    <label>SMS Message 1</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <order_status translate="label">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+                        <message translate="label">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessageone</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+
+                </sms_message_one>
+                <sms_message_two translate="label">
+                    <label>SMS Message 2</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <order_status translate="label">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+                        <message translate="label">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessagetwo</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+
+                </sms_message_two>
+                <sms_message_three translate="label">
+                    <label>SMS Message 3</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <order_status translate="label">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+                        <message translate="label">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessagethree</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+                </sms_message_three>
+                <sms_message_four translate="label">
+                    <label>SMS Message 4</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <enabled translate="label">
+                            <label>Enabled</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <order_status translate="label">
+                            <label>Order Status</label>
+                            <sort_order>20</sort_order>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderstatus</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </order_status>
+                        <message translate="label">
+                            <label>Message</label>
+                            <frontend_type>textarea</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_smsmessagefour</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <validate>validate-length maximum-length-110</validate>
+                        </message>
+                    </fields>
+
+                </sms_message_four>
+            </groups>
+        </sms_section>
+        <dynamic_content translate="label">
+            <label><![CDATA[Dynamic Content]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>8000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>0</show_in_store>
+            <groups>
+                <products translate="label">
+                    <label>Dynamic Products</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <related translate="label">
+                            <label>Related Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related>
+                        <related_display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related_display_type>
+                        <related_items_to_display translate="label">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>30</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </related_items_to_display>
+
+                        <upsell translate="label">
+                            <label>Up Sell Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </upsell>
+                        <upsell_display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </upsell_display_type>
+                        <upsell_items_to_display translate="label">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </upsell_items_to_display>
+
+                        <crosssell translate="label">
+                            <label>Cross Sell Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </crosssell>
+                        <crosssell_display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </crosssell_display_type>
+                        <crosssell_items_to_display translate="label">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>90</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </crosssell_items_to_display>
+
+                        <best translate="label">
+                            <label>Best Sellers</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </best>
+                        <best_display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </best_display_type>
+                        <best_items_to_display translate="label">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>120</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </best_items_to_display>
+                        <best_time_period translate="label">
+                            <label>Time Period</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_timeperiod</source_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </best_time_period>
+
+                        <most_viewed translate="label">
+                            <label>Most Viewed</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>140</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed>
+                        <most_viewed_display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>150</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_display_type>
+                        <most_viewed_items_to_display translate="label">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>160</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_items_to_display>
+                        <most_viewed_time_period translate="label">
+                            <label>Time Period</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_timeperiod</source_model>
+                            <sort_order>170</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_time_period>
+
+                        <recently_viewed translate="label">
+                            <label>Recently Viewed</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>180</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed>
+                        <recently_viewed_display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>190</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed_display_type>
+                        <recently_viewed_items_to_display translate="label">
+                            <label>items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>200</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed_items_to_display>
+
+                        <validator>
+                            <label></label>
+                            <frontend_type>hidden</frontend_type>
+                            <frontend_model>connector/adminhtml_system_config_gridlist</frontend_model>
+                            <sort_order>210</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <can_be_empty>1</can_be_empty>
+                        </validator>
+                    </fields>
+
+                </products>
+                <manual_product_search translate="label">
+                    <label>Manual Product Push</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <settings tranlate="label">
+                            <label>Settings</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </settings>
+                        <display_type translate="label">
+                            <label>Display Type</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_displaytype</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </display_type>
+                        <items_to_display translate="label">
+                            <label>Items To Display</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_gridview</source_model>
+                            <sort_order>60</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </items_to_display>
+                        <products_push translate="label">
+                            <label>Products</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </products_push>
+                        <products_push_items translate="label">
+                            <label>Products</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Comma Separated Product Id's]]></comment>
+                        </products_push_items>
+                    </fields>
+                </manual_product_search>
+                <fallback_products translate="label">
+                    <label>Fallback Products</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <product_list translate="label">
+                            <label>Products</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Comma Separated Product Id's]]></comment>
+                        </product_list>
+                    </fields>
+                </fallback_products>
+            </groups>
+        </dynamic_content>
+        <connector_advanced_settings translate="label">
+            <label><![CDATA[Advanced Settings]]></label>
+            <tab>connector</tab>
+            <frontend_type>text</frontend_type>
+            <sort_order>9000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>1</show_in_website>
+            <show_in_store>1</show_in_store>
+            <groups>
+                <sync_limits>
+                    <label>Transactional Sync Limit</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <orders translate="label">
+                            <label>Historical import limit</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>connector/system_config_source_orderlimit</source_model>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </orders>
+                    </fields>
+                </sync_limits>
+                <external translate="label">
+                    <label><![CDATA[External Dynamic Content]]></label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>20</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <passcode translate="label">
+                            <label>Passcode</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <comment><![CDATA[Recommended: Set a passcode so that basket contents and coupon codes can only be viewed if the following passcode is sent with the request.]]></comment>
+                        </passcode>
+                        <lost_basket_title translate="label">
+                            <label>Lost Baskets</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </lost_basket_title>
+
+                        <lost_basket_url translate="label">
+                            <label>Baskets Content URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_lostbasket</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </lost_basket_url>
+                        <coupon_code_title title="label">
+                            <label>Coupon Codes</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>40</sort_order>
+                            <show_in_website>1</show_in_website>
+                            <show_in_default>1</show_in_default>
+                            <show_in_store>0</show_in_store>
+                        </coupon_code_title>
+                        <coupon_code_url translate="label">
+                            <label>Coupon Codes URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_couponinfo</frontend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </coupon_code_url>
+
+                        <dynamic_content_url translate="label">
+                            <label>Dynamic Content</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>60</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </dynamic_content_url>
+                        <related_products_url translate="label">
+                            <label>Related Products URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_related</frontend_model>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </related_products_url>
+                        <upsell_products_url translate="label">
+                            <label>Up Sell Products URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_upsell</frontend_model>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </upsell_products_url>
+                        <crosssell_products_url translate="label">
+                            <label>Cross Sell Products URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_crosssell</frontend_model>
+                            <sort_order>90</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </crosssell_products_url>
+
+                        <best_sellers_url translate="label">
+                            <label>Best Sellers URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_bestsellers</frontend_model>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </best_sellers_url>
+                        <most_viewed_url translate="label">
+                            <label>Most Viewed URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_mostviewed</frontend_model>
+                            <sort_order>110</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </most_viewed_url>
+                        <product_push_url translate="label">
+                            <label>Product Push URL</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_productpush</frontend_model>
+                            <sort_order>120</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </product_push_url>
+                        <recently_viewed_url translate="label">
+                            <label>Recently Viewed</label>
+                            <frontend_type>label</frontend_type>
+                            <frontend_model>connector/adminhtml_system_recentlyviewed</frontend_model>
+                            <sort_order>130</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </recently_viewed_url>
+                    </fields>
+                </external>
+                <admin translate="label">
+                    <label>Admin</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>30</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_default>1</show_in_default>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <admin_title translate="label">
+                            <label>Contacts ID's</label>
+                            <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </admin_title>
+                        <count_customers translate="label">
+                            <label>Count Customers with ID</label>
+                            <frontend_model>connector/debug_countcontacts</frontend_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </count_customers>
+                        <delete_contact translate="label">
+                            <label>Delete All Contact ID's</label>
+                            <frontend_model>connector/debug_deletecontacts</frontend_model>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </delete_contact>
+                        <memory_limit translate="label">
+                            <label>Memory Limit</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>40</sort_order>
+                            <comment>Set to NO to use system default memory.</comment>
+                        </memory_limit>
+                        <batch_size translate="label">
+                            <label>Customer Sync Batch Size</label>
+                            <frontend_type>text</frontend_type>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <sort_order>50</sort_order>
+                            <comment>Set the limit size for customers loaded in memory.</comment>
+                        </batch_size>
+                        <debug translate="label">
+                            <label>Debug Mode</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <comment>Set to YES to allow creating log files</comment>
+                        </debug>
+                    </fields>
+                </admin>
+            </groups>
+        </connector_advanced_settings>
+    </sections>
+</config>

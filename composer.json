@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/dotmailermagento",
+    "type": "magento-module",
+    "license": "OSL-v3.0",
+    "homepage": "",
+    "description": "Integrate your ecommerce with dotMailer's powerful triggered email marketing and convert more visits to sales.",
+    "authors": [
+    {
+        "name": "Calin Diacon",
+        "email": "cdiacon@gmail.com"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
