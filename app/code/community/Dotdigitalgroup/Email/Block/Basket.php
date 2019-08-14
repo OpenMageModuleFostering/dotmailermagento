@@ -24,10 +24,6 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $customer = Mage::getModel('customer/customer');
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId())->loadByEmail($email);
 
-        if (! $customer->getId()) {
-            Mage::helper('connector')->log('Lost basket, customer not found : ' . $email);
-            exit();
-        }
         //last active  guest  basket
         $quoteModel = Mage::getResourceModel('sales/quote_collection')
             ->addFieldToFilter('is_active', 1)
@@ -37,6 +33,13 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
             ->setPageSize(1);
 
         $quoteModel = $quoteModel->getFirstItem();
+
+	    //check for any quote for this email, don't want to render further
+	    if ($quoteModel->getId()) {
+		    Mage::helper('connector')->log('no quote found for email : ' . $email);
+		    exit();
+	    }
+
         $this->_quote = $quoteModel;
 
 	    //Start environment emulation of the specified store

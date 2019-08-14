@@ -802,7 +802,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 			if ($order !== true){
 
 				$url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED', 'website' => $website->getId()));
-				$resultContent->setStyle( self::CONNECTOR_DASHBOARD_WARRNING)
+				$resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
 					->setMessage('')
 					->setTable(array(
 						'Website' => $websiteName,
@@ -868,7 +868,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
             if ($delete !== true){
 
                 $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_ORDER_DELETE', 'website' => $website->getId(), 'value' => '180'));
-                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_WARRNING)
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
                     ->setMessage('')
                     ->setTable(array(
                         'Website' => $websiteName,

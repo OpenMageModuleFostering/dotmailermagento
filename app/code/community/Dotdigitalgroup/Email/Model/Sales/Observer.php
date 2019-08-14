@@ -103,7 +103,6 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
 	 */
 	public function handleSalesOrderRefund(Varien_Event_Observer $observer)
     {
-        Mage::helper('connector')->log('observer sales order refund');
         $creditmemo = $observer->getEvent()->getCreditmemo();
         $storeId = $creditmemo->getStoreId();
         $order   = $creditmemo->getOrder();

@@ -2,7 +2,7 @@
 <layout version="0.1.0">
     <default>
         <reference name="before_body_end">
-            <block type="page/html_head" name="mailcheck" as="mailcheck" template="mailcheck/scripts.phtml">
+            <block type="page/html_head" name="mailcheck" as="mailcheck">
                 <action method="addJs" ifconfig="connector_advanced_settings/mailcheck/enabled">
                     <script>mailcheck/mailcheck.min.js</script>
                 </action>

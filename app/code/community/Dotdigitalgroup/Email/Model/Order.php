@@ -123,9 +123,8 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
 
         if($days)
         {
-            $from = Zend_Date::now()->subYear(8)->toString('YYYY-MM-dd HH:mm:ss');
             $to = Zend_Date::now()->subDay($days)->toString('YYYY-MM-dd HH:mm:ss');
-            $created = array( 'from' => $from, 'to' => $to, 'date' => true);
+            $created = array('to' => $to, 'date' => true);
             $collection->addFieldToFilter('created_at', $created);
         }
 

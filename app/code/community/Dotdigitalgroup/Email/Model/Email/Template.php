@@ -49,14 +49,12 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
      */
     public function sendTransactional($templateId, $sender, $email, $name, $vars=array(), $storeId=null)
     {
+	    $sendType = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_SENDTYPE);
+	    $transEnabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
+	    $campaignId = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_DATAFIELD);
 
-	    $sendType = Mage::helper('connector/transactional')->getMapping($templateId, Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_SENDTYPE, $storeId);
 
-        $transEnabled = Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
-
-	    $campaignId = Mage::helper('connector/transactional')->getMapping($templateId, Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_DATAFIELD, $storeId);
-
-        //design and send. campaign id is needed for this option
+	    //design and send. campaign id is needed for this option
         if ($sendType == 2 && $transEnabled && $campaignId) {
             if(is_array($email)) {
                 foreach($email as $one) {

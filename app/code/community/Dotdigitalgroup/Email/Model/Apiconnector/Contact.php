@@ -56,7 +56,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $helper = Mage::helper('connector');
         $pageSize = $helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_LIMIT, $website);
         //skip if the mapping field is missing
-        if(!$helper->getCustomerAddressBook($website))
+        if ( !$helper->getCustomerAddressBook($website))
             return;
         //reset wishlists
         $this->_wishlists = array();
@@ -76,7 +76,11 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $customerIds = array();
         foreach ($contacts as $contact) {
             $customerIds[] = $contact->getCustomerId();
+	        //remove contact with customer id set and no customer
+	        if (! Mage::getModel('customer/customer')->load($contact->getCustomerId())->getId())
+		        $contact->delete();
         }
+
         //customer collection
         $customerCollection = $this->getCollection($customerIds, $website);
 
@@ -100,10 +104,13 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
 
 
         foreach ($customerCollection as $customer) {
-            $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerId($customer->getId());
-            //skip contacts without customer id
-            if(!$contactModel->getId())
-                continue;
+	        $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerEmail($customer->getEmail(), $website->getId());
+	        //remove contact with customer id set and no customer
+            if(!$contactModel->getId()){
+				Mage::helper("connector")->log('clean contact email :'  . $customer->getEmail());
+	            $contactModel->delete();
+	            continue;
+            }
             /**
              * DATA.
              */
@@ -252,6 +259,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             $headers[] = $data['datafield'];
             $allMappedHash[$data['attribute']] = $data['datafield'];
         }
+
         $headers[] = 'Email';
         $headers[] = 'EmailType';
         $fileHelper->outputCSV($fileHelper->getFilePath($customersFile), $headers);
@@ -261,7 +269,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $customerCollection = $this->getCollection(array($customerId));
 
         foreach ($customerCollection as $customer) {
-            $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerId($customer->getId());
+            $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerEmail($customer->getEmail(), $websiteId);
             //skip contacts without customer id
             if (!$contactModel->getId())
                 continue;
@@ -288,14 +296,16 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
              */
 
             //mark the contact as imported
-            $contactModel->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED);
-            $subscriber = Mage::getModel('newsletter/subscriber')->loadByEmail($customer->getEmail());
+	        $contactModel->setEmailImported(Dotdigitalgroup_Email_Model_Contact::EMAIL_CONTACT_IMPORTED);
+	        $subscriber = Mage::getModel('newsletter/subscriber')->loadByEmail($customer->getEmail());
             if ($subscriber->isSubscribed()) {
-                $contactModel->setIsSubscriber(1)
+                $contactModel->setIsSubscriber('1')
                     ->setSubscriberStatus($subscriber->getSubscriberStatus());
             }
 
             $contactModel->save();
+
+			Mage::helper("connector")->log($contactModel->getData());
 
             //Send wishlist as transactional data
             if ($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $website)) {
@@ -303,6 +313,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             }
             $updated++;
         }
+
         //send wishlist as transactional data
         if (isset($this->_wishlists[$website->getId()])) {
             //send wishlists as transactional data
