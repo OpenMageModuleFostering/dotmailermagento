@@ -109,7 +109,7 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         $storeIds = $website->getStoreIds();
         $orderModel   = Mage::getModel('email_connector/order');
         if(empty($storeIds))
-            return;
+            return array();
 
         $helper = Mage::helper('connector');
         $orderStatuses = $helper->getConfigSelectedStatus($website);
@@ -118,7 +118,7 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         if($orderStatuses)
             $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses, $days);
         else
-            return;
+            return array();
 
         foreach ($orderCollection as $order) {
             try {

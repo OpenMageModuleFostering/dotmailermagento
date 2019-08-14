@@ -270,7 +270,6 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 		$emailCollection = $this->getCollection();
 		$emailCollection->addFieldToFilter('is_sent', array('null' => true))
 		                ->addFieldToFilter('campaign_id', array('notnull' => true))
-		                ->addFieldToFilter('is_created', array('notnull' => true))
 		                ->addFieldToFilter('type', 1);
 		$emailCollection->getSelect()->order('campaign_id');
 		return $emailCollection;
