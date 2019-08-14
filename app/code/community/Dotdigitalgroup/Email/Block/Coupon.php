@@ -39,7 +39,7 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
             $generator->setUsesPerCoupon(1);
             $generator->setDash(3);
             $generator->setLength(9);
-            $generator->setPrefix('');
+            $generator->setPrefix('DOT-');
             $generator->setSuffix('');
             //set the generation settings
             $rule->setCouponCodeGenerator($generator);
@@ -48,12 +48,20 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
             $coupon     = $rule->acquireCoupon();
             $couponCode = $coupon->getCode();
             //save the type of coupon
-            $couponModel = Mage::getModel('salesrule/coupon')->loadByCode(
-                $couponCode
-            );
-            $couponModel->setType(
-                Mage_SalesRule_Model_Rule::COUPON_TYPE_NO_COUPON
-            );
+            $couponModel = Mage::getModel('salesrule/coupon')
+                ->loadByCode(
+                    $couponCode
+                );
+            $couponModel->setType(Mage_SalesRule_Model_Rule::COUPON_TYPE_NO_COUPON)
+                ->setGeneratedByDotmailer(1);
+
+            if (is_numeric($params['expire_days'])) {
+                $locale = Mage::app()->getLocale()->getLocale();
+                $expirationDate = Zend_Date::now($locale)->addDay($params['expire_days']);
+                $couponModel->setExpirationDate($expirationDate->toString('yyyy-MM-dd HH:mm'));
+            } elseif ($rule->getToDate()) {
+                $couponModel->setExpirationDate($rule->getToDate());
+            }
             $couponModel->save();
 
             return $couponCode;
@@ -62,7 +70,11 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
         return false;
     }
 
-
+    /**
+     * Get style text from config
+     *
+     * @return array
+     */
     protected function getStyle()
     {
         return explode(
@@ -72,6 +84,11 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
         );
     }
 
+    /**
+     * Get coupon font color
+     *
+     * @return mixed
+     */
     protected function getCouponColor()
     {
         return Mage::getStoreConfig(
@@ -79,6 +96,11 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
         );
     }
 
+    /**
+     * Get font size
+     *
+     * @return mixed
+     */
     protected function getFontSize()
     {
         return Mage::getStoreConfig(
@@ -86,6 +108,11 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
         );
     }
 
+    /**
+     * Get font
+     *
+     * @return mixed
+     */
     protected function getFont()
     {
         return Mage::getStoreConfig(
@@ -93,6 +120,11 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
         );
     }
 
+    /**
+     * Get background color
+     *
+     * @return mixed
+     */
     protected function getBackgroundColor()
     {
         return Mage::getStoreConfig(
