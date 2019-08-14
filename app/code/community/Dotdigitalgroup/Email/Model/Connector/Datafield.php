@@ -198,6 +198,11 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
             'type' => 'numeric',
             'visibility' => 'private',
         ),
+        'last_quote_id' => array(
+            'name' => 'LAST_QUOTE_ID',
+            'type' => 'numeric',
+            'visibility' => 'private',
+        ),
         'total_refund' => array(
 	        'name' => 'TOTAL_REFUND',
 	        'type' => 'numeric',
@@ -212,7 +217,12 @@ class Dotdigitalgroup_Email_Model_Connector_Datafield
             'name' => 'LAST_REVIEW_DATE',
             'type' => 'date',
             'visibility' => 'private',
-        )
+        ),
+        'subscriber_status' => array(
+            'name' => 'SUBSCRIBER_STATUS',
+            'type' => 'string',
+            'visibility' => 'private',
+        ),
     );
 
 	/**

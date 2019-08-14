@@ -7,6 +7,8 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 	const CONNECTOR_DASHBOARD_WARRNING   = 'connector_warning';
 	const CONNECTOR_DASHBOARD_FAILED     = 'error';
 
+	const FAST_FIX_MESSAGE = 'Fast Fix Available, Click To Enable The Mapping And Redirect Back.';
+
 	private $_checkpoints = array(
 		'extention_installed' => 'Extension And CURL Installed',
 		'cron_running' => 'Cron running',
@@ -19,15 +21,24 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		'contact_syncing' => 'Contacts Syncing',
 		'subscriber_sync_enabled' => 'Subscribers Sync Enabled',
 		'subscribers_syncing' => 'Subscribers Syncing',
+		'automation_active' => 'Automation Programs Active',
 		'abandoned_carts_enabled' => 'Abandoned Carts Enabled',
 		'data_field_mapped' => 'Data Field Mapped',
 		'valid_api_credentials' => 'API Credentials',
 		'order_enabled' => 'Order Sync Enabled',
+        'custom_order_attributes' => 'Custom Order Attributes',
 		'order_syncing' => 'Orders Syncing',
-        'order_delete' => 'Orders Expiry',
 		'last_abandoned_cart_sent_day' => 'Last Abandoned Cart Sent Day',
+        'review_enabled' => 'Review Sync Enabled',
+        'review_syncing' => 'Review Syncing',
+        'review_campaign_status' => 'Review Status',
+        'wishlist_enabled' => 'Wishlist Enabled',
+        'wishlist_syncing' => 'Wishlist Syncing',
+        'easy_email_capture_enabled' => 'Easy Email Capture Enabled',
+        'disable_newsletter_success_enabled' => 'Disable Newsletter Success Enabled',
 		'conflict_check' => 'Conflict Check',
 		'system_information' => 'System Information'
+
 	);
     /**
      * Set the template.
@@ -173,20 +184,20 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 			$link = Mage::helper('adminhtml')->getUrl('*/system_config/edit/section/connector_sync_settings/website/' . $website->getCode());
 
 			$customerMapped = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID))? true :
-				'Not mapped !';
+				'Not mapped!';
 			$subscriberMapped = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID))? true :
-				'Not mapped !';
+				'Not mapped!';
 			$guestMapped = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID))? true :
-				'Not mapped !';
+				'Not mapped!';
 
 			if ($customerMapped !== true || $subscriberMapped !== true || $guestMapped !== true) {
 				$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
 					->setMessage('')
 					->setTable(array(
 					'Website' => $websiteName,
-					'Customers' => ($customerMapped !== true)? $customerMapped . '<a href="' . $link . '"> Click to map</a>' : 'Mapped.',
-					'Subscribers' => ($subscriberMapped !== true)? $subscriberMapped . '<a href="' . $link . '"> Click to map</a>'  : 'Mapped.',
-					'Guests' => ($guestMapped !== true)? $guestMapped . '<a href="' . $link . '"> Click to map</a>' : 'Mapped.'
+					'Customers' => ($customerMapped !== true)? $customerMapped . ' <a href="' . $link . '">configuration</a>' : 'Mapped.',
+					'Subscribers' => ($subscriberMapped !== true)? $subscriberMapped . ' <a href="' . $link . '">configuration</a>'  : 'Mapped.',
+					'Guests' => ($guestMapped !== true)? $guestMapped . ' <a href="' . $link . '">configuration</a>' : 'Mapped.'
 				));
 			}
 		}
@@ -205,6 +216,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 			->setTitle('ROI Tracking Status : ')
 			->setMessage('Looks Great.');
 
+		$valid = true;
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$websiteName  = $website->getName();
 
@@ -221,10 +233,15 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 					->setMessage('')
 					->setTable(array(
 						'Website' => $websiteName,
-						'ROI' => ($roiConfig !== true)? $roiConfig . '<a href="' . $roiUrl . '"> Click to enable</a>' : 'Mapped.',
-						'PAGE' => ($pageTracking !== true)? $pageTracking . '<a href="' . $pageUrl . '"> Click to enable</a>' : 'Mapped.'
+						'ROI' => ($roiConfig !== true)? $roiConfig . ' <a href="' . $roiUrl . '">enable</a>' : 'Mapped.',
+						'PAGE' => ($pageTracking !== true)? $pageTracking . ' <a href="' . $pageUrl . '">enable</a>' : 'Mapped.'
 					));
+				$valid = false;
 			}
+		}
+		//validation failed
+		if (! $valid) {
+			$resultContent->setHowto(self::FAST_FIX_MESSAGE);
 		}
 
 		return $resultContent;
@@ -242,19 +259,24 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 			->setMessage('Enabled.')
 		;
 
+		$valid = true;
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$websiteName  = $website->getName();
-			$transactional = ($website->getConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED))? true :
-				'Disabled ';
+			$transactional = ($website->getConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED))? true : 'Disabled! ';
 			if ($transactional !== true){
 				$url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_TRANSACTIONAL_API_ENABLED', 'website' => $website->getId()));
 				$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
 					->setMessage('')
 					->setTable(array(
 						'Website' => $websiteName,
-						'Status' => ($transactional)? $transactional . '<a href="' . $url . '">Click to enable</a>' : 'Enabled.'
+						'Status' => ($transactional)? $transactional . ' <a href="' . $url . '">enable</a>' : 'Enabled.'
 					));
+				$valid = false;
 			}
+		}
+		//validation failed
+		if (! $valid) {
+			$resultContent->setHowto(self::FAST_FIX_MESSAGE);
 		}
 
 		return $resultContent;
@@ -277,16 +299,18 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		$emailDir   = Mage::getBaseDir('var') . DIRECTORY_SEPARATOR . 'export' .  DIRECTORY_SEPARATOR . 'email';
 		$archiveDir = Mage::getBaseDir('var') . DIRECTORY_SEPARATOR . 'export' .  DIRECTORY_SEPARATOR . 'email' . DIRECTORY_SEPARATOR . 'archive';
 
-		$checkEmail = Mage::helper('connector/file')->checkPathPermission($emailDir);
-		$checkArchive = Mage::helper('connector/file')->checkPathPermission($archiveDir);
-		if($checkEmail   != Dotdigitalgroup_Email_Helper_File::FILE_FULL_ACCESS_PERMISSION || $checkArchive != Dotdigitalgroup_Email_Helper_File::FILE_FULL_ACCESS_PERMISSION) {
+		$checkEmail   = Mage::helper('connector/file')->getPathPermission($emailDir);
+		$checkArchive = Mage::helper('connector/file')->getPathPermission($archiveDir);
+
+		//file persmission failed
+		if ($checkEmail != 755 && $checkEmail != 777 || $checkArchive != 755 && $checkArchive != 777) {
 			$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
-				->setMessage('Wrong Permission For Directory : ');
+				->setMessage('Wrong Permission For Directory : 777 or 755');
 
 			//list of directory permission checked
-			if ($checkEmail   != Dotdigitalgroup_Email_Helper_File::FILE_FULL_ACCESS_PERMISSION)
+			if ($checkEmail   != 755 || $checkEmail != 777)
 				$resultContent->setHowto( $emailDir . ' is set to : ' . $checkEmail);
-			if ($checkArchive != Dotdigitalgroup_Email_Helper_File::FILE_FULL_ACCESS_PERMISSION)
+			if ($checkArchive != 755 || $checkArchive != 777)
 				$resultContent->setHowto( $archiveDir . ' is set to : ' . $checkArchive);
 		}
 
@@ -302,12 +326,11 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		$resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
 
 		$resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
-		              ->setTitle('Missing Files : ')
-		              ->setMessage('Looks Great.');
+			->setTitle('Missing Files : ')
+            ->setMessage('Looks Great.');
 
 		$filePath = Mage::getModuleDir('etc', Dotdigitalgroup_Email_Helper_Config::MODULE_NAME).DS.'files.yaml';
 		$config = Zend_Config_Yaml::decode(file_get_contents($filePath));
-
 
 		/**
 		 * Code dirs.
@@ -331,13 +354,25 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		 */
 		$skinDir = Mage::getBaseDir('skin');
 
-		$filesToCheck = array($config['etc'], $config['controllers'], $config['sql'], $config['locale'], $config['block'], $config['helper'], $config['model'], $config['design'], $config['skin']);
-		$pathToCheck = array($etcDir, $controllerDir, $sqlDir, $localeDir, $blockDir, $helperDir, $modelDir, $designDir, $skinDir);
+        /**
+         * Js dir
+         */
+        $jsDir = Mage::getBaseDir('base') . DS . 'js';
+
+        /**
+         * lib dir
+         */
+        $libDir = Mage::getBaseDir('lib');
+
+		$filesToCheck = array($config['etc'], $config['controllers'], $config['sql'], $config['locale'], $config['block'],
+            $config['helper'], $config['model'], $config['design'], $config['skin'], $config['lib'], $config['js']);
+		$pathToCheck = array($etcDir, $controllerDir, $sqlDir, $localeDir, $blockDir, $helperDir,
+            $modelDir, $designDir, $skinDir, $libDir, $jsDir);
 		foreach ( $filesToCheck as $subdir ) {
 			foreach ( $subdir as $path ) {
 				$file = $pathToCheck[0] . DS . str_replace( '#', DS, $path );
 
-				if ( !file_exists( $file ) ) {
+				if ( !is_file( $file ) ) {
 					$resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED )
 						->setMessage('')
 						->setHowto('File not found : ' . $file );
@@ -348,8 +383,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 
 		return $resultContent;
 	}
-
-
 
 	/**
 	 * Contact Sync Status.
@@ -362,10 +395,10 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		              ->setTitle('Contacts Sync Status : ')
 		              ->setMessage('Looks Great.');
 
+		$valid = true;
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$websiteName  = $website->getName();
-			$contact = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED))? true :
-				'Disabled ';
+			$contact = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED))? true : 'Disabled!';
 			//disabled show data table
 			if ($contact !== true){
 				//redirection url to enable website config
@@ -374,10 +407,15 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 					->setMessage('')
 	                ->setTable(array(
 		              'Website' => $websiteName,
-		              'Status' => ($contact)? $contact : 'Enabled.',
-		                'Fast Fix' => '<a href="' . $url . '">Click to enable</a>'
-	                ));
+		              'Status' => ($contact)? $contact . ' <a href="' . $url . '">enable</a>' : 'Enabled.'
+	                ))
+				;
+				$valid = false;
 			}
+		}
+		//validation failed
+		if (! $valid) {
+			$resultContent->setHowto(self::FAST_FIX_MESSAGE);
 		}
 
 		return $resultContent;
@@ -389,58 +427,80 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 	 */
 	public function contactSyncing()
 	{
+		//content to render
 		$resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
 		$resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
 		              ->setTitle('Contacts Sync : ')
 		              ->setMessage('Looks Great.');
+		$contactModel = Mage::getModel('email_connector/contact');
 
-		//duplicate email customers
-		$customers = Mage::helper('connector')->getCustomersWithDuplicateEmails();
-		$duplicates = $customers->count();
-		if ($duplicates) {
+		//global email duplicates
+		if (Mage::getResourceModel('customer/customer')->findEmailDuplicates()) {
 
+			//duplicate email customers
+			$customers = Mage::helper('connector')->getCustomersWithDuplicateEmails();
 			$customerEmails = implode(',   ', $customers->getColumnValues('email'));
+			//render the email duplicates
 			$resultContent->setHowto('Found Duplicate Customers Emails :')
 				->setHowto($customerEmails);
 		}
 
 		foreach ( Mage::app()->getWebsites() as $website ) {
-			$websiteName  = $website->getName();
+
 			$websiteId    = $website->getId();
-			//number of customers for website
-			$cusotmerForWebsite = Mage::getModel('customer/customer')->getCollection()
+			//total customers for website
+			$countCustomers = Mage::getModel('customer/customer')->getCollection()
 				->addAttributeToFilter('website_id', $websiteId)
 				->getSize();
+
 			//skip if no customers
-			if (! $cusotmerForWebsite)
+			if (! $countCustomers)
 				continue;
-			//number of contacts imported
-			$contacts = Mage::getModel('email_connector/contact')->getCollection()
-				->addFieldToFilter('email_imported', 1)
-				->addFieldToFilter('customer_id', array('neq' => '0'))
-				->addFieldToFilter('website_id', $websiteId)
-				->getSize();
+
+			//total contacts from customer address book
+			$customerAddressBook = $this->_getAddressBookContacts($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID), $website);
+			$countAddressbookContacts = ($customerAddressBook)? $customerAddressBook->contacts : 0;
+			//total contacts as customers
+			$countCustomerContacts = $contactModel->getNumberCustomerContacts($websiteId);
+
+			//suppressed contacts
+			$suppressed = $contactModel->getNumberCustomerSuppressed($websiteId);
+
+			//table data
 			$tableData = array(
-				'Website' => $websiteName,
-				'Status' => 'Syncing',
-				'Total Customers' => $cusotmerForWebsite,
-				'Imported Contacts' => $contacts
+				'Website' => $website->getName(),
+				'Total Customers/Contacts' => $countCustomers . '/ ' . $countCustomerContacts,
+				'Customer AddressBook Contacts' => ($customerAddressBook)? $customerAddressBook->name . ' : ' . $countAddressbookContacts : 'Not Mapped.',
+				'Suppressed' => $suppressed,
+				'Synced'     => $contactModel->getNumberCustomerSynced($websiteId)
 			);
-			//missing contacts
-			$missing = $cusotmerForWebsite - $contacts;
+
+			//number of customers not match, try to update
+			if ($countCustomers != $countCustomerContacts) {
+
+				$url = Mage::helper('adminhtml')->getUrl('*/connector/populatecontacts', array('type' => 'customers', 'website' => $website->getId()));
+				$link = ' <a href="' . $url . '"> populate</a>';
+				$tableData['Status'] = 'Customers not matching the contact table. ' . $link;
+			//customers not synced yet
+			} elseif ($countCustomers > $countCustomerContacts + $suppressed){
+				$tableData['Status'] = 'Syncing..';
+			//all customers syned.
+			} else {
+				$tableData['Status'] = 'Synced';
+			}
+
+			//not valid response remove status
+			if (!$countAddressbookContacts)
+				unset($tableData['Status']);
 
 			//no contacts
-			if (! $contacts) {
+			if (! $countCustomers) {
 
 				$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
 					->setTitle('Contacts Sync (ignore if you have reset contacts for reimport) : ')
 					->setMessage('');
-				$tableData['Status'] = 'No Imported Contacts Found';
+				$tableData['Status'] = 'No Imported Contacts Found!';
 				unset($tableData['Imported Contacts']);
-			} elseif ($missing) {
-
-				$tableData['Status'] = 'Sync Not Complete';
-				$tableData['Missing'] = $missing;
 			}
 
 			$resultContent->setTable($tableData);
@@ -460,26 +520,29 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		              ->setTitle('Subscribers Sync Status : ')
 		              ->setMessage('Looks Great.');
 
+		$passed = true;
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$websiteName  = $website->getName();
 			$contact = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED))? true :
-				'Disabled ';
+				'Disabled!';
 			//disabled show data table
 			if ($contact !== true){
 				//redirection url to enable website config
 				$url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED', 'website' => $website->getId()));
 				$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
-				              ->setMessage('')
-				              ->setTable(array(
-					              'Website' => $websiteName,
-					              'Status' => ($contact)? $contact : 'Enabled.',
-					              'Fast Fix' => '<a href="' . $url . '">Click to enable</a>'
-				              ));
+					->setMessage('')
+					->setTable(array(
+					  'Website' => $websiteName,
+					  'Status' => ($contact)? $contact . ' <a href="' . $url . '">enable</a>' : 'Enabled.'
+					));
+				$passed = false;
 			}
 		}
+		//if validation not passed
+		if (! $passed)
+			$resultContent->setHowto(self::FAST_FIX_MESSAGE);
 
 		return $resultContent;
-
 	}
 
 	/**
@@ -492,35 +555,232 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		$resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
 		              ->setTitle('Subscribers Sync : ')
 		              ->setMessage('Looks Great.');
+		$contactModel = Mage::getModel('email_connector/contact');
 
 		foreach ( Mage::app()->getWebsites() as $website ) {
+			$websiteId = $website->getId();
 			$websiteName  = $website->getName();
 			$storeIds = $website->getStoreIds();
-			//number of customers for website
-			$subscriberForWebsite = Mage::getModel('newsletter/subscriber')->getCollection()
-                ->addFieldToFilter('store_id', array('in' => $storeIds))
-				->getSize()
-			;
-
+			//total subscribers
+			$countSubscribers = Mage::getModel('newsletter/subscriber')->getCollection()
+                ->useOnlySubscribed()
+                ->addStoreFilter($storeIds)
+				->getSize();
 			//skip if no subscriber
-			if (! $subscriberForWebsite)
+			if (! $countSubscribers)
 				continue;
-			//number of contacts imported as subscribers
-			$contacts = Mage::getModel('email_connector/contact')->getCollection()
-			                ->addFieldToFilter('subscriber_imported', 1)
-			                ->addFieldToFilter('is_subscriber', 1)
-			                ->addFieldToFilter('store_id', array('in' => $storeIds))
-			                ->getSize();
-			//no contacts
-			if (! $contacts) {
+
+			//total contacts subscribed
+			$countSubscribedContacts = $contactModel->getNumberSubscribers($websiteId);
+			//total contacts subscribed imported
+			$countSubscribersImported = $contactModel->getNumberSubscribersSynced($websiteId);
+
+			//number of address
+			$countAddressbookContacts = $this->_getAddressBookContacts($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID), $website);
+
+			$tableData = array(
+				'Website' => $websiteName,
+				'Total Subscribers/Contacts' => $countSubscribers . '/ ' . $countSubscribedContacts,
+				'Subscriber AddressBook Contacts' => ($countAddressbookContacts)? $countAddressbookContacts->name . ' : ' . $countAddressbookContacts->contacts : 'Not Mapped.',
+				'Imported' => $countSubscribersImported
+			);
+
+			$tableData['Status'] = '';
+
+			//no imported contacts
+			if (! $countSubscribersImported) {
+
+				$tableData['Status'] = 'No Imported Subscribers Found.';
 				$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
 	                ->setTitle('Subscriber Sync (ignore if you have reset subscribers for reimport) : ')
-	                ->setMessage('')
-	                ->setTable(array(
-		              'Website' => $websiteName,
-		              'Status' => 'No Imported Subscribers Found.'
-	                ));
+	                ->setMessage('');
 			}
+			$resultContent->setTable($tableData);
+		}
+
+		return $resultContent;
+	}
+	//check the mapped programs are active
+	public function automationActive()
+	{
+		$disableCustomer = $disableSubscriber  = $disableOrder = $disableGuestOrder = $disableReviews  = $disableWishlist = '';
+		$resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+		$resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+			->setTitle('Automation Program Status :')
+			->setMessage('');
+
+		foreach ( Mage::app()->getWebsites() as $website ) {
+			$customerProgram = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER);
+			$subscriberProgram = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER);
+            $orderProgram = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER);
+            $guestOrderProgram = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER);
+            $reviewsProgram = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW);
+            $wishlistProgram = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST);
+
+			//programs
+			$cusProgram = $this->_getWebisteProgram($customerProgram, $website);
+			$subProgram = $this->_getWebisteProgram($subscriberProgram, $website);
+            $orderProgram = $this->_getWebisteProgram($orderProgram, $website);
+            $guestOrderProgram = $this->_getWebisteProgram($guestOrderProgram, $website);
+            $reviewsProgram = $this->_getWebisteProgram($reviewsProgram, $website);
+            $wishlistProgram = $this->_getWebisteProgram($wishlistProgram, $website);
+
+            //check for wishlist program
+            if ($wishlistProgram) {
+
+                if ($wishlistProgram->status != 'Active') {
+
+                    //set the status as failed
+                    $resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+                        ->setMessage('  Consider to disable not active programs');
+
+                    $disableWishlist = Mage::helper( 'adminhtml' )->getUrl( '*/connector/enablewebsiteconfiguration', array(
+                            'path'    => 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST',
+                            'value'   => '0',
+                            'website' => $website->getId()
+                        )
+                    );
+                    $disableWishlist = 'Deactivated! <a href="' . $disableWishlist . '">click</a> to disable';
+
+                } else {
+
+                    $disableWishlist = $wishlistProgram->status;
+                }
+            }
+
+            //check for order program
+            if ($orderProgram) {
+
+                if ($orderProgram->status != 'Active') {
+
+                    //set the status as failed
+                    $resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+                        ->setMessage('  Consider to disable not active programs');
+
+                    $disableOrder = Mage::helper( 'adminhtml' )->getUrl( '*/connector/enablewebsiteconfiguration', array(
+                            'path'    => 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER',
+                            'value'   => '0',
+                            'website' => $website->getId()
+                        )
+                    );
+                    $disableOrder = 'Deactivated! <a href="' . $disableOrder . '">click</a> to disable';
+
+                } else {
+
+                    $disableOrder = $orderProgram->status;
+                }
+            }
+
+            //check for review program
+            if ($reviewsProgram) {
+
+                if ($reviewsProgram->status != 'Active') {
+
+                    //set the status as failed
+                    $resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+                        ->setMessage('  Consider to disable not active programs');
+
+                    $disableReviews = Mage::helper( 'adminhtml' )->getUrl( '*/connector/enablewebsiteconfiguration', array(
+                            'path'    => 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW',
+                            'value'   => '0',
+                            'website' => $website->getId()
+                        )
+                    );
+                    $disableReviews = 'Deactivated! <a href="' . $disableReviews . '">click</a> to disable';
+
+                } else {
+
+                    $disableReviews = $reviewsProgram->status;
+                }
+            }
+
+            //check for guest order program
+            if ($guestOrderProgram) {
+
+                if ($guestOrderProgram->status != 'Active') {
+
+                    //set the status as failed
+                    $resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+                        ->setMessage('  Consider to disable not active programs');
+
+                    $disableGuestOrder = Mage::helper( 'adminhtml' )->getUrl( '*/connector/enablewebsiteconfiguration', array(
+                            'path'    => 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER',
+                            'value'   => '0',
+                            'website' => $website->getId()
+                        )
+                    );
+                    $disableGuestOrder = 'Deactivated! <a href="' . $disableGuestOrder . '">click</a> to disable';
+
+                } else {
+
+                    $disableGuestOrder = $guestOrderProgram->status;
+                }
+            }
+
+			//check for customer program
+			if ($cusProgram) {
+
+				if ($cusProgram->status != 'Active') {
+
+					//set the status as failed
+					$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+						->setMessage('  Consider to disable not active programs');
+
+					$disableCustomer = Mage::helper( 'adminhtml' )->getUrl( '*/connector/enablewebsiteconfiguration', array(
+							'path'    => 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER',
+							'value'   => '0',
+							'website' => $website->getId()
+						)
+					);
+					$disableCustomer = 'Deactivated! <a href="' . $disableCustomer . '">click</a> to disable';
+
+				} else {
+
+					$disableCustomer = $cusProgram->status;
+				}
+			}
+
+			//check for subscriber program
+			if ($subProgram) {
+
+				if ($subProgram->status != 'Active') {
+					// set the status failed
+					$resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+						->setMessage('  Consider to disable not active programs');
+
+					//link to disbale config
+					$disableSubscriber = Mage::helper( 'adminhtml' )->getUrl( '*/connector/enablewebsiteconfiguration', array(
+							'path'    => 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER',
+							'value'   => '0',
+							'website' => $website->getId()
+						)
+					);
+					 $disableSubscriber = 'Deactivated <a href="' . $disableSubscriber . '">click</a> to disable';
+
+				} else {
+					$disableSubscriber = $subProgram->status;
+				}
+			}
+
+			$tableData = array(
+				'Website' => $website->getName(),
+				'Customer Program' => (isset($cusProgram->name))? $cusProgram->name : 'Disabled',
+				'Customer Status' => (isset($cusProgram->status))? $disableCustomer : '',
+				'Subscriber Program' => (isset($subProgram->name))? $subProgram->name : 'Disabled',
+				'Subscriber Status' => (isset($subProgram->status))? $disableSubscriber : '',
+                'Order Program' => (isset($orderProgram->name))? $orderProgram->name : 'Disabled',
+                'Order Status' => (isset($orderProgram->status))? $disableOrder : '',
+                'Guest Order Program' => (isset($guestOrderProgram->name))? $guestOrderProgram->name : 'Disabled',
+                'Guest Order Status' => (isset($guestOrderProgram->status))? $disableGuestOrder : '',
+                'Review Program' => (isset($reviewsProgram->name))? $reviewsProgram->name : 'Disabled',
+                'Review Status' => (isset($reviewsProgram->status))? $disableReviews : '',
+                'Wishlist Program' => (isset($wishlistProgram->name))? $wishlistProgram->name : 'Disabled',
+                'Wishlist Status' => (isset($wishlistProgram->status))? $disableWishlist : '',
+			);
+
+			//set the content with table data
+			$resultContent->setTable($tableData);
+
 		}
 
 		return $resultContent;
@@ -541,17 +801,17 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$websiteName  = $website->getName();
 			$abandonedCusomer_1 = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CARTS_ENABLED_1))? true :
-				'Disabled ';
+				'Disabled!';
 			$abandonedCusomer_2 = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CARTS_ENABLED_2))? true :
-				'Disabled ';
+				'Disabled!';
 			$abandonedCusomer_3 = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_ABANDONED_CARTS_ENABLED_3))? true :
-				'Disabled ';
+				'Disabled!';
 			$abandonedGuest_1 = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_GUEST_ABANDONED_CARTS_ENABLED_1))? true :
-				'Disabled ';
+				'Disabled!';
 			$abandonedGuest_2 = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_GUEST_ABANDONED_CARTS_ENABLED_2))? true :
-				'Disabled ';
+				'Disabled!';
 			$abandonedGuest_3 = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_GUEST_ABANDONED_CARTS_ENABLED_3))? true :
-				'Disabled ';
+				'Disabled!';
 
 			if ($abandonedCusomer_1 !== true || $abandonedCusomer_2 !== true || $abandonedCusomer_3 !== true || $abandonedGuest_1 !== true || $abandonedGuest_2 !== true || $abandonedGuest_3 !== true){
 				//customer abandoned links to enable
@@ -568,12 +828,12 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 					->setMessage('Don\'t forget to map')
 					->setTable(array(
 						'Website' => $websiteName,
-						'Customer Abandoned 1' => ($abandonedCusomer_1 !== true)? $abandonedCusomer_1 . '<a href="' . $customer1 . '">Click to enable</a>' : 'Enabled',
-						'Customer Abandoned 2' => ($abandonedCusomer_2 !== true)? $abandonedCusomer_2 . '<a href="' . $customer2 . '">Click to enable</a>' : 'Enabled',
-						'Customer Abandoned 3' => ($abandonedCusomer_3 !== true)? $abandonedCusomer_3 . '<a href="' . $customer3 . '">Click to enable</a>' : 'Enabled',
-						'Guest Abandoned 1' => ($abandonedGuest_1 !== true)? $abandonedGuest_1 . '<a href="' . $guest1 . '">Click to enable</a>' : 'Enabled',
-						'Guest Abandoned 2' => ($abandonedGuest_2 !== true)? $abandonedGuest_2 . '<a href="' . $guest2 . '">Click to enable</a>' : 'Enabled',
-						'Guest Abandoned 3' => ($abandonedGuest_3 !== true)? $abandonedGuest_3 . '<a href="' . $guest3 . '">Click to enable</a>' : 'Enabled',
+						'Customer Abandoned 1' => ($abandonedCusomer_1 !== true)? $abandonedCusomer_1 . ' <a href="' . $customer1 . '">enable</a>' : 'Enabled',
+						'Customer Abandoned 2' => ($abandonedCusomer_2 !== true)? $abandonedCusomer_2 . ' <a href="' . $customer2 . '">enable</a>' : 'Enabled',
+						'Customer Abandoned 3' => ($abandonedCusomer_3 !== true)? $abandonedCusomer_3 . ' <a href="' . $customer3 . '">enable</a>' : 'Enabled',
+						'Guest Abandoned 1' => ($abandonedGuest_1 !== true)? $abandonedGuest_1 . ' <a href="' . $guest1 . '">enable</a>' : 'Enabled',
+						'Guest Abandoned 2' => ($abandonedGuest_2 !== true)? $abandonedGuest_2 . ' <a href="' . $guest2 . '">enable</a>' : 'Enabled',
+						'Guest Abandoned 3' => ($abandonedGuest_3 !== true)? $abandonedGuest_3 . ' <a href="' . $guest3 . '">enable</a>' : 'Enabled',
 					));
 			}
 		}
@@ -596,139 +856,142 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$passed = true;
 			$mapped = 0;
-			$nm = 'Not Mapped';
 			$tableData = array();
 			//website name for table data
 			$websiteName  = $website->getName();
 			$tableData['Website'] = $websiteName;
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_ID)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_FIRSTNAME)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LASTNAME)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DOB)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_GENDER)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_WEBSITE_NAME)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_STORE_NAME)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_CREATED_AT)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_LOGGED_DATE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_CUSTOMER_GROUP)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_REVIEW_COUNT)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_REVIEW_DATE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_ADDRESS_1)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_ADDRESS_2)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_CITY)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_STATE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_COUNTRY)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_POSTCODE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_BILLING_TELEPHONE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_ADDRESS_1)) {
 				$passed  = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_ADDRESS_2)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_CITY)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_STATE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_COUNTRY)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_POSTCODE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_DELIVERY_TELEPHONE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_TOTAL_NUMBER_ORDER)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_AOV)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_TOTAL_SPEND)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_DATE)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
 			if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_CUSTOMER_TOTALREFUND)) {
 				$passed = false;
-				$mapped += 1;
+				$mapped++;
 			}
+            if (! $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS)) {
+                $passed = false;
+                $mapped++;
+            }
 			$tableData['Mapped Percentage'] = number_format((1 - $mapped / 32) * 100, 2)  . ' %';
 			//mapping not complete.
 			if (! $passed ){
@@ -741,7 +1004,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		}
 
 		return $resultContent;
-
 	}
 
 
@@ -765,7 +1027,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 
 			$api = Mage::getModel('email_connector/apiconnector_test')->ajaxvalidate($apiUsername, $apiPassword);
 
-			if ($api != 'Credentials Valid.'){
+			if ($api != 'Credentials Valid.') {
 				$url = Mage::helper('adminhtml')->getUrl('*/system_config/edit/section/connector_api_credentials/website/' . $website->getCode());
 
 				$resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
@@ -779,8 +1041,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		}
 
 		return $resultContent;
-
-
 	}
 
 	/**
@@ -794,10 +1054,11 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		              ->setTitle('Order Sync : ')
 		              ->setMessage('Enabled.');
 
+		$passed = true;
 		foreach ( Mage::app()->getWebsites() as $website ) {
 			$websiteName  = $website->getName();
 			$order = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED))? true :
-				'Disabled';
+				'Disabled!';
 
 			if ($order !== true){
 
@@ -806,14 +1067,47 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 					->setMessage('')
 					->setTable(array(
 						'Website' => $websiteName,
-						'Status' => $order,
-						'Fast Fix' => 'Click  <a href="' . $url . '">here </a>to enable.'
+						'Status' => $order . ' <a href="' . $url . '">enable</a>'
 					));
+				$passed = false;
 			}
+		}
+		//validation failed
+		if (! $passed) {
+			$resultContent->setHowto(self::FAST_FIX_MESSAGE);
 		}
 
 		return $resultContent;
 	}
+
+    /**
+     * check if any custom order attribute selected
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function customOrderAttributes()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Custom Order Attributes : ')
+            ->setMessage('Selected.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $customOrderAttibute = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES))? true : false;
+
+            if ($customOrderAttibute !== true){
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setTitle('Custom order attribute not selected (ignore if you do not want to import custom order attributes) :')
+                    ->setMessage('')
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => 'No Custom Order Attribute Selected'
+                    ));
+            }
+        }
+
+        return $resultContent;
+    }
 
 	/**
 	 * Check if any orders are imported.
@@ -851,34 +1145,121 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 	}
 
     /**
-     *
+     * review sync enabled.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     * Display the transactional data for orders to be removed.
      */
-    public function orderDelete()
+    public function reviewEnabled()
     {
         $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
         $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
-            ->setTitle('Order Expiry : ')
-            ->setMessage('Looks Great. ');
+            ->setTitle('Review Sync : ')
+            ->setMessage('Enabled.');
 
         foreach ( Mage::app()->getWebsites() as $website ) {
             $websiteName  = $website->getName();
-            $delete = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_DELETE))? true :
-                'Do Not Delete';
+            $review = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED))? true :
+                'Disabled';
 
-            if ($delete !== true){
-
-                $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_ORDER_DELETE', 'website' => $website->getId(), 'value' => '180'));
+            if ($review !== true){
+                $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED', 'website' => $website->getId()));
                 $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
-                    ->setMessage('')
+                    ->setMessage('Don\'t forget to enable if you want to sync reviews.' )
                     ->setTable(array(
                         'Website' => $websiteName,
-                        'Status' => $delete,
-                        'Fast Fix' => 'Click  <a href="' . $url . '">here </a>to configure order delete.'
+                        'Status' => $review,
+                        'Fast Fix' => 'Click  <a href="' . $url . '">here </a>to enable.'
                     ));
-            }else
-                $resultContent->setMessage($resultContent->getMessage() . $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_DELETE) . ' Days Set.');
+            }
         }
+        return $resultContent;
+    }
 
+    /**
+     * Check if any reviews are imported.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function reviewSyncing()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Review Syncing : ')
+            ->setMessage('Looks Great.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $storeIds = $website->getStoreIds();
+
+            //number of reviews marked as imported
+            $numReview = Mage::getModel('email_connector/review')->getCollection()
+                ->addFieldToFilter('review_imported', 1)
+                ->addFieldToFilter('store_id', array('in', $storeIds))
+                ->getSize();
+
+            //total reviews
+            $totalReview = Mage::getModel('email_connector/review')->getCollection()
+                ->addFieldToFilter('store_id', array('in', $storeIds))
+                ->getSize();
+
+            $tableData = array(
+                'Website' => $websiteName,
+                'Total Reviews' => $totalReview,
+                'Imported' => $numReview
+            );
+
+            $tableData['Status'] = 'Importing';
+
+            if (! $numReview) {
+                $tableData['Status'] = 'No Imported Review Found.';
+                $resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setTitle('Review Sync (ignore if you have reset wishlist) : ')
+                    ->setMessage('');
+            }
+            $resultContent->setTable($tableData);
+        }
+        return $resultContent;
+    }
+
+    /**
+     * review campaign enabled.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function reviewCampaignStatus()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Review Status : ')
+            ->setMessage('Looks Great.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $enabled = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_REVIEWS_ENABLED))? true :
+                'Disabled ';
+            $orderStatus = ($website->getConfig(Dotdigitalgroup_Email_Helper_Review::XML_PATH_REVIEW_STATUS))? true :
+                'Disabled ';
+            $delayPeriod = ($website->getConfig(Dotdigitalgroup_Email_Helper_Review::XML_PATH_REVIEW_DELAY))? true :
+                'Disabled ';
+            $newProduct = ($website->getConfig(Dotdigitalgroup_Email_Helper_Review::XML_PATH_REVIEW_NEW_PRODUCT))? true :
+                'Disabled ';
+            $campaign = ($website->getConfig(Dotdigitalgroup_Email_Helper_Review::XML_PATH_REVIEW_CAMPAIGN))? true :
+                'Disabled ';
+
+            if ($enabled !== true || $orderStatus !== true || $delayPeriod !== true || $newProduct !== true || $campaign !== true){
+                $enabledUrl = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_REVIEWS_ENABLED', 'website' => $website->getId()));
+
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setMessage('Don\'t forget to map')
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Enabled' => ($enabled !== true)? $enabled . '<a href="' . $enabledUrl . '">Click to enable</a>' : 'Enabled',
+                        'Order Status' => ($orderStatus !== true)? 'Not Set' : 'Enabled',
+                        'Delay Period' => ($delayPeriod !== true)? 'Not Set' : 'Enabled',
+                        'New Product Only' => ($newProduct !== true)? 'Not Set' : 'Enabled',
+                        'Campaign To Select' => ($campaign !== true)? 'Not Set' : 'Enabled',
+                    ));
+            }
+        }
         return $resultContent;
     }
 
@@ -994,15 +1375,251 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Status extends Mage_A
 		$resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
 		$resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED);
 
+		//compatibility with the old versions
+		if (version_compare(Mage::getVersion(), '1.6.2.0', '>')) {
+			$version = 'Magento ' . Mage::getEdition() . ' ' .  Mage::getVersion() . 'V';
+		} else {
+			$version = 'Magento version : ' . Mage::getVersion() . 'V';
+		}
+
+		$fh = @fopen('/proc/meminfo', 'r');
+		$mem = 0;
+		if ($fh) {
+			while ($line = fgets($fh)) {
+				$pieces = array();
+				if (preg_match('^MemTotal:\s+(\d+)\skB$^', $line, $pieces)) {
+					$mem = $pieces[1];
+					break;
+				}
+			}
+			fclose($fh);
+		}
+		if ($mem > 0) {
+			$mem = $mem / 1024 . 'M';
+		} else {
+			$mem = $this->_getTopMemoryInfo();
+		}
+
 		//check for php version
 		$resultContent->setHowTo('PHP version : V' . PHP_VERSION)
-			->setHowto('PHP Memory : ' . ini_get('memory_limit'))
+			->setHowto('PHP Memory : ' . $mem)
 			->setHowto('PHP Max Execution Time : ' . ini_get('max_execution_time') . ' sec')
-			->setHowto('Magento version : ' . Mage::getEdition() . ' V' . Mage::getVersion())
+			->setHowto($version)
 			->setHowto('Connector version : V' . Mage::helper('connector')->getConnectorVersion());
-
-
 
 		return $resultContent;
 	}
+
+
+	/**
+	 * Returns memory size. Alternative way
+	 *
+	 * @return string|null
+	 */
+	public function _getTopMemoryInfo()
+	{
+		$memInfo = exec('top -l 1 | head -n 10 | grep PhysMem');
+		$memInfo = str_ireplace('PhysMem: ', '', $memInfo);
+
+		if (!empty($memInfo)) {
+			return $memInfo;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Check if the mapped program is active.
+
+	 */
+	protected function _getWebisteProgram($program, $website) {
+		$client = Mage::helper('connector')->getWebsiteApiClient($website);
+
+		if (! $client || !$program){
+			return false;
+		}
+
+		$data = $client->getProgramById($program);
+
+		if (isset($data->message))
+			return false;
+
+
+		return $data;
+	}
+
+	/**
+	 * Get the contacts address book.
+	 * @param $addressBook
+	 * @param $webiste
+	 *
+	 * @return bool|null
+	 */
+	protected function _getAddressBookContacts($addressBook, $webiste) {
+		$client = Mage::helper('connector')->getWebsiteApiClient($webiste);
+
+		if (! $client && $addressBook)
+			return false;
+
+		$response = $client->getAddressBookById($addressBook);
+
+		if (isset($response->message))
+			return false;
+		return $response;
+	}
+
+	/**
+	 * Get the method name
+	 * @param $name
+	 *
+	 * @return string
+	 */
+	public function getFormatedMethodName($name)
+	{
+		//version that not support the lcfirst method
+		if(function_exists('lcfirst') === false) {
+
+			$method = strtolower(substr(uc_words($name, '') ,0,1)).substr(uc_words($name, ''), 1);
+
+		} else {
+			$method = lcfirst(uc_words($name, ''));
+		}
+
+		return $method;
+	}
+
+    /**
+     * easy email capture enabled
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function easyEmailCaptureEnabled()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Easy Email Capture : ')
+            ->setMessage('Enabled.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $enabled = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE))? true :
+                'Disabled';
+
+            if ($enabled !== true){
+                $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_EMAIL_CAPTURE', 'website' => $website->getId()));
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setMessage('Don\'t forget to enable if you want to enable easy email capture.' )
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => $enabled,
+                        'Fast Fix' => 'Click  <a href="' . $url . '">here </a>to enable.'
+                    ));
+            }
+        }
+        return $resultContent;
+    }
+
+    /**
+     * disabled newsletter success enabled
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function disableNewsletterSuccessEnabled()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Disable Newsletter Success : ')
+            ->setMessage('Enabled.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $enabled = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS))? true :
+                'Disabled';
+
+            if ($enabled !== true){
+                $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS', 'website' => $website->getId()));
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setMessage('Don\'t forget to enable if you want to disable Magento newsletter success email.' )
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => $enabled,
+                        'Fast Fix' => 'Click  <a href="' . $url . '">here </a>to enable.'
+                    ));
+            }
+        }
+        return $resultContent;
+    }
+
+    /**
+     * wishlist sync enabled.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function wishlistEnabled()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Wishlist Sync : ')
+            ->setMessage('Enabled.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $wishlist = ($website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED))? true :
+                'Disabled';
+
+            if ($wishlist !== true){
+                $url = Mage::helper('adminhtml')->getUrl('*/connector/enablewebsiteconfiguration', array('path' => 'XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED', 'website' => $website->getId()));
+                $resultContent->setStyle( self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setMessage('Don\'t forget to enable if you want to sync wishlist.' )
+                    ->setTable(array(
+                        'Website' => $websiteName,
+                        'Status' => $wishlist,
+                        'Fast Fix' => 'Click  <a href="' . $url . '">here </a>to enable.'
+                    ));
+            }
+        }
+        return $resultContent;
+    }
+
+    /**
+     * Check if any wishlist are imported.
+     * @return Dotdigitalgroup_Email_Model_Adminhtml_Dashboard_Content
+     */
+    public function wishlistSyncing()
+    {
+        $resultContent = Mage::getModel('email_connector/adminhtml_dashboard_content');
+        $resultContent->setStyle(self::CONNECTOR_DASHBOARD_PASSED)
+            ->setTitle('Wishlist Syncing : ')
+            ->setMessage('Looks Great.');
+
+        foreach ( Mage::app()->getWebsites() as $website ) {
+            $websiteName  = $website->getName();
+            $storeIds = $website->getStoreIds();
+
+            //number of wishlist marked as imported
+            $numWishlist = Mage::getModel('email_connector/wishlist')->getCollection()
+                ->addFieldToFilter('wishlist_imported', 1)
+                ->addFieldToFilter('store_id', array('in', $storeIds))
+                ->getSize();
+
+            //total wishlist
+            $totalWishlist = Mage::getModel('email_connector/wishlist')->getCollection()
+                ->addFieldToFilter('store_id', array('in', $storeIds))
+                ->getSize();
+
+            $tableData = array(
+                'Website' => $websiteName,
+                'Total Wishlist' => $totalWishlist,
+                'Imported' => $numWishlist
+            );
+
+            $tableData['Status'] = 'Importing';
+
+            if (! $numWishlist) {
+                $tableData['Status'] = 'No Imported Wishlist Found.';
+                $resultContent->setStyle(self::CONNECTOR_DASHBOARD_FAILED)
+                    ->setTitle('Wishlist Sync (ignore if you have reset wishlist) : ')
+                    ->setMessage('');
+            }
+            $resultContent->setTable($tableData);
+        }
+        return $resultContent;
+    }
 }

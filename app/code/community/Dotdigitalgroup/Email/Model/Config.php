@@ -33,7 +33,7 @@ class Dotdigitalgroup_Email_Model_Config extends Mage_Core_Model_Abstract
 		$config =  $this->getCollection()
 		                ->addFieldToFilter('path', Dotdigitalgroup_Email_Helper_Config::CONNECTOR_EMAIL_CONFIG_HOUR_TRIGGER);
 		//found the config value
-		if ($config->count()) {
+		if ($config->getSize()) {
 			return $configData = $config->getFirstItem()->getValue();
 		}
 
@@ -54,7 +54,7 @@ class Dotdigitalgroup_Email_Model_Config extends Mage_Core_Model_Abstract
 			->setPageSize(1);
 
 		//found the item
-		if ($collection->count()) {
+		if ($collection->getSize()) {
 			return $collection->getFirstItem();
 		}
 

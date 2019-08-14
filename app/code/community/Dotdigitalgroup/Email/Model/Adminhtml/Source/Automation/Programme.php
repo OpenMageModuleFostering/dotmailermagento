@@ -9,29 +9,21 @@ class Dotdigitalgroup_Email_Model_Adminhtml_Source_Automation_Programme
 		$websiteName = Mage::app()->getRequest()->getParam('website', false);
 		//admin
 		$website = 0;
+		$fields[] = array('value' => '0', 'label' => Mage::helper('connector')->__('-- Disabled --'));
 		if ($websiteName) {
 			$website = Mage::app()->getWebsite($websiteName);
 		}
-		$client = Mage::helper('connector')->getWebsiteApiClient($website);
 
+		if (Mage::helper('connector')->isEnabled($website)) {
 
-		/**
-		$savedCampaigns = Mage::registry('savedcampigns');
+			$client = Mage::helper( 'connector' )->getWebsiteApiClient( $website );
+			$programmes = $client->getPrograms();
 
-		if ($savedCampaigns) {
-			$campaigns = $savedCampaigns;
-		} else {
-			$campaigns = $client->getCampaigns();
-			Mage::register('savedcampigns', $campaigns);
-		}
-		 **/
-
-		$programmes = $client->getPrograms();
-		$fields[] = array('value' => '0', 'label' => Mage::helper('connector')->__('-- Disabled --'));
-
-		foreach ($programmes as $one) {
-			if(isset($one->id))
-				$fields[] = array('value' => $one->id, 'label' => Mage::helper('connector')->__($one->name));
+			foreach ( $programmes as $one ) {
+				if ( isset( $one->id ) ) {
+					$fields[] = array( 'value' => $one->id, 'label' => Mage::helper( 'connector' )->__( $one->name ) );
+				}
+			}
 		}
 
 		return $fields;

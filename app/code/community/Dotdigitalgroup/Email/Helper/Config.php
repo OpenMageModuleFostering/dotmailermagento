@@ -40,12 +40,14 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED        = 'connector_sync_settings/sync/subscriber_enabled';
     const XML_PATH_CONNECTOR_SYNC_ORDER_ENABLED             = 'connector_sync_settings/sync/order_enabled';
     const XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED          = 'connector_sync_settings/sync/wishlist_enabled';
+    const XML_PATH_CONNECTOR_SYNC_REVIEW_ENABLED            = 'connector_sync_settings/sync/review_enabled';
 
     const XML_PATH_CONNECTOR_CUSTOMERS_ADDRESS_BOOK_ID      = 'connector_sync_settings/address_book/customers';
     const XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID    = 'connector_sync_settings/address_book/subscribers';
     const XML_PATH_CONNECTOR_GUEST_ADDRESS_BOOK_ID          = 'connector_sync_settings/address_book/guests';
     // Mapping
     const XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID          = 'connector_data_mapping/customer_data/last_order_id';
+    const XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID          = 'connector_data_mapping/customer_data/last_quote_id';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_ID            = 'connector_data_mapping/customer_data/customer_id';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOM_DATAFIELDS      = 'connector_data_mapping/customer_data/custom_attributes';
     const XML_PATH_CONNECTOR_MAPPING_CUSTOMER_STORENAME     = 'connector_data_mapping/customer_data/store_name';
@@ -104,35 +106,48 @@ class Dotdigitalgroup_Email_Helper_Config
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_DATE       = 'connector_data_mapping/customer_data/last_order_date';
     const XML_PATH_CONNECTOR_CUSTOMER_LAST_ORDER_ID         = 'connector_data_mapping/customer_data/last_order_id';
     const XML_PATH_CONNECTOR_CUSTOMER_TOTAL_REFUND          = 'connector_data_mapping/customer_data/total_refund';
+    const XML_PATH_CONNECTOR_CUSTOMER_SUBSCRIBER_STATUS     = 'connector_data_mapping/customer_data/subscriber_status';
 
-    // Dynamic
-    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
+	/**
+	 * Dynamic Content
+	 */
+    const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE       = 'connector_dynamic_content/external_dynamic_content_urls/passcode';
+	const XML_PATH_CONNECTOR_DYNAMIC_CONTENT_NOSTO          = 'connector_dynamic_content/nosto_recommendation/api';
 
-    /**
-     * ADVANCED SECTION.
+	/**
+     * CONFIGURATION SECTION.
      */
-    const XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED         = 'connector_advanced_settings/admin/debug_enabled';
-    const XML_PATH_CONNECTOR_SYNC_LIMIT                     = 'connector_advanced_settings/admin/batch_size';
-    const XML_PATH_CONNECTOR_RESOURCE_ALLOCATION            = 'connector_advanced_settings/admin/memory_limit';
-    const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_advanced_settings/sync_limits/orders';
-    const XML_PATH_CONNECTOR_TRANSACTIONAL_STYLING          = 'connector_advanced_settings/admin/inline_styling';
-    const XML_PATH_CONNECTOR_RECOMMENDED_STYLING            = 'connector_advanced_settings/admin/recommended_inline';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS              = 'connector_advanced_settings/sync_limits/order_statuses';
-    const XML_PATH_RAYGUN_APPLICATION_CODE                  = 'connector_advanced_settings/admin/raygun_code';
-    const XML_PATH_CONNECTOR_FEED_ENABLED                   = 'connector_advanced_settings/admin/feed_enabled';
-    const XML_PATH_CONNECTOR_FEED_URL                       = 'connector_advanced_settings/admin/feed_url';
-    const XML_PATH_CONNECTOR_FEED_FREQUENCY                 = 'connector_advanced_settings/admin/frequency';
-    const XML_PATH_CONNECTOR_FEED_USE_HTTPS                 = 'connector_advanced_settings/admin/use_https';
-    const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT           = 'connector_advanced_settings/abandoned_cart/limits';
-    const XML_PATH_CONNECTOR_ABANDONED_CART_SHELL           = 'connector_advanced_settings/abandoned_cart/shell';
-    const XML_PATH_CONNECTOR_SYNC_ORDER_DELETE              = 'connector_advanced_settings/sync_limits/order_delete';
-	const XML_PATH_CONNECTOR_DEBUG_API_CALLS                = 'connector_advanced_settings/admin/debug_api_calls';
+	const XML_PATH_CONNECTOR_SYNC_ORDER_STATUS              = 'connector_configuration/transactional_data/order_statuses';
+	const XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES        = 'connector_configuration/transactional_data/order_custom_attributes';
+	const XML_PATH_CONNECTOR_EMAIL_CAPTURE                  = 'connector_configuration/abandoned_carts/email_capture';
+	const XML_PATH_CONNECTOR_ABANDONED_CART_LIMIT           = 'connector_configuration/abandoned_carts/limits';
+	const XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS     = 'connector_configuration/admin/disable_newsletter_success';
+    const XML_PATH_CONNECTOR_DISABLE_CUSTOMER_SUCCESS       = 'connector_configuration/admin/disable_customer_success';
+    const XML_PATH_CONNECTOR_DYNAMIC_STYLING                = 'connector_configuration/admin/recommended_inline';
+	const XML_PATH_CONNECTOR_RESOURCE_ALLOCATION            = 'connector_developer_settings/import_settings/memory_limit';
+	const XML_PATH_CONNECTOR_SYNC_LIMIT                     = 'connector_developer_settings/import_settings/batch_size';
+	const XML_PATH_CONNECTOR_TRANSACTIONAL_DATA_SYNC_LIMIT  = 'connector_developer_settings/import_settings/orders';
+	const XML_PATH_CONNECTOR_ABANDONED_CART_SHELL           = 'connector_developer_settings/abandoned_cart/shell';
+	const XML_PATH_CONNECTOR_SETUP_DATAFIELDS               = 'connector_developer_settings/sync_settings/setup_data_fields';
+	const XML_PATH_CONNECTOR_ADVANCED_DEBUG_ENABLED         = 'connector_developer_settings/debug/debug_enabled';
+	const XML_PATH_CONNECTOR_DEBUG_API_CALLS                = 'connector_developer_settings/debug/debug_api_calls';
+	const XML_PATH_RAYGUN_APPLICATION_CODE                  = 'connector_developer_settings/debug/raygun_code';
+	const XML_PATH_CONNECTOR_FEED_ENABLED                   = 'connector_developer_settings/feed_configuration/feed_enabled';
+	const XML_PATH_CONNECTOR_FEED_URL                       = 'connector_developer_settings/feed_configuration/feed_url';
+	const XML_PATH_CONNECTOR_FEED_FREQUENCY                 = 'connector_developer_settings/feed_configuration/frequency';
+	const XML_PATH_CONNECTOR_FEED_USE_HTTPS                 = 'connector_developer_settings/feed_configuration/use_https';
+
 
     /**
      * Automation studio.
      */
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER    = 'connector_automation_studio/automation/subscriber_automation';
-    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER      = 'connector_automation_studio/automation/customer_automation';
+	const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER      = 'connector_automation_studio/automation/customer_automation';
+	const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_SUBSCRIBER    = 'connector_automation_studio/automation/subscriber_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER         = 'connector_automation_studio/automation/order_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER   = 'connector_automation_studio/automation/guest_order_automation';
+    const XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW        = 'connector_automation_studio/automation/review_automation';
+    CONST XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST      = 'connector_automation_studio/automation/wishlist_automation';
+
 
     /**
      * ROI SECTION.
@@ -158,6 +173,18 @@ class Dotdigitalgroup_Email_Helper_Config
     /**
      * Transactional Emails.
      */
-    const XML_PATH_TRANSACTIONAL_API_ENABLED                    = 'connector_transactional_emails/credentials/enabled';
+    const XML_PATH_TRANSACTIONAL_API_ENABLED                = 'connector_transactional_emails/credentials/enabled';
+
+    /**
+     * Reviews
+     */
+    const XML_PATH_REVIEWS_ENABLED                          = 'connector_reviews/settings/enabled';
+
+	/**
+	 * Nosto
+	 */
+	const API_ENDPOINT                                      = 'https://api.nosto.com';
+	const API_ENDPOINT_TEST                                 = 'https://test.api.nosto.com';
+
 
 }

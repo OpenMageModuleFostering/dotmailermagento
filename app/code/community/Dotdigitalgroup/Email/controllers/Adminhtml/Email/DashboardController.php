@@ -3,6 +3,21 @@
 class Dotdigitalgroup_Email_Adminhtml_Email_DashboardController extends Mage_Adminhtml_Controller_Action
 {
 	/**
+	 * post dispatch
+	 */
+	public function postDispatch()
+	{
+		//check the api valid for any of the website
+		foreach ( Mage::app()->getWebsites( true ) as $website ) {
+
+			$passed = Mage::helper('connector')->isEnabled($website);
+
+			if (! $passed)
+				$this->_redirect('*/system_config/edit', array('section' => 'connector_api_credentials'));
+		}
+
+	}
+	/**
 	 * main page.
 	 */
 	public function indexAction()

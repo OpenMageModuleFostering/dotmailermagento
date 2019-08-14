@@ -4,6 +4,7 @@ class Dotdigitalgroup_Email_DynamicContentController extends Mage_Core_Controlle
 {
 	/**
 	 * @return Mage_Core_Controller_Front_Action|void
+	 * @throws Exception
 	 */
 	public function preDispatch()
 	{
@@ -20,12 +21,10 @@ class Dotdigitalgroup_Email_DynamicContentController extends Mage_Core_Controlle
 				$appEmulation = Mage::getSingleton('core/app_emulation');
 				$appEmulation->startEnvironmentEmulation($storeId);
 			} else {
-				Mage::helper('connector')->log('TE invoice : order not found: ' . $orderId);
-				exit;
+				throw new Exception('TE invoice : order not found: ' . $orderId);
 			}
 		} else {
-			Mage::helper('connector')->log('TE invoice : order_id missing :' . $orderId);
-			exit;
+			throw new Exception('TE invoice : order_id missing :' . $orderId);
 		}
 		parent::preDispatch();
 	}

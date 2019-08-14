@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Dotdigitalgroup_Email>
-            <version>3.2.3</version>
+            <version>3.3.0</version>
         </Dotdigitalgroup_Email>
     </modules>
     <frontend>
@@ -65,6 +65,12 @@
                     <config>
                         <table>email_config</table>
                     </config>
+                    <review>
+                        <table>email_review</table>
+                    </review>
+                    <wishlist>
+                        <table>email_wishlist</table>
+                    </wishlist>
                 </entities>
             </email_connector_resource>
             <core>
@@ -72,6 +78,16 @@
                     <email_template>Dotdigitalgroup_Email_Model_Email_Template</email_template>
                 </rewrite>
             </core>
+            <newsletter>
+                <rewrite>
+                    <subscriber>Dotdigitalgroup_Email_Model_Newsletter_Sub</subscriber>
+                </rewrite>
+            </newsletter>
+            <customer>
+                <rewrite>
+                    <customer>Dotdigitalgroup_Email_Model_Customer</customer>
+                </rewrite>
+            </customer>
         </models>
         <helpers>
             <connector>
@@ -207,6 +223,38 @@
                     </connector_review_save_after>
                 </observers>
             </review_save_after>
+            <wishlist_save_after>
+                <observers>
+                    <connector_wishlist_save_after>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>wishlistSaveAfter</method>
+                    </connector_wishlist_save_after>
+                </observers>
+            </wishlist_save_after>
+            <wishlist_item_save_after>
+                <observers>
+                    <connector_wishlist_item_save_after>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>wishlistItemSaveAfter</method>
+                    </connector_wishlist_item_save_after>
+                </observers>
+            </wishlist_item_save_after>
+            <wishlist_delete_after>
+                <observers>
+                    <connector_wishlist_delete_after>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>wishlistDeleteAfter</method>
+                    </connector_wishlist_delete_after>
+                </observers>
+            </wishlist_delete_after>
+            <wishlist_item_delete_after>
+                <observers>
+                    <connector_wishlist_item_delete_after>
+                        <class>Dotdigitalgroup_Email_Model_Customer_Observer</class>
+                        <method>wishlistItemSaveAfter</method>
+                    </connector_wishlist_item_delete_after>
+                </observers>
+            </wishlist_item_delete_after>
         </events>
     </global>
     <adminhtml>
@@ -254,7 +302,7 @@
             <connector_email_customer_sync>
                 <run><model>email_connector/cron::contactSync</model></run>
                 <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
+                    <cron_expr>*/15 * * * *</cron_expr>
                 </schedule>
             </connector_email_customer_sync>
             <connector_email_subscriber_and_guest_sync>
@@ -269,6 +317,14 @@
                     <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
             </connector_email_lostbaskets>
+            <connector_email_reviews_and_wishlist>
+                <run>
+                    <model>email_connector/cron::reviewsAndWishlist</model>
+                </run>
+                <schedule>
+                    <cron_expr>0 * * * *</cron_expr>
+                </schedule>
+            </connector_email_reviews_and_wishlist>
             <connector_email_campaign>
                 <run>
                     <model>email_connector/cron::sendMappedEmails</model>
@@ -315,9 +371,10 @@
                 <subscriber_enabled>0</subscriber_enabled>
                 <order_enabled>0</order_enabled>
                 <wishlist_enabled>0</wishlist_enabled>
+                <review_enabled>0</review_enabled>
             </sync>
             <dynamic_addressbook>
-                <addressbook_name>0</addressbook_name>
+                <addressbook_name></addressbook_name>
             </dynamic_addressbook>
         </connector_sync_settings>
         <connector_data_mapping>
@@ -334,6 +391,7 @@
                 <customer_group></customer_group>
                 <review_count></review_count>
                 <last_review_date></last_review_date>
+                <subscriber_status></subscriber_status>
                 <billing_address_1></billing_address_1>
                 <billing_address_2></billing_address_2>
                 <billing_city></billing_city>
@@ -444,10 +502,12 @@
                 <most_viewed_time_period></most_viewed_time_period>
                 <recently_viewed_display_type>list</recently_viewed_display_type>
                 <recently_viewed_items_to_display>2</recently_viewed_items_to_display>
+                <review_display_type>list</review_display_type>
             </products>
             <external_dynamic_content_urls>
                 <passcode>secret</passcode>
                 <lost_basket_url></lost_basket_url>
+                <review_url></review_url>
                 <coupon_code_url></coupon_code_url>
                 <dynamic_content_url></dynamic_content_url>
                 <related_products_url></related_products_url>
@@ -483,6 +543,16 @@
                 <product_list></product_list>
             </fallback_products>
         </connector_dynamic_content>
+        <connector_reviews>
+            <settings>
+                <enabled>0</enabled>
+                <status></status>
+                <delay></delay>
+                <new_product>0</new_product>
+                <campaign>0</campaign>
+                <anchor></anchor>
+            </settings>
+        </connector_reviews>
         <connector_transactional_emails>
             <credentials>
                 <enabled>0</enabled>
@@ -505,19 +575,38 @@
             <automation>
                 <customer_automation>0</customer_automation>
                 <subscriber_automation>0</subscriber_automation>
+                <order_automation>0</order_automation>
+                <guest_order_automation>0</guest_order_automation>
+                <review_automation>0</review_automation>
+                <wishlist_automation>0</wishlist_automation>
             </automation>
         </connector_automation_studio>
-        <connector_advanced_settings>
-            <sync_limits>
-                <orders>500</orders>
+        <connector_configuration>
+            <transactional_data>
                 <order_statuses></order_statuses>
-                <order_delete>0</order_delete>
-            </sync_limits>
+                <order_custom_attributes></order_custom_attributes>
+            </transactional_data>
+            <abandoned_carts>
+                <email_capture>0</email_capture>
+                <limits></limits>
+            </abandoned_carts>
+            <admin>
+                <disable_newsletter_success>0</disable_newsletter_success>
+                <disable_customer_success>0</disable_customer_success>
+                <recommended_inline><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></recommended_inline>
+            </admin>
+        </connector_configuration>
+        <connector_developer_settings>
+            <import_settings>
+                <memory_limit>0</memory_limit>
+                <batch_size>10000</batch_size>
+                <orders>500</orders>
+            </import_settings>
             <abandoned_cart>
-                <limits>0</limits>
                 <shell></shell>
             </abandoned_cart>
             <sync_settings>
+                <setup_data_fields></setup_data_fields>
                 <contact_sync></contact_sync>
                 <subscriber_sync></subscriber_sync>
                 <order_sync></order_sync>
@@ -527,20 +616,18 @@
                 <reimport_orders></reimport_orders>
                 <suppressed_contacts></suppressed_contacts>
             </sync_settings>
-            <admin>
-                <setup_data_fields></setup_data_fields>
-                <memory_limit>0</memory_limit>
-                <batch_size>10000</batch_size>
+            <debug>
                 <debug_enabled>1</debug_enabled>
                 <debug_api_calls>0</debug_api_calls>
                 <raygun_code>JOWaQ4nf4Ox7eAFUvr+TAw==</raygun_code>
-                <recommended_inline><![CDATA[table{font-family: arial, geneva, sans-serif; font-size:12px;}]]></recommended_inline>
+            </debug>
+            <feed_configuration>
                 <feed_enabled>1</feed_enabled>
                 <feed_url>dotmailerformagento.co.uk/feed</feed_url>
                 <use_https>0</use_https>
                 <frequency>1</frequency>
                 <last_update></last_update>
-            </admin>
-        </connector_advanced_settings>
+            </feed_configuration>
+        </connector_developer_settings>
     </default>
 </config>

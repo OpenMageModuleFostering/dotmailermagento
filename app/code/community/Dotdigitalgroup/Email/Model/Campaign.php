@@ -78,7 +78,7 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 		                   ->addFieldToFilter('quote_id', $quoteId)
 		                   ->addFieldToFilter('store_id', $storeId);
 
-		if ($collection->count()) {
+		if ($collection->getSize()) {
 			return $collection->getFirstItem();
 		} else {
 			$this->setQuoteId($quoteId)
@@ -102,13 +102,16 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 		$templateModel = Mage::getModel('email_connector/email_template');
 
 		foreach ($emailsToSend as $campaign) {
-			$email = $campaign->getEmail();
-			$storeId = $campaign->getStoreId();
-			$store = Mage::app()->getStore($storeId);
-			$websiteId = $store->getWebsiteId();
-			$storeName = $store->getName();
-			$websiteName = $store->getWebsite()->getName();
+
+			$email      = $campaign->getEmail();
+			$storeId    = $campaign->getStoreId();
 			$campaignId = $campaign->getCampaignId();
+			$store = Mage::app()->getStore($storeId);
+			$websiteId      = $store->getWebsiteId();
+			$storeName      = $store->getName();
+			$websiteName    = $store->getWebsite()->getName();
+
+
 			if (!$campaignId) {
 				$campaign->setMessage('Missing campaign id: ' . $campaignId)
 				         ->setIsSent(1)
@@ -125,7 +128,16 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 					$client = Mage::helper('connector')->getWebsiteApiClient($websiteId);
 					$contactId = Mage::helper('connector')->getContactId($campaign->getEmail(), $websiteId);
 					if(is_numeric($contactId)) {
-						Mage::helper('connector')->log($contactId);
+
+                        //update data field
+                        $data = array(
+                            array(
+                                'Key' => 'LAST_QUOTE_ID',
+                                'Value' => $campaign->getQuoteId()
+                            )
+                        );
+                        $client->updateContactDatafieldsByEmail($campaign->getEmail(), $data);
+
 						$response = $client->postCampaignsSend($campaignId, array($contactId));
 						if (isset($response->message)) {
 							//update  the failed to send email message
@@ -166,6 +178,24 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 								'Key' => 'CUSTOMER_ID',
 								'Value' => $customerId)
 						);
+                        // last order and last quote
+                        $emailOrder = Mage::getModel('email_connector/sales_order');
+                        $lastOrder = $emailOrder->getCustomerLastOrderId($customer);
+                        $lastQuote = $emailOrder->getCustomerLastQuoteId($customer);
+
+                        if($lastOrder){
+                            $data[] = array(
+                                'Key' => 'LAST_ORDER_ID',
+                                'Value' => $lastOrder->getId()
+                            );
+                        }
+                        if($lastQuote){
+                            $data[] = array(
+                                'Key' => 'LAST_QUOTE_ID',
+                                'Value' => $lastQuote->getId()
+                            );
+                        }
+
 						$this->transactionalClient->updateContactDatafieldsByEmail($email, $data);
 
 						$response = $this->transactionalClient->postCampaignsSend($campaignId, array($contactId));
@@ -185,7 +215,7 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 						$campaign->setContactMessage($contactId)->setIsSent(1)->save();
 					}
 
-				} elseif ($templateModel->getSalesEvent($campaign->getEventName())) {
+				} elseif ($templateModel->getSalesEvent($campaign->getEventName()) or $campaign->getEventName() == 'Order Review') {
 					// transactional
 					$orderModel = Mage::getModel("sales/order")->loadByIncrementId($campaign->getOrderIncrementId());
 					$contactId = Mage::helper('connector/transactional')->getContactId($campaign->getEmail(), $websiteId);
@@ -214,7 +244,10 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 								'Value' => $lastname),
 							array(
 								'Key' => 'LAST_ORDER_ID',
-								'Value' => $orderModel->getId())
+								'Value' => $orderModel->getId()),
+                            array(
+                                'Key' => 'LAST_QUOTE_ID',
+                                'Value' => $orderModel->getQuoteId()),
 						);
 						$this->transactionalClient->updateContactDatafieldsByEmail($email, $data);
 						$response = $this->transactionalClient->postCampaignsSend($campaignId, array($contactId));
@@ -288,8 +321,13 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 			try {
 				$websiteId = $email->getWebsiteId();
 
-				if (!$this->fromAddress)
-					$this->fromAddress = $helper->getFromAddress($websiteId);
+				if (!$this->fromAddress) {
+                    if($email->getFromAddress())
+                        $this->fromAddress = $email->getFromAddress();
+                    else
+                        $this->fromAddress = $helper->getFromAddress($websiteId);
+                }
+
 				if (!$this->replyAction)
 					$this->replyAction = $helper->getReplyAction($websiteId);
 				if ($this->replyAction == 'WebMailForward') {
@@ -328,6 +366,21 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 						continue;
 					}
 					Mage::helper('connector')->log('createEmailsToCampaigns ' . $result->id);
+
+                    //attachment to campaign
+                    if($email->getAttachmentId()){
+                        $attachment = array(
+                            'id' => $email->getAttachmentId()
+                        );
+                        $attachmentResult = $client->postCampaignAttachments($result->id, $attachment);
+                        if (isset($attachmentResult->message)) {
+                            $email->setCreateMessage($attachmentResult->message)
+                                ->setIsCreated(1)
+                                ->save();
+                            continue;
+                        }
+                    }
+
 					$email->setCampaignId($result->id)
 					      ->setType(1)
 					      ->setIsCreated(1)
@@ -347,7 +400,6 @@ class Dotdigitalgroup_Email_Model_Campaign extends Mage_Core_Model_Abstract
 				Mage::logException($e);
 			}
 		}
-		return;
 	}
 
 	/**

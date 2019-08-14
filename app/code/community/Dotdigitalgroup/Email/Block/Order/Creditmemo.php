@@ -13,9 +13,10 @@ class Dotdigitalgroup_Email_Block_Order_Creditmemo  extends Mage_Sales_Block_Ord
         }
     }
 
-    /**
+	/**
 	 * Get current Order.
-	 * @return Mage_Core_Model_Abstract|Mage_Sales_Model_Order|mixed
+	 * @return Mage_Sales_Model_Order
+	 * @throws Exception
 	 */
     public function getOrder()
     {
@@ -30,8 +31,7 @@ class Dotdigitalgroup_Email_Block_Order_Creditmemo  extends Mage_Sales_Block_Ord
             Mage::register('current_order', $order);
         }
         if (! $order->hasCreditmemos()) {
-            Mage::helper('connector')->log('TE - no creditmemo for order : '. $orderId);
-            exit;
+            throw new Exception('TE - no creditmemo for order : '. $orderId);
         }
 
         return $order;

@@ -13,10 +13,9 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Automation_Connect extends Ma
         $url = Mage::helper('connector')->getAuthoriseUrl();
         $ssl = $this->_checkForSecureUrl();
         $disabled = false;
+	    //disable for ssl missing
         if (!$ssl) {
             $disabled = true;
-            //Mage::getSingleton('adminhtml/session')->addNotice('Cannot Use the Authorization For Non SSL Server!');
-
         }
 
         $adminUser = Mage::getSingleton('admin/session')->getUser();
@@ -32,8 +31,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Automation_Connect extends Ma
             ->toHtml();
     }
 
-    private function _checkForSecureUrl()
-    {
+    private function _checkForSecureUrl() {
         $baseUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB, true);
         if (!preg_match('/https/',$baseUrl)) {
             return false;

@@ -12,9 +12,10 @@ class Dotdigitalgroup_Email_Block_Order_Invoice extends Mage_Sales_Block_Order_I
         }
     }
 
-    /**
+	/**
 	 * Get current order.
-	 * @return Mage_Core_Model_Abstract|Mage_Sales_Model_Order|mixed
+	 * @return Mage_Sales_Model_Order
+	 * @throws Exception
 	 */
     public function getOrder()
     {
@@ -29,8 +30,7 @@ class Dotdigitalgroup_Email_Block_Order_Invoice extends Mage_Sales_Block_Order_I
             Mage::register('current_order', $order);
         }
         if (! $order->hasInvoices()) {
-            Mage::helper('connector')->log('TE - no invoice for order : '. $orderId);
-            exit;
+            throw new Exception('TE - no invoice for order : '. $orderId);
         }
 
         return $order;

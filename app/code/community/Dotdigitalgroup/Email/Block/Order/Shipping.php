@@ -12,9 +12,9 @@ class Dotdigitalgroup_Email_Block_Order_Shipping  extends Mage_Sales_Block_Order
         }
     }
 
-    /**
-	 * Get current order.
-	 * @return Mage_Core_Model_Abstract|Mage_Sales_Model_Order|mixed
+	/**
+	 * @return Mage_Sales_Model_Order
+	 * @throws Exception
 	 */
     public function getOrder()
     {
@@ -29,20 +29,11 @@ class Dotdigitalgroup_Email_Block_Order_Shipping  extends Mage_Sales_Block_Order
             Mage::register('current_order', $order);
         }
         if (! $order->hasShipments()) {
-            Mage::helper('connector')->log('TE - no shipments for order : '. $orderId);
-            exit;
+            throw new Exception('TE - no shipments for order : '. $orderId);
         }
 
         return $order;
 
     }
 
-    /**
-	 * Order shipments.
-	 * @return mixed
-	 */
-    public function getShipment()
-    {
-        return $shipment = Mage::registry('current_order')->getShipmentsCollection()->getFirstItem();
-    }
 }

@@ -25,6 +25,29 @@ class Dotdigitalgroup_Email_Model_Cron
     }
 
     /**
+     * CRON FOR SYNC REVIEWS and REGISTER ORDER REVIEW CAMPAIGNS
+     */
+    public function reviewsAndWishlist()
+    {
+        //sync reviews
+        $this->reviewSync();
+        //sync wishlist
+        Mage::getModel('email_connector/wishlist')->sync();
+    }
+
+    /**
+     * review sync
+     */
+    public function reviewSync()
+    {
+        //find orders to review and register campaign
+        Mage::getModel('email_connector/sales_order')->createReviewCampaigns();
+        //sync reviews
+        $result = Mage::getModel('email_connector/review')->sync();
+        return $result;
+    }
+
+    /**
      * CRON FOR ORDER TRANSACTIONAL DATA
      */
     public function orderSync()

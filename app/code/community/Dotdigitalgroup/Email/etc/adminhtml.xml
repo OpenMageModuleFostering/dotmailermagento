@@ -26,7 +26,7 @@
                         </email_connector_order>
                         <email_connector_campaign translate="title">
                             <title>Email Send Status</title>
-                            <sort_order>30</sort_order>
+                            <sort_order>35</sort_order>
                             <action>adminhtml/email_campaign</action>
                         </email_connector_campaign>
                         <email_connector_contact translate="title">
@@ -34,6 +34,16 @@
                             <sort_order>10</sort_order>
                             <action>adminhtml/email_contact</action>
                         </email_connector_contact>
+                        <email_connector_review translate="title">
+                            <title>Review Sync</title>
+                            <sort_order>25</sort_order>
+                            <action>adminhtml/email_review</action>
+                        </email_connector_review>
+                        <email_connector_wishlist translate="title">
+                            <title>Wishlist Sync</title>
+                            <sort_order>30</sort_order>
+                            <action>adminhtml/email_wishlist</action>
+                        </email_connector_wishlist>
                     </children>
                 </reports>
                 <email_configuration translate="title">
@@ -85,6 +95,12 @@
                                     <email_connector_contact translate="title">
                                         <title>Email Connector Contacts</title>
                                     </email_connector_contact>
+                                    <email_connector_review translate="title">
+                                        <title>Email Connector Reviews</title>
+                                    </email_connector_review>
+                                    <email_connector_wishlist translate="title">
+                                        <title>Email Connector Wishlist</title>
+                                    </email_connector_wishlist>
                                 </children>
                             </reports>
                             <email_configuration translate="title">
@@ -122,6 +138,9 @@
                                     <connector_lost_baskets translate="title">
                                         <title><![CDATA[Abandoned Carts]]></title>
                                     </connector_lost_baskets>
+                                    <connector_reviews translate="title">
+                                        <title><![CDATA[Reviews]]></title>
+                                    </connector_reviews>
                                     <connector_sms translate="title">
                                         <title><![CDATA[Email SMS Section]]></title>
                                     </connector_sms>
@@ -134,9 +153,12 @@
                                     <connector_automation_studio translate="title">
                                         <title><![CDATA[Automation Studio]]></title>
                                     </connector_automation_studio>
-                                    <connector_advanced_settings translate="title">
-                                        <title><![CDATA[Email Advanced Settings]]></title>
-                                    </connector_advanced_settings>
+                                    <connector_configuration translate="title">
+                                        <title><![CDATA[Configuration]]></title>
+                                    </connector_configuration>
+                                    <connector_developer_settings translate="title">
+                                        <title><![CDATA[Developer]]></title>
+                                    </connector_developer_settings>
                                 </children>
                             </config>
                         </children>

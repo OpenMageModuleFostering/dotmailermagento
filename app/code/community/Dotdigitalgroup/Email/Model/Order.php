@@ -83,24 +83,15 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
 	 * @param $storeIds
 	 * @param $limit
 	 * @param $orderStatuses
-     * @param $days
 	 *
 	 * @return Dotdigitalgroup_Email_Model_Resource_Order_Collection
 	 */
-    public function getOrdersToImport($storeIds, $limit, $orderStatuses, $days)
+    public function getOrdersToImport($storeIds, $limit, $orderStatuses)
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('email_imported', array('null' => true))
             ->addFieldToFilter('store_id', array('in' => $storeIds))
             ->addFieldToFilter('order_status', array('in' => $orderStatuses));
-
-        if($days)
-        {
-            $to = Zend_Date::now()->toString('YYYY-MM-dd HH:mm:ss');
-            $from = Zend_Date::now()->subDay($days)->toString('YYYY-MM-dd HH:mm:ss');
-            $created = array( 'from' => $from, 'to' => $to, 'date' => true);
-            $collection->addFieldToFilter('created_at', $created);
-        }
 
         $collection->getSelect()->limit($limit);
         return $collection->load();
@@ -111,22 +102,14 @@ class Dotdigitalgroup_Email_Model_Order extends Mage_Core_Model_Abstract
      *
      * @param $storeIds
      * @param $limit
-     * @param $days
      *
      * @return Dotdigitalgroup_Email_Model_Resource_Order_Collection
      */
-    public function getAllSentOrders($storeIds, $limit, $days)
+    public function getAllSentOrders($storeIds, $limit)
     {
         $collection = $this->getCollection()
             ->addFieldToFilter('email_imported', 1)
             ->addFieldToFilter('store_id', array('in' => $storeIds));
-
-        if($days)
-        {
-            $to = Zend_Date::now()->subDay($days)->toString('YYYY-MM-dd HH:mm:ss');
-            $created = array('to' => $to, 'date' => true);
-            $collection->addFieldToFilter('created_at', $created);
-        }
 
         $collection->getSelect()->limit($limit);
         return $collection->load();

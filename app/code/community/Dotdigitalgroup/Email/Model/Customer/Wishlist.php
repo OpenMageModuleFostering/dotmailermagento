@@ -26,6 +26,10 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
 	 */
 	protected $total_wishlist_value;
 
+    /**
+     * @var string
+     */
+    public $updated_at;
 	/**
 	 * constructor.
 	 *
@@ -43,7 +47,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
      */
     public function setCustomerId($customer_id)
     {
-        $this->customer_id = $customer_id;
+        $this->customer_id = (int) $customer_id;
     }
 
     /**
@@ -51,7 +55,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
      */
     public function getCustomerId()
     {
-        return $this->customer_id;
+        return (int) $this->customer_id;
     }
 
     /**
@@ -60,7 +64,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
      */
     public function setId($id)
     {
-        $this->id = $id;
+        $this->id = (int) $id;
         return $this;
     }
 
@@ -69,7 +73,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
      */
     public function getId()
     {
-        return $this->id;
+        return (int) $this->id;
     }
 
 	/**
@@ -90,5 +94,27 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
 	public function expose()
 	{
         return get_object_vars($this);
+    }
+
+    /**
+     * set wishlist date.
+     *
+     * @param $date
+     * @return $this;
+     */
+    public function setUpdatedAt($date)
+    {
+        $date = new Zend_Date($date, Zend_Date::ISO_8601);
+
+        $this->updated_at = $date->toString(Zend_Date::ISO_8601);;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
     }
 }

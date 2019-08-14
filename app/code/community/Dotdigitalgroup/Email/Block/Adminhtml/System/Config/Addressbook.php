@@ -18,11 +18,12 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Addressbook extends Ma
             "<script>
                 function createAddressbook(form, element) {
                     var name       = $('connector_sync_settings_dynamic_addressbook_addressbook_name').value;
+                    var visibility = $('connector_sync_settings_dynamic_addressbook_visibility').value;
                     var reloadurl  = '{$url}';
-                    if(name){
+                    if(name && visibility){
                         new Ajax.Request(reloadurl, {
                             method: 'post',
-                            parameters: {'name' : name, 'website': '$website'},
+                            parameters: {'name' : name, 'visibility' : visibility, 'website': '$website'},
                             onComplete: function(transport) {
                                 window.location.reload();
                             }

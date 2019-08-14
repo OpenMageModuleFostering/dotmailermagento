@@ -74,6 +74,11 @@ class Dotdigitalgroup_Email_Model_Connector_Order
     public $couponCode;
 
     /**
+     * @var array
+     */
+    public  $custom = array();
+
+    /**
      * set the order information
      * @param Mage_Sales_Model_Order $orderData
      */
@@ -97,6 +102,24 @@ class Dotdigitalgroup_Email_Model_Connector_Order
 	    if ($payment = $orderData->getPayment())
             $this->payment = $payment->getMethodInstance()->getTitle();
         $this->couponCode = $orderData->getCouponCode();
+
+        /**
+         * custom order attributes
+         */
+        $helper = Mage::helper('connector');
+        $website = Mage::app()->getStore($orderData->getStore())->getWebsite();
+        $customAttributes = $helper->getConfigSelectedCustomOrderAttributes($website);
+        if($customAttributes){
+            $fields = $helper->getOrderTableDescription();
+            foreach($customAttributes as $customAttribute){
+                if(isset($fields[$customAttribute])){
+                    $field = $fields[$customAttribute];
+                    $value = $this->_getCustomAttributeValue($field, $orderData);
+                    if($value)
+                        $this->_assignCustom($field, $value);
+                }
+            }
+        }
 
         /**
          * Billing address.
@@ -133,7 +156,9 @@ class Dotdigitalgroup_Email_Model_Connector_Order
          */
         foreach ($orderData->getAllItems() as $productItem) {
 
-	        $product = $productItem->getProduct();
+	        //load product by product id, for compatibility
+	        $product = Mage::getModel('catalog/product')->load($productItem->getProductId());
+
 	        if ($product) {
 		        // category names
 		        $categoryCollection = $product->getCategoryCollection()
@@ -204,4 +229,51 @@ class Dotdigitalgroup_Email_Model_Connector_Order
 
     }
 
+    private function _getCustomAttributeValue($field, $orderData)
+    {
+        $type = $field['DATA_TYPE'];
+
+        $function = 'get';
+        $exploded = explode('_', $field['COLUMN_NAME']);
+        foreach ($exploded as $one) {
+            $function .= ucfirst($one);
+        }
+
+        $value = null;
+        if($type == 'int' or $type == 'smallint'){
+            try{
+                $value = (int)$orderData->$function();
+            }catch (Exception $e){
+                Mage::logException($e);
+            }
+        }
+        if($type == 'decimal'){
+            try{
+                $value = (float)number_format($orderData->$function(), 2 , '.', '');
+            }catch (Exception $e){
+                Mage::logException($e);
+            }
+        }
+        if($type == 'timestamp' or $type == 'datetime'){
+            try{
+                $date = new Zend_Date($orderData->$function(), Zend_Date::ISO_8601);
+                $value = $date->toString(Zend_Date::ISO_8601);
+            }catch (Exception $e){
+                Mage::logException($e);
+            }
+        }
+
+        return $value;
+    }
+
+    /** 
+     * create property on runtime
+     *
+     * @param $field
+     * @param $value
+     */
+    private function _assignCustom($field, $value)
+    {
+        $this->custom[$field['COLUMN_NAME']] = $value;
+    }
 }

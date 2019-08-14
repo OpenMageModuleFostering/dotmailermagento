@@ -14,6 +14,12 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
 
     protected $_mapping_hash;
 
+    private $subscriber_status = array(
+        Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED => 'Subscribed',
+        Mage_Newsletter_Model_Subscriber::STATUS_NOT_ACTIVE => 'Not Active',
+        Mage_Newsletter_Model_Subscriber::STATUS_UNSUBSCRIBED => 'Unsubscribed',
+        Mage_Newsletter_Model_Subscriber::STATUS_UNCONFIRMED => 'Unconfirmed'
+    );
 
 	/**
 	 * constructor, mapping hash to map.
@@ -36,18 +42,17 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
     }
 
     /**
-	 * Set customer data.
-	 *
-	 * @param Mage_Customer_Model_Customer $customer
-	 */
-    public function setCustomerData(Mage_Customer_Model_Customer $customer, $website = null)
+     * Set customer data.
+     *
+     * @param Mage_Customer_Model_Customer $customer
+     */
+    public function setCustomerData(Mage_Customer_Model_Customer $customer)
     {
-        $helper = Mage::helper('connector');
-
         $this->customer = $customer;
         $this->setReviewCollection();
+        $website = $customer->getStore()->getWebsite();
 
-        if($website && $helper->isSweetToothToGo($website))
+        if($website && Mage::helper('connector')->isSweetToothToGo($website))
             $this->setRewardCustomer($customer);
 
         foreach ($this->getMappingHash() as $key => $field) {
@@ -72,8 +77,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
     public function setReviewCollection()
     {
         $customer_id = $this->customer->getId();
-        $collection = Mage::getModel('review/review')->getCollection();
-        $collection
+        $collection = Mage::getModel('review/review')->getCollection()
             ->addCustomerFilter($customer_id)
             ->setOrder('review_id','DESC');
         $this->reviewCollection = $collection;
@@ -97,34 +101,43 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
      */
     public function setRewardCustomer(Mage_Customer_Model_Customer $customer)
     {
+        //get tbt reward customer
         $tbt_reward = Mage::getModel('rewards/customer')->getRewardsCustomer($customer);
         $this->rewardCustomer = $tbt_reward;
 
+        //get transfers collection from tbt reward. only active and order by last updated.
         $lastTransfers = $tbt_reward->getTransfers()
             ->selectOnlyActive()
             ->addOrder('last_update_ts', Varien_Data_Collection::SORT_ORDER_DESC);
 
         $spent = $earn = null;
 
-        if($lastTransfers->getSize()) {
-            foreach($lastTransfers as $transfer) {
-                if(is_null($earn) && $transfer->getQuantity() > 0){
-                    $earn  = $transfer->getEffectiveStart();
-                }else if(is_null($spent) && $transfer->getQuantity() < 0) {
-                    $spent = $transfer->getEffectiveStart();
-                }
-                if(!is_null($spent) && !is_null($earn)) {
-                    break;
-                }
+        foreach($lastTransfers as $transfer) {
+            // if transfer quantity is greater then 0 then this is last points earned date. keep checking until earn is not null
+            if(is_null($earn) && $transfer->getQuantity() > 0){
+                $earn  = $transfer->getEffectiveStart();
+            }
+            // id transfer quantity is less then 0 then this is last points spent date. keep checking until spent is not null
+            else if(is_null($spent) && $transfer->getQuantity() < 0) {
+                $spent = $transfer->getEffectiveStart();
+            }
+            // break if both spent and earn are not null (a value has been assigned)
+            if(!is_null($spent) && !is_null($earn)) {
+                break;
             }
         }
 
-        if($earn) $this->rewardLastEarned = $earn;
-        if($spent) $this->rewardLastSpent = $spent;
+        // if earn is not null (has a value) then assign the value to property
+        if($earn)
+            $this->rewardLastEarned = $earn;
+        // if spent is not null (has a value) then assign the value to property
+        if($spent)
+            $this->rewardLastSpent = $spent;
 
         $tbt_expiry = Mage::getSingleton('rewards/expiry')
             ->getExpiryDate($tbt_reward);
 
+        // if there is an expiry (has a value) then assign the value to property
         if($tbt_expiry) $this->rewardExpiry = $tbt_expiry;
     }
 
@@ -172,7 +185,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
 	 *
 	 * @return bool|string
 	 */
-	public function getGender(){
+	public function getGender()
+    {
         return $this->_getCustomerGender();
     }
 
@@ -425,13 +439,23 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
     }
 
 	/**
-	 * get last order date.
+	 * get last order id.
 	 *
 	 * @return mixed
 	 */
 	public function getLastOrderId()
     {
         return $this->customer->getLastOrderId();
+    }
+
+    /**
+     * get last quote id.
+     *
+     * @return mixed
+     */
+    public function getLastQuoteId()
+    {
+        return $this->customer->getLastQuoteId();
     }
 
 	/**
@@ -592,7 +616,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
     public function getRewardPointExpiration()
     {
         if($this->rewardExpiry != "")
-            return date_format(date_create($this->makeUSDate($this->rewardExpiry)), 'Y-m-d H:i:s');
+            return Mage::getModel('core/date')->date('Y/m/d', strtotime($this->rewardExpiry));
         return $this->rewardExpiry;
     }
 
@@ -606,16 +630,18 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Customer
         return $this->rewardLastEarned;
     }
 
-    public function makeUSDate($uk_date, $separator_input = '/', $sepatator_output = '/')
-    {
-        list($day, $month, $year) = explode($separator_input, $uk_date);
-        return $month.$sepatator_output.$day.$sepatator_output.$year;
-    }
-
     public function cleanString($string)
     {
         $cleanedString = preg_replace("/[^0-9]/","",$string);
-        if($cleanedString != "") return (int) number_format($cleanedString, 0, '.', '');
-        return (int) 0;
+        if($cleanedString != "")
+            return (int) number_format($cleanedString, 0, '.', '');
+        return 0;
+    }
+
+    public function getSubscriberStatus()
+    {
+        $subscriber = Mage::getModel('newsletter/subscriber')->loadByCustomer($this->customer);
+        if($subscriber->getCustomerId())
+             return $this->subscriber_status[$subscriber->getSubscriberStatus()];
     }
 }

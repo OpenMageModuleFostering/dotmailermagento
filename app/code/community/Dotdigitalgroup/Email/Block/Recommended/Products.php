@@ -2,6 +2,12 @@
 
 class Dotdigitalgroup_Email_Block_Recommended_Products extends Mage_Core_Block_Template
 {
+	/**
+	 * Slot div name.
+	 * @var string
+	 */
+	public $slot;
+
     /**
 	 * Prepare layout, set the template.
 	 * @return Mage_Core_Block_Abstract|void
@@ -146,4 +152,43 @@ class Dotdigitalgroup_Email_Block_Recommended_Products extends Mage_Core_Block_T
         $this->setProduct($product);
         return $this->toHtml();
     }
+
+
+	/**
+	 * Nosto products data.
+	 * @return object
+	 */
+	public function getNostoProducts()
+	{
+		$client = Mage::getModel('email_connector/apiconnector_client');
+		//slot name, div id
+		$slot  = Mage::app()->getRequest()->getParam('slot', false);
+
+		//email recommendation
+		$email = Mage::app()->getRequest()->getParam('email', false);
+
+		//no valid data for nosto recommendation
+		if (!$slot || ! $email)
+			return false;
+		else
+			$this->slot = $slot;
+
+		//html data from nosto
+		$data = $client->getNostoProducts($slot, $email);
+
+		//check for valid response
+		if (! isset($data->$email) && !isset($data->$email->$slot))
+			return false;
+		return $data->$email->$slot;
+	}
+
+	/**
+	 * Slot name.
+	 * Should be called after getNostoProducts.
+	 * @return string
+	 */
+	public function getSlotName()
+	{
+		return $this->slot;
+	}
 }

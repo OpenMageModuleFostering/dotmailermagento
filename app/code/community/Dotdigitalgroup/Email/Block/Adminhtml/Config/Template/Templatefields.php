@@ -18,6 +18,10 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Template_Templatefields  exte
 	 */
 	protected $_getSendtypeRenderer;
 
+    /**
+     * From address
+     */
+    protected $_getFromadddressRenderer;
 
 	/**
 	 * Construct.
@@ -51,6 +55,16 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Template_Templatefields  exte
 				'style' => 'width:120px',
 			)
 		);
+        $this->addColumn('fromaddress', array(
+                'label' => Mage::helper('adminhtml')->__("From Address"),
+                'style' => 'width:120px',
+            )
+        );
+        $this->addColumn('attachmentid', array(
+                'label' => Mage::helper('adminhtml')->__("Attachment Id"),
+                'style' => 'width:120px',
+            )
+        );
 	}
 
 	protected function _renderCellTemplate($columnName)
@@ -79,7 +93,15 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Template_Templatefields  exte
 			            ->setExtraParams('style="width:160px"')
 			            ->setOptions(Mage::getModel('email_connector/adminhtml_source_transactional_campaigns')->toOptionArray())
 			            ->toHtml();
-		}
+		} elseif ($columnName == "fromaddress") {
+            return $this->_getFromadddressRenderer()
+                ->setName($inputName)
+                ->setTitle($columnName)
+                ->setExtraParams('style="width:160px"')
+                ->setOptions(Mage::getModel('email_connector/adminhtml_source_transactional_fromaddress')->toOptionArray())
+                ->toHtml();
+        }
+
 		return parent::_renderCellTemplate($columnName);
 	}
 
@@ -105,7 +127,13 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Template_Templatefields  exte
 			'option_extra_attr_' . $this->_getDatafieldRenderer()->calcOptionHash($row->getData('datafield')),
 			'selected="selected"'
 		);
+
+        $row->setData(
+            'option_extra_attr_' . $this->_getFromadddressRenderer()->calcOptionHash($row->getData('fromaddress')),
+            'selected="selected"'
+        );
 	}
+
 	protected function _getTemplateRenderer()
 	{
 		if (!$this->_getTemplateRenderer) {
@@ -135,6 +163,17 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Config_Template_Templatefields  exte
 		}
 		return $this->_getSendtypeRenderer;
 	}
+
+    protected function _getFromadddressRenderer()
+    {
+        if (!$this->_getFromadddressRenderer) {
+            $this->_getFromadddressRenderer = $this->getLayout()
+                ->createBlock('email_connector/adminhtml_config_select')
+                ->setIsRenderToJsTemplate(true);
+        }
+        return $this->_getFromadddressRenderer;
+    }
+
 	public function _toHtml()
 	{
 		if(count($this->getElement()->getValues())){

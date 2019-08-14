@@ -8,7 +8,10 @@ class Dotdigitalgroup_Email_ProductsController extends Mage_Core_Controller_Fron
     public function preDispatch()
     {
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
-        if ($this->getRequest()->getActionName() != 'push') {
+	    //skip order_id check for this actions
+	    $skip = array('push', 'nosto');
+	    $actionName = $this->getRequest()->getActionName();
+        if (! in_array($actionName, $skip)) {
             $orderId = $this->getRequest()->getParam('order_id', false);
             //check for order id param
 	        if ($orderId) {
@@ -91,4 +94,19 @@ class Dotdigitalgroup_Email_ProductsController extends Mage_Core_Controller_Fron
         $this->getLayout()->getBlock('content')->append($products);
         $this->renderLayout();
     }
+
+	/**
+	 * Nosto recommendation action.
+	 */
+	public function nostoAction()
+	{
+		$this->loadLayout();
+
+		$products = $this->getLayout()->createBlock('email_connector/recommended_products', 'connector_nosto_recommended', array(
+			'template' => 'connector/product/nosto.phtml'
+		));
+		$this->getLayout()->getBlock('content')->append($products);
+		$this->renderLayout();
+	}
+
 }

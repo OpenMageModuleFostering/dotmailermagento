@@ -66,7 +66,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 	{
 		Mage::getModel('email_connector/contact')->resetAllContacts();
 
-		Mage::getSingleton('adminhtml/session')->addSuccess('Customers Refreshed.');
+		Mage::getSingleton('adminhtml/session')->addSuccess('Done.');
 
 		$this->_redirectReferer();
 	}
@@ -180,14 +180,18 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
         }
     }
 
+	/**
+	 * Create new address book action.
+	 */
     public function createnewaddressbookAction()
     {
         $addressBookName = $this->getRequest()->getParam('name');
+	    $visibility = $this->getRequest()->getParam('visibility');
         $website  = $this->getRequest()->getParam('website', 0);
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
         if (strlen($addressBookName)) {
-            $response = $client->postAddressBooks($addressBookName);
-            if(isset($response->message))
+            $response = $client->postAddressBooks($addressBookName, $visibility);
+            if (isset($response->message))
                 Mage::getSingleton('adminhtml/session')->addError($response->message);
             else
                 Mage::getSingleton('adminhtml/session')->addSuccess('Address book : '. $addressBookName . ' created.');
@@ -199,7 +203,7 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
     {
         $updated = Mage::getModel('email_connector/contact')->resetSubscribers();
         if ($updated) {
-            Mage::getSingleton('adminhtml/session')->addSuccess('Subscribers updated : ' . $updated);
+            Mage::getSingleton('adminhtml/session')->addSuccess('Done.');
         } else {
             Mage::getSingleton('adminhtml/session')->addNotice('No subscribers imported!');
         }
@@ -211,9 +215,9 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 	 */
 	public function enablewebsiteconfigurationAction()
 	{
-		$path = $this->getRequest()->getParam('path');
-		$website = $this->getRequest()->getParam('website', 0);
-        $value = $this->getRequest()->getParam('value');
+		$path       = $this->getRequest()->getParam('path');
+		$value      = $this->getRequest()->getParam('value');
+		$website    = $this->getRequest()->getParam('website', 0);
 
 		$path = constant('Dotdigitalgroup_Email_Helper_Config::' . $path);
 		$scope = 'websites';
@@ -221,13 +225,50 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 
 		$config = Mage::getConfig();
 
-        if(isset($value))
+		//use value 1 if not set
+        if (isset($value))
 		    $config->saveConfig($path, $value, $scope, $scopeId);
         else
             $config->saveConfig($path, 1, $scope, $scopeId);
 
+		//clean cache
 		$config->cleanCache();
 
+		$this->_redirectReferer();
+	}
+
+	/**
+	 * Populate the tables (customer-email_contact, subscribers-email_contact) with missing ones.
+	 */
+	public function populatecontactsAction()
+	{
+
+		//type of data to bring up-to-date
+		$type = $this->getRequest()->getParam('type', false);
+		$website = $this->getRequest()->getParam('website', false);
+		//required data not set
+		if (!$type && $website == false) {
+			return ;
+		}
+
+		$contactTable = Mage::getSingleton('core/resource')->getTableName('email_connector/contact');
+
+		$customerCollection = Mage::getModel('customer/customer')->getCollection()
+			->addFieldToFilter('website_id', $website);
+
+		$customerCollection->getSelect()
+			->joinLeft(array('ec' => $contactTable), 'e.entity_id = ec.customer_id', array('customer_id' => 'ec.customer_id'))
+			->where('ec.customer_id IS NULL');
+
+		//found customers t
+		if ($count = $customerCollection->getSize()) {
+			//trigger the save to update the contact table
+			foreach ( $customerCollection as $customer ) {
+				$customer->save();
+			}
+
+			Mage::getSingleton( 'adminhtml/session' )->addSuccess( "Total contacts populated : " . $count );
+		}
 		$this->_redirectReferer();
 	}
 
@@ -269,4 +310,30 @@ class Dotdigitalgroup_Email_Adminhtml_ConnectorController extends Mage_Adminhtml
 
 		$this->_redirectReferer();
 	}
+
+    /**
+     * Trigger to run the review sync.
+     */
+    public function runreviewsyncAction()
+    {
+
+        $result = Mage::getModel('email_connector/cron')->reviewSync();
+        if ($result['message'])
+            Mage::getSingleton('adminhtml/session')->addSuccess($result['message']);
+
+        $this->_redirectReferer();
+    }
+
+    /**
+     * Trigger to run the reviw sync.
+     */
+    public function runwishlistsyncAction()
+    {
+
+        $result = Mage::getModel('email_connector/wishlist')->sync();
+        if ($result['message'])
+            Mage::getSingleton('adminhtml/session')->addSuccess($result['message']);
+
+        $this->_redirectReferer();
+    }
 }

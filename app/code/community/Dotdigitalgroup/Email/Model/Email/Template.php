@@ -34,6 +34,15 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
         'customer_create_account_email_template'         => 'New Customer Account'
     );
 
+    /**
+     * @var string
+     */
+    private $_templateId;
+
+    /**
+     * @var int
+     */
+    private $_storeId;
 
     /**
      * Send transactional email to recipient
@@ -49,9 +58,10 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
      */
     public function sendTransactional($templateId, $sender, $email, $name, $vars=array(), $storeId=null)
     {
-	    $sendType = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_SENDTYPE);
-	    $transEnabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED);
-	    $campaignId = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_DATAFIELD);
+        $this->_templateId = $templateId;
+	    $sendType = Mage::helper('connector/transactional')->getMapping($templateId, Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_SENDTYPE, $storeId);
+	    $transEnabled = Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Transactional::XML_PATH_TRANSACTIONAL_API_ENABLED, $storeId);
+	    $campaignId = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_DATAFIELD, $storeId);
 
 
 	    //design and send. campaign id is needed for this option
@@ -68,7 +78,12 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
 
         //send via connector
         if($sendType == 1 && $transEnabled)
-            return $this->sendTransactionalForOptionViaConnector($templateId, $sender, $email, $name, $vars, $storeId, $sendType);
+            return $this->sendTransactionalForOptionViaConnector($sender, $email, $name, $vars, $storeId, $sendType);
+
+        // If Template ID is 'nosend', then simply return false
+        if ($templateId == 'nosend') {
+            return false;
+        }
 
         //templates not mapped or mapped "Use System Default"
         return parent::sendTransactional($templateId, $sender, $email, $name, $vars, $storeId);
@@ -87,8 +102,9 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
      * @return $this
      * @throws Mage_Core_Exception
      */
-    public function sendTransactionalForOptionViaConnector($templateId, $sender, $email, $name, $vars = array(), $storeId = null, $sendType)
+    public function sendTransactionalForOptionViaConnector($sender, $email, $name, $vars = array(), $storeId = null, $sendType)
     {
+        $templateId = $this->_templateId;
         $this->setSentSuccess(false);
         if (($storeId === null) && $this->getDesignConfig()->getStore()) {
             $storeId = $this->getDesignConfig()->getStore();
@@ -154,6 +170,7 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
      */
     public function sendViaConnector($email, $name, $variables)
     {
+        $templateId = $this->_templateId;
         $emails = array_values((array)$email);
         $names = is_array($name) ? $name : (array)$name;
         $names = array_values($names);
@@ -175,7 +192,10 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
         $templateName = $helper->getTemplateLabelById($this->getId());
 
         if($helper->getUnsubscribeLink($websiteId))
-            $body .= '<br><br>Want to unsubscribe or change your details ' . '<a href="http://$UNSUB$">Unsubscribe from this newsletter</a>';
+            $body .= '<br><br>' . $helper->__('Want to unsubscribe or change your details') . '<a href="http://$UNSUB$">' . $helper->__('Unsubscribe from this newsletter') . '</a>';
+
+        $fromAddress = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_FROM_ADDRESS, $store->getId());
+        $attachmentId = Mage::helper('connector/transactional')->getMapping($templateId,Dotdigitalgroup_Email_Helper_Transactional::MAP_COLUMN_KEY_ATTACHMENT_ID, $store->getId());
 
         foreach($emails as $email){
             try{
@@ -184,11 +204,13 @@ class Dotdigitalgroup_Email_Model_Email_Template extends Mage_Core_Model_Email_T
                 $emailCreate
                     ->setEmail($email)
                     ->setFromName($this->getSenderName())
+                    ->setFromAddress($fromAddress)
                     ->setWebsiteId($websiteId)
                     ->setEventName($templateName)
                     ->setSubject($subject)
                     ->setHtmlContent($body)
                     ->setPlainTextContent($helper->__('Want to unsubscribe or change your details?') . 'http://$UNSUB$')
+                    ->setAttachmentId($attachmentId)
                     ->setCreatedAt($now)
                     ->setType(2)
                     ->save();

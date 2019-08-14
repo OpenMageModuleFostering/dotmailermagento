@@ -3,7 +3,7 @@
     <default>
         <reference name="before_body_end">
             <block type="core/template" name="mailcheck" as="mailcheck" template="mailcheck/scripts.phtml">
-                <action method="setData" ifconfig="connector_advanced_settings/mailcheck/enabled">
+                <action method="setData" ifconfig="connector_configuration/mailcheck/enabled">
                     <name>show</name><value>1</value>
                 </action>
             </block>

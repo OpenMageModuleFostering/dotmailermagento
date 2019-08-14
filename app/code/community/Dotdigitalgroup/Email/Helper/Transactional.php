@@ -19,6 +19,8 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
 	const MAP_COLUMN_KEY_SENDTYPE                               = 'sendtype';
 	const MAP_COLUMN_KEY_CAMPAIGN                               = 'campaign';
 	const MAP_COLUMN_KEY_DATAFIELD                              = 'datafield';
+    const MAP_COLUMN_KEY_FROM_ADDRESS                           = 'fromaddress';
+    const MAP_COLUMN_KEY_ATTACHMENT_ID                          = 'attachmentid';
 
 	const TRANSACTIONAL_SENDTYPE_SYSTEM_DEFAULT                 = '0';
 	const TRANSACTIONAL_SENDTYPE_VIA_CONNECTOR                  = '1';
@@ -130,10 +132,13 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
 	}
 
     /**
-     * Transactional emails check for campaing id if it's mapped.
+     * Transactional emails check for campaign id if it's mapped.
      * Default Emails stored in magento
      *
-     * @return mixed
+     * @param $templateId
+     * @param $key
+     * @param null $storeId
+     * @return bool|mixed
      */
 	public function getMapping($templateId, $key ,$storeId = null)
 	{
@@ -151,6 +156,12 @@ class Dotdigitalgroup_Email_Helper_Transactional extends Mage_Core_Helper_Abstra
 
 		if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_SENDTYPE)
 			return $isMapped[self::MAP_COLUMN_KEY_SENDTYPE];
+
+        if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_FROM_ADDRESS)
+            return $isMapped[self::MAP_COLUMN_KEY_FROM_ADDRESS];
+
+        if(is_array($isMapped) && $key == self::MAP_COLUMN_KEY_ATTACHMENT_ID)
+            return $isMapped[self::MAP_COLUMN_KEY_ATTACHMENT_ID];
 
 		return $isMapped;
 	}

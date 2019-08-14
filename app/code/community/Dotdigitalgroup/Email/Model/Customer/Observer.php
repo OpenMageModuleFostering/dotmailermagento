@@ -71,7 +71,8 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
 		$websiteId  = $customer->getWebsiteId();
 
 		// send customer to automation mapped
-		$this->_postCustomerToAutomation($email, $websiteId);
+        $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER';
+		$this->_postCustomerToAutomation($email, $websiteId, $automationType);
 
 		return $this;
 	}
@@ -109,50 +110,207 @@ class Dotdigitalgroup_Email_Model_Customer_Observer
         return $this;
     }
 
-	private function _postCustomerToAutomation( $email, $websiteId ) {
+    /**
+     * enrol single contact to automation
+     *
+     * @param $email
+     * @param $websiteId
+     * @param $automationType
+     */
+	private function _postCustomerToAutomation( $email, $websiteId, $automationType) {
 		/**
 		 * Automation Programme
 		 */
-		$customerAutoCamaignId = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_AUTOMATION_STUDIO_CUSTOMER, $websiteId);
-		//forward add customer to automation
-		if ($customerAutoCamaignId) {
-			Mage::helper( 'connector' )->log( 'AS - customer automation Campaign id : ' . $customerAutoCamaignId );
+        $path = constant('Dotdigitalgroup_Email_Helper_Config::' . $automationType);
+		$automationCampaignId = Mage::helper('connector')->getWebsiteConfig($path, $websiteId);
+		$enabled = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED, $websiteId);
+
+		//add customer to automation
+		if ($enabled && $automationCampaignId) {
+			Mage::helper( 'connector' )->log( 'AS - ' . $automationType . ' automation Campaign id : ' . $automationCampaignId );
 			$client = Mage::helper( 'connector' )->getWebsiteApiClient( $websiteId );
 			$apiContact = $client->postContacts($email);
 
 			// get a program by id
-			$program = $client->getProgramById($customerAutoCamaignId);
+			$program = $client->getProgramById($automationCampaignId);
 			/**
 			 * id
 			 * name
 			 * status
 			 * dateCreated
 			 */
-			Mage::helper( 'connector' )->log( 'AS - get customer Program id : ' . $program->id);
-
-			$data = array(
-				'Contacts' => array($apiContact->id),
-				'ProgramId'   => $program->id,
-				'Status'      => $program->status,
-				'DateCreated' => $program->dateCreated,
-				'AddressBooks' => array()
-			);
-			$client->postProgramsEnrolments($data);
+			Mage::helper( 'connector' )->log( 'AS - get ' . $automationType . ' Program id : ' . $program->id);
+            //check for active program with status "Active"
+            if (isset($program->status) && $program->status == 'Active') {
+                $data = array(
+                    'Contacts' => array($apiContact->id),
+                    'ProgramId'   => $program->id,
+                    'Status'      => $program->status,
+                    'DateCreated' => $program->dateCreated,
+                    'AddressBooks' => array()
+                );
+                $client->postProgramsEnrolments($data);
+            }
 		}
 	}
 
     /**
-     * Set contact to re-import if registered customer submitted a review
+     * Set contact to re-import if registered customer submitted a review. Save review in email_review table.
      * @param Varien_Event_Observer $observer
      * @return $this
      */
     public function reviewSaveAfter(Varien_Event_Observer $observer)
     {
         $dataObject = $observer->getEvent()->getDataObject();
-        if($customerId = $dataObject->getCustomerId()){
+        if($dataObject->getCustomerId() && $dataObject->getStatusId() == '1'){
+            $customerId = $dataObject->getCustomerId();
             $helper = Mage::helper('connector');
             $helper->setConnectorContactToReImport($customerId);
+            //save review info in the table
+            $this->_registerReview($dataObject);
+            // send customer to automation mapped
+            $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_REVIEW';
+            $customer = Mage::getModel('customer/customer')->load($customerId);
+            $email      = $customer->getEmail();
+            $websiteId  = $customer->getWebsiteId();
+            $this->_postCustomerToAutomation($email, $websiteId, $automationType);
         }
         return $this;
+    }
+
+    /**
+     * register review
+     *
+     * @param $review
+     */
+    private function _registerReview($review)
+    {
+        try{
+            $emailReview = Mage::getModel('email_connector/review');
+            $emailReview->setReviewId($review->getReviewId())
+                ->setCustomerId($review->getCustomerId())
+                ->setStoreId($review->getStoreId())
+                ->save();
+        }catch(Exception $e){
+            Mage::logException($e);
+        }
+    }
+
+    /**
+     * wishlist save after observer. save new wishlist in the email_wishlist table.
+     *
+     * @param Varien_Event_Observer $observer
+     * @return $this
+     */
+    public function wishlistSaveAfter(Varien_Event_Observer $observer)
+    {
+	    //skip the version that has no wishlist observer
+	    if (version_compare(Mage::getVersion(), '1.6.2.0', '<=')) {
+
+		    return;
+	    }
+		$dataObject = $observer->getEvent()->getDataObject();
+
+        if ($dataObject->getCustomerId()) {
+	        //save wishlist info in the table
+	        $this->_registerWishlist( $dataObject );
+        }
+    }
+
+    /**
+     * register wishlist
+     *
+     * @param $wishlist
+     */
+    private function _registerWishlist($wishlist)
+    {
+        try{
+            $emailWishlist = Mage::getModel('email_connector/wishlist');
+            $customer = Mage::getModel('customer/customer');
+
+            //if wishlist exist not to save again
+            if(!$emailWishlist->getWishlist($wishlist->getWishlistId())){
+                $customer->load($wishlist->getCustomerId());
+                $emailWishlist->setWishlistId($wishlist->getWishlistId())
+                    ->setCustomerId($wishlist->getCustomerId())
+                    ->setStoreId($customer->getStoreId())
+                    ->save();
+                // send customer to automation mapped
+                $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_WISHLIST';
+                $email      = $customer->getEmail();
+                $websiteId  = $customer->getWebsiteId();
+                $this->_postCustomerToAutomation($email, $websiteId, $automationType);
+            }
+        }catch(Exception $e){
+            Mage::logException($e);
+        }
+    }
+
+    /**
+     * wishlist item save after
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function wishlistItemSaveAfter(Varien_Event_Observer $observer)
+    {
+	    //skip the version that has no wishlist observer
+	    if (version_compare(Mage::getVersion(), '1.6.2.0', '<=')) {
+		    return;
+	    }
+
+	    $object        = $observer->getEvent()->getDataObject();
+	    $wishlist      = Mage::getModel( 'wishlist/wishlist' )->load( $object->getWishlistId() );
+	    $emailWishlist = Mage::getModel( 'email_connector/wishlist' );
+	    try {
+		    if ( $object->getWishlistId() ) {
+			    $itemCount = count( $wishlist->getItemCollection() );
+			    $item      = $emailWishlist->getWishlist( $object->getWishlistId() );
+
+			    if ( $item->getId() ) {
+				    $preSaveItemCount = $item->getItemCount();
+
+				    if ( $itemCount != $item->getItemCount() ) {
+					    $item->setItemCount( $itemCount );
+				    }
+
+				    if ( $itemCount == 1 && $preSaveItemCount == 0 ) {
+					    $item->setWishlistImported( null );
+				    } elseif ( $item->getWishlistImported() ) {
+					    $item->setWishlistModified( 1 );
+				    }
+
+				    $item->save();
+			    }
+		    }
+	    } catch ( Exception $e ) {
+		    Mage::logException( $e );
+	    }
+
+    }
+
+    /**
+     * wishlist delete observer
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function wishlistDeleteAfter(Varien_Event_Observer $observer)
+    {
+        $object = $observer->getEvent()->getDataObject();
+        $customer = Mage::getModel('customer/customer')->load($object->getCustomerId());
+        $website = Mage::app()->getStore($customer->getStoreId())->getWebsite();
+        $client = Mage::helper('connector')->getWebsiteApiClient($website);
+
+         //Remove wishlist
+        try{
+            $item = Mage::getModel('email_connector/wishlist')->getWishlist($object->getWishlistId());
+            if ($item->getId()) {
+                $result = $client->deleteContactsTransactionalData($item->getId(), 'Wishlist');
+                if (!isset($result->message)){
+                    $item->delete();
+                }
+            }
+        }catch (Exception $e){
+            Mage::logException($e);
+        }
     }
 }

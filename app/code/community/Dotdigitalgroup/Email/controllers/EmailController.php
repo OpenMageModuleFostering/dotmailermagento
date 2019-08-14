@@ -7,7 +7,7 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
      */
     public function couponAction()
     {
-        //authinticate
+        //authenticate
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
 
         $this->loadLayout();
@@ -28,7 +28,7 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
      */
     public function basketAction()
     {
-        //authinticate
+        //authenticate
         Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
         $this->loadLayout();
         if ($root = $this->getLayout()->getBlock('root')) {
@@ -38,6 +38,18 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
             'template' => 'connector/basket.phtml'
         ));
         $this->getLayout()->getBlock('content')->append($basket);
+        $this->renderLayout();
+    }
+
+    public function reviewAction()
+    {
+        //authenticate
+        Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
+        $this->loadLayout();
+        $review = $this->getLayout()->createBlock('email_connector/order', 'connector_review', array(
+            'template' => 'connector/review.phtml'
+        ));
+        $this->getLayout()->getBlock('content')->append($review);
         $this->renderLayout();
     }
 
@@ -61,7 +73,7 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
             'type'  => 'filename',
             'value' => $filePath
         ));
-        exit();
+		return;
     }
 
     public function showAction() {

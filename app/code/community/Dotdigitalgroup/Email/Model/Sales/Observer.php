@@ -13,7 +13,8 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
         $order = $observer->getEvent()->getOrder();
         // the reloaded status
         $reloaded = Mage::getModel('sales/order')->load($order->getId());
-        Mage::register('sales_order_status_before', $reloaded->getStatus());
+	    if (! Mage::registry('sales_order_status_before'))
+            Mage::register('sales_order_status_before', $reloaded->getStatus());
         return $this;
     }
     /**
@@ -90,7 +91,20 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
 
             Mage::helper('connector/transactional')->updateContactData($data);
         }
-
+        //automation enrolment for order
+        if($order->getCustomerIsGuest()){
+            //send guest to automation mapped
+            $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_GUEST_ORDER';
+            $email      = $order->getCustomerEmail();
+            $websiteId  = $order->getWebsiteId();
+            $this->_postCustomerToAutomation($email, $websiteId, $automationType);
+        }else{
+            //send customer to automation mapped
+            $automationType = 'XML_PATH_CONNECTOR_AUTOMATION_STUDIO_ORDER';
+            $email      = $order->getCustomerEmail();
+            $websiteId  = $order->getWebsiteId();
+            $this->_postCustomerToAutomation($email, $websiteId, $automationType);
+        }
         return $this;
     }
 
@@ -149,5 +163,49 @@ class Dotdigitalgroup_Email_Model_Sales_Observer
         }
 
         return $this;
+    }
+
+    /**
+     * enrol single contact to automation
+     *
+     * @param $email
+     * @param $websiteId
+     * @param $automationType
+     */
+    private function _postCustomerToAutomation( $email, $websiteId, $automationType) {
+        /**
+         * Automation Programme
+         */
+        $path = constant('Dotdigitalgroup_Email_Helper_Config::' . $automationType);
+        $automationCampaignId = Mage::helper('connector')->getWebsiteConfig($path, $websiteId);
+        $enabled = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_TRANSACTIONAL_API_ENABLED, $websiteId);
+
+        //add customer to automation
+        if ($enabled && $automationCampaignId) {
+            Mage::helper( 'connector' )->log( 'AS - ' . $automationType . ' automation Campaign id : ' . $automationCampaignId );
+            $client = Mage::helper( 'connector' )->getWebsiteApiClient( $websiteId );
+            $apiContact = $client->postContacts($email);
+
+            // get a program by id
+            $program = $client->getProgramById($automationCampaignId);
+            /**
+             * id
+             * name
+             * status
+             * dateCreated
+             */
+            Mage::helper( 'connector' )->log( 'AS - get ' . $automationType . ' Program id : ' . $program->id);
+            //check for active program with status "Active"
+            if (isset($program->status) && $program->status == 'Active') {
+                $data = array(
+                    'Contacts' => array($apiContact->id),
+                    'ProgramId'   => $program->id,
+                    'Status'      => $program->status,
+                    'DateCreated' => $program->dateCreated,
+                    'AddressBooks' => array()
+                );
+                $client->postProgramsEnrolments($data);
+            }
+        }
     }
 }

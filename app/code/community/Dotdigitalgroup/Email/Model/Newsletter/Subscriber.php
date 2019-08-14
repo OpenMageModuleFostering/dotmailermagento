@@ -13,7 +13,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
      * Global number of subscriber updated.
      * @var
      */
-    protected $_countSubscriber;
+    protected $_countSubscriber = 0;
 
     /**
      * SUBSCRIBER SYNC.
@@ -24,7 +24,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
         $response = array('success' => true, 'message' => '');
         /** @var Dotdigitalgroup_Email_Helper_Data $helper */
         $helper = Mage::helper('connector');
-        $helper->log('---------------------- Start subscriber sync -------------------');
+
         $this->_start = microtime(true);
 
         foreach (Mage::app()->getWebsites(true) as $website) {
@@ -32,7 +32,13 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
             $enabled = (bool)$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED);
             $addressBook = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SUBSCRIBERS_ADDRESS_BOOK_ID);
 
+	        //enabled and mapped
             if ( $enabled && $addressBook ) {
+
+	            //ready to start sync
+	            if (!$this->_countSubscriber)
+	                $helper->log('---------------------- Start subscriber sync -------------------');
+
                 $numUpdated = $this->exportSubscribersPerWebsite($website);
                 // show message for any number of customers
                 if ($numUpdated)
@@ -103,46 +109,54 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
      */
     public function unsubscribe($force = false)
     {
-        $result['customers'] = 0;
-        $limit = 5;
-        $max_to_select = 1000;
-        $date = Zend_Date::now()->subHour(1);
-        $helper = Mage::helper('connector');
+	    $limit = 5;
+	    $max_to_select = 1000;
+	    $result['customers'] = 0;
+	    $helper = Mage::helper('connector');
+	    $date = Mage::app()->getLocale()->date()->subHour(1);
         // force sync all customers
         if($force)
             $date = $date->subYear(10);
         // datetime format string
         $dateString = $date->toString(Zend_Date::W3C);
-
         /**
          * 1. Sync all suppressed for each store
          */
         foreach (Mage::app()->getWebsites(true) as $website) {
+
             $enabled = (bool)$website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_API_ENABLED);
+	        $client = Mage::helper('connector')->getWebsiteApiClient($website);
+
+	        //no enabled and valid credentials
             if (! $enabled)
                 continue;
+
             $contacts = array();
             $skip = $i = 0;
-            $client = Mage::helper('connector')->getWebsiteApiClient($website);
+
             //there is a maximum of request we need to loop to get more suppressed contacts
             for ($i=0; $i<= $limit;$i++) {
                 $apiContacts = $client->getContactsSuppressedSinceDate($dateString, $max_to_select , $skip);
-                // skip no more contacts
-                if(empty($apiContacts))
+
+                // skip no more contacts or the api request failed
+                if(empty($apiContacts) || isset($apiContacts->message))
                     break;
+
                 $contacts = array_merge($contacts, $apiContacts);
                 $skip += 1000;
             }
+
             $subscriberBookId = $helper->getSubscriberAddressBook($website);
+
             // suppressed contacts to unsubscibe
             foreach ($contacts as $apiContact) {
                 if (isset($apiContact->suppressedContact)) {
                     $suppressedContact = $apiContact->suppressedContact;
-                    $email = $suppressedContact->email;
-                    $contactId = $suppressedContact->id;
+                    $email      = $suppressedContact->email;
+                    $contactId  = $suppressedContact->id;
                     try{
                         /**
-                         * 2. Unsubscribe customer.
+                         * 2. Remove subscriber from the address book.
                          */
                         $subscriber = Mage::getModel('newsletter/subscriber')->loadByEmail($email);
                         if ($subscriber->getStatus() == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED) {
@@ -158,7 +172,7 @@ class Dotdigitalgroup_Email_Model_Newsletter_Subscriber
                         //unsubscribe from the email contact table.
                         foreach ($contactCollection as $contact) {
                             $contact->setIsSubscriber(null)
-                                ->setSuppressed(1)->save();
+                                ->setSuppressed('1')->save();
                         }
                     }catch (Exception $e){
                         Mage::logException($e);

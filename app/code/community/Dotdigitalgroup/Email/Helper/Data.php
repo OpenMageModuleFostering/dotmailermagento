@@ -30,9 +30,8 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     public function auth($authRequest)
     {
         if ($authRequest != Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DYNAMIC_CONTENT_PASSCODE)) {
-            $this->log('Authenication failed : ' . $authRequest);
-            $this->getRaygunClient()->Send('Authinication failed with code :' . $authRequest);
-            exit();
+            $this->getRaygunClient()->Send('Authentication failed with code :' . $authRequest);
+            throw new Exception('Authentication failed : ' . $authRequest);
         }
         return true;
     }
@@ -55,6 +54,12 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
     public function getLastOrderId()
     {
         return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_ORDER_ID);
+
+    }
+
+    public function getLastQuoteId()
+    {
+        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_LAST_QUOTE_ID);
 
     }
 
@@ -235,6 +240,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
         $callback    = $baseUrl . 'connector/email/callback';
         $adminUser = Mage::getSingleton('admin/session')->getUser();
 
+	    //query params
         $params = array(
             'redirect_uri' => $callback,
             'scope' => 'Account',
@@ -242,7 +248,6 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
             'response_type' => 'code'
         );
         $url = Dotdigitalgroup_Email_Helper_Config::API_CONNECTOR_URL_AUTHORISE . http_build_query($params) . '&client_id=' . $clientId;
-        Mage::helper('connector')->log('Authorization code url : '. $url);
 
         return $url;
     }
@@ -257,6 +262,15 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
         $status = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_STATUS, $website);
         if($status)
             return explode(',',$status);
+        else
+            return false;
+    }
+
+    public function getConfigSelectedCustomOrderAttributes($website = 0)
+    {
+        $customAttributes = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_CUSTOM_ORDER_ATTRIBUTES, $website);
+        if($customAttributes)
+            return explode(',',$customAttributes);
         else
             return false;
     }
@@ -277,7 +291,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function isSweetToothToGo($website)
     {
-        $stMappingStatus = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE, $website->getData('website_id'));
+        $stMappingStatus = $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_MAPPING_SWEETTOOTH_ACTIVE, $website);
         if($stMappingStatus && $this->isSweetToothEnabled()) return true;
         return false;
     }
@@ -354,7 +368,7 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
         $code = Mage::getstoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_RAYGUN_APPLICATION_CODE);
 
         if ($this->raygunEnabled()) {
-            require_once Mage::getBaseDir('lib').DS.'Raygun4php/RaygunClient.php';
+            require_once Mage::getBaseDir('lib') . DS . 'Raygun4php' . DS  . 'RaygunClient.php';
             return new Raygun4php\RaygunClient($code, false, true);
         }
 
@@ -444,37 +458,55 @@ class Dotdigitalgroup_Email_Helper_Data extends Mage_Core_Helper_Abstract
      * @return string
      * @throws Mage_Core_Exception
      */
-    public function generateDynamicUrl()
+	public function generateDynamicUrl()
+	{
+		$website = Mage::app()->getRequest()->getParam('website', false);
+
+		//set website url for the default store id
+		$website = ($website)? Mage::app()->getWebsite( $website ) : 0;
+
+		$defaultGroup = Mage::app()->getWebsite($website)
+		                    ->getDefaultGroup();
+
+		if (! $defaultGroup)
+			return $mage = Mage::app()->getStore()->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB);
+
+		//base url
+		$baseUrl = Mage::app()->getStore($defaultGroup->getDefaultStore())->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
+
+		return $baseUrl;
+
+	}
+
+    /**
+     *
+     *
+     * @param int $store
+     * @return mixed
+     */
+    public function isNewsletterSuccessDisabled($store = 0)
     {
-        $website = Mage::app()->getRequest()->getParam('website', false);
-
-        //set website url for the default store id
-        if ($website) {
-            $website = Mage::app()->getWebsite( $website );
-        }else {
-            $website = 0;
-        }
-        $desfaultStoreId = Mage::app()
-            ->getWebsite($website)
-            ->getDefaultGroup()
-            ->getDefaultStoreId();
-
-        //base url
-        $baseUrl = Mage::app()->getStore($desfaultStoreId)->getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
-
-        return $baseUrl;
-
+        return Mage::getStoreConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_DISABLE_NEWSLETTER_SUCCESS, $store);
     }
 
-	/**
-	 *
-	 * @param int $website
-	 *
-	 * @return bool|mixed
-	 */
-    public function getOrderDeleteDays($website = 0)
+    /**
+     * get sales_flat_order table description
+     *
+     * @return array
+     */
+    public function getOrderTableDescription()
     {
-        return $this->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_ORDER_DELETE, $website);
+        $resource = Mage::getSingleton('core/resource');
+        $readConnection = $resource->getConnection('core_read');
+        $salesTable = $resource->getTableName('sales/order');
+        return $readConnection->describeTable($salesTable);
     }
 
+    /**
+     * @return bool
+     */
+    public function getEasyEmailCapture()
+    {
+        return Mage::getStoreConfigFlag(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_EMAIL_CAPTURE);
+    }
 }

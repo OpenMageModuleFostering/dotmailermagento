@@ -71,8 +71,6 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Test extends Dotdigitalgroup_Emai
         $contactId         = self::TEST_CONTACT_ID;
         $campaignId        = self::TEST_API_CAMPAIGN;
 
-	    Mage::log($this->getApiUsername());
-	    Mage::log($this->getApiPassword());
         /**
          * send initial info
          */

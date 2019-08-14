@@ -11,7 +11,7 @@ class Dotdigitalgroup_Email_Block_Coupon extends Mage_Core_Block_Template
     {
         $params = $this->getRequest()->getParams();
         if (!isset($params['id']) || !isset($params['code']))
-            exit();
+            throw new Exception('Coupon no id or code is set');
         //coupon rule id
         $couponCodeId = $params['id'];
         $authCode = $params['code'];

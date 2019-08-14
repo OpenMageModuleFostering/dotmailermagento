@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
     <sections>
-        <connector_advanced_settings translate="label" module="connector">
+        <connector_configuration translate="label" module="connector">
             <groups>
                 <mailcheck translate="label" module="connector">
                     <label>MailCheck Settings</label>
@@ -23,6 +23,6 @@
                     </fields>
                 </mailcheck>
             </groups>
-        </connector_advanced_settings>
+        </connector_configuration>
     </sections>
 </config>

@@ -123,7 +123,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
             ->addFieldToFilter('website_id', $websiteId)
             ->setPageSize(1);
 
-        if ($collection->count()) {
+        if ($collection->getSize()) {
             return $collection->getFirstItem();
         } else {
             $this->setEmail($email)
@@ -141,6 +141,7 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
      */
     public function getSubscribersToImport($website, $limit = 1000)
     {
+
         $storeIds = $website->getStoreIds();
         $collection = $this->getCollection()
             ->addFieldToFilter('is_subscriber', array('notnull' => true))
@@ -202,4 +203,88 @@ class Dotdigitalgroup_Email_Model_Contact extends Mage_Core_Model_Abstract
 
         return $num;
     }
+
+	/**
+	 * Get the number of customers for a website.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberCustomerContacts($websiteId = 0)
+	{
+		$countContacts = Mage::getModel('email_connector/contact')->getCollection()
+		    ->addFieldToFilter('customer_id', array('gt' => '0'))
+		    ->addFieldToFilter('website_id', $websiteId)
+		    ->getSize();
+		return $countContacts;
+	}
+
+	/**
+	 *
+	 * Get number of suppressed contacts as customer.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberCustomerSuppressed( $websiteId = 0 )
+	{
+		$countContacts = Mage::getModel('email_connector/contact')->getCollection()
+			->addFieldToFilter('customer_id', array('gt' => 0))
+			->addFieldToFilter('website_id', $websiteId)
+			->addFieldToFilter('suppressed', '1')
+			->getSize();
+
+		return $countContacts;
+	}
+
+	/**
+	 * Get number of synced customers.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberCustomerSynced( $websiteId = 0 )
+	{
+		$countContacts = Mage::getModel('email_connector/contact')->getCollection()
+			->addFieldToFilter('customer_id', array('gt' => 0))
+			->addFieldToFilter('website_id', $websiteId)
+			->addFieldToFilter('email_imported' , '1')
+			->getSize();
+
+		return $countContacts;
+
+	}
+
+	/**
+	 * Get number of subscribers synced.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberSubscribersSynced( $websiteId = 0 )
+	{
+		$countContacts = Mage::getModel('email_connector/contact')->getCollection()
+			->addFieldToFilter('subscriber_status', Dotdigitalgroup_Email_Model_Newsletter_Subscriber::STATUS_SUBSCRIBED)
+			->addFieldToFilter('subscriber_imported', '1')
+			->addFieldToFilter('website_id', $websiteId)
+			->getSize();
+
+		return $countContacts;
+	}
+
+	/**
+	 * Get number of subscribers.
+	 * @param int $websiteId
+	 *
+	 * @return int
+	 */
+	public function getNumberSubscribers( $websiteId = 0 )
+	{
+
+		$countContacts = Mage::getModel('email_connector/contact')->getCollection()
+			->addFieldToFilter('subscriber_status', Dotdigitalgroup_Email_Model_Newsletter_Subscriber::STATUS_SUBSCRIBED)
+			->addFieldToFilter('website_id', $websiteId)
+            ->getSize();
+		return $countContacts;
+	}
 }

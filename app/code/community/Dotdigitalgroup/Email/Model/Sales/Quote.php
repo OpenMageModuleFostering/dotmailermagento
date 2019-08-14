@@ -137,8 +137,8 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
 								    ->setEmail( $email )
 								    ->setEventName( 'Lost Basket' )
 								    ->setCheckoutMethod( 'Guest' )
-						            ->setCampaignId( $guestCampaignId )
-						            ->setStoreId( $storeId )
+								    ->setCampaignId( $guestCampaignId )
+								    ->setStoreId( $storeId )
 								    ->setWebsiteId($store->getWebsiteId())
 								    ->setIsSent( null )->save();
 						    }
@@ -206,8 +206,9 @@ class Dotdigitalgroup_Email_Model_Sales_Quote
             ->addFieldToFilter('customer_email', array('neq' => ''))
             ->addFieldToFilter('store_id', $storeId)
             ->addFieldToFilter('updated_at', $updated);
-        if ($guest)
-            $salesCollection->addFieldToFilter('checkout_method' , Mage_Checkout_Model_Type_Onepage::METHOD_GUEST);
+        if ($guest) {
+	        $salesCollection->addFieldToFilter( 'customer_id', array( 'null' => true ) );
+        }
 
 	    return $salesCollection;
     }

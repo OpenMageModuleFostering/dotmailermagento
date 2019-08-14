@@ -16,7 +16,7 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Dynamic_Couponinfo extends Ma
             $code = '[PLEASE SET UP A PASSCODE]';
 
 	    //full url
-	    $text = $baseUrl  . 'connector/email/coupon/id/[INSERT ID HERE]/code/'. $code;
+	    $text = $baseUrl  . 'connector/email/coupon/id/[INSERT ID HERE]/code/'. $code . '/@EMAIL@';
 
         $element->setData('value', $text);
         $element->setData('disabled', 'disabled');

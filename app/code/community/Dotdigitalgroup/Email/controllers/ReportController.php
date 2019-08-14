@@ -49,11 +49,10 @@ class Dotdigitalgroup_Email_ReportController extends Mage_Core_Controller_Front_
         $customerId = $this->getRequest()->getParam('customer_id');
 	    //no customer was found
         if (! $customerId) {
-            Mage::helper('connector')->log('Recentlyviewed : no customer id : ' . $customerId);
-            exit();
+            throw new Exception('Recentlyviewed : no customer id : ' . $customerId);
         }
         $this->loadLayout();
-	    //set content tempalate
+	    //set content template
         $products = $this->getLayout()->createBlock('email_connector/recommended_recentlyviewed', 'connector_customer', array(
             'template' => 'connector/product/list.phtml'
         ));

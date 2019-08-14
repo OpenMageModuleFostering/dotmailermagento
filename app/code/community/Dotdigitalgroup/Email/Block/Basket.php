@@ -16,7 +16,7 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $params = $this->getRequest()->getParams();
 
         if (!isset($params['email']) && !isset($params['code']))
-            exit();
+            throw new Exception('Basket no email or code is set');
         Mage::helper('connector')->auth($params['code']);
 
         $email = $params['email'];
@@ -32,13 +32,11 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
             ->setOrder('updated_at', 'DESC')
             ->setPageSize(1);
 
-	    $quoteModel = $quoteModel->getFirstItem();
-
+        $quoteModel = $quoteModel->getFirstItem();
 
 	    //check for any quote for this email, don't want to render further
 	    if (! $quoteModel->getId()) {
-		    Mage::helper('connector')->log('no quote found for email : ' . $email);
-		    exit();
+		    throw new Exception('no quote found for email : ' . $email);
 	    }
 
         $this->_quote = $quoteModel;

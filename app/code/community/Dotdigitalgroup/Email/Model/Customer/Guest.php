@@ -12,17 +12,24 @@ class Dotdigitalgroup_Email_Model_Customer_Guest
     {
         /** @var Dotdigitalgroup_Email_Helper_Data $helper */
         $helper = Mage::helper('connector');
-        $helper->log('----------- Start guest sync ----------');
         $this->_start = microtime(true);
         foreach(Mage::app()->getWebsites() as $website) {
 
 	        //check if the guest is mapped and enabled
 	        $enabled = $helper->getGuestAddressBook($website);
-	        if ($enabled)
-	            $this->exportGuestPerWebsite($website);
+	        $mapped = $website->getConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_SUBSCRIBER_ENABLED);
+	        if ($enabled && $mapped) {
+
+		        //ready to start sync
+		        if (!$this->_countGuests)
+		            $helper->log('----------- Start guest sync ----------');
+
+		        //sync guests for website
+		        $this->exportGuestPerWebsite($website);
+	        }
         }
-        $helper->log('---- End Guest total time for guest sync : ' . gmdate("H:i:s", microtime(true) - $this->_start));
-        return;
+	    if ($this->_countGuests)
+            $helper->log('---- End Guest total time for guest sync : ' . gmdate("H:i:s", microtime(true) - $this->_start));
     }
 
     public function exportGuestPerWebsite(Mage_Core_Model_Website $website)
@@ -53,7 +60,7 @@ class Dotdigitalgroup_Email_Model_Customer_Guest
                 //Add to guest address book
                 $client->postAddressBookContactsImport($guestFilename, $helper->getGuestAddressBook($website));
             }
-            //arhive guest file
+            //archive guest file
             $fileHelper->archiveCSV($guestFilename);
         }
     }

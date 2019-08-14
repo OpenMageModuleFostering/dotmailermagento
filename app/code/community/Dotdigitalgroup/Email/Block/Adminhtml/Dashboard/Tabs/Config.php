@@ -45,9 +45,6 @@ class Dotdigitalgroup_Email_Block_Adminhtml_Dashboard_Tabs_Config extends  Mage_
 			->addFieldToFilter('path', array('neq' => 'connector_api_hour_trigger'))
 			->addFieldToFilter('is_api', true);
 
-		//@todo sorting is not working due the value types stored
-		//$collection->getSelect()->order('value DESC');
-
 		$data = $collection->getData();
 
 		return $data;

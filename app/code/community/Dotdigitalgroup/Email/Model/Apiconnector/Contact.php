@@ -3,8 +3,7 @@
 class Dotdigitalgroup_Email_Model_Apiconnector_Contact
 {
     private $_start;
-    private $_countCustomers;
-    private $_wishlists;
+    private $_countCustomers = 0;
 
 	/**
 	 * Contact sync.
@@ -16,7 +15,6 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         $result = array('success' => true, 'message' => '');
         /** @var Dotdigitalgroup_Email_Helper_Data $helper */
         $helper = Mage::helper('connector');
-        $helper->log('---------- Start customer sync ----------');
         $this->_start = microtime(true);
         //resourse allocation
         $helper->allowResourceFullExecution();
@@ -25,16 +23,18 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             $sync = Mage::helper('connector')->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_CONTACT_ENABLED, $website);
             if ($enabled && $sync) {
 
+	            if (!$this->_countCustomers)
+	                $helper->log('---------- Start customer sync ----------');
 	            $numUpdated = $this->exportCustomersForWebsite($website);
 	            // show message for any number of customers
 	            if ($numUpdated)
-	                $result['message'] .=  '</br>' . $website->getName() . ', updated customers = ' . $numUpdated;
+	            $result['message'] .=  '</br>' . $website->getName() . ', updated customers = ' . $numUpdated;
             }
         }
-	    $message = 'Total time for sync : ' . gmdate("H:i:s", microtime(true) - $this->_start) . ', Total updated = ' . $this->_countCustomers;
-        $helper->log($message);
-
+	    //sync proccessed
 	    if ($this->_countCustomers) {
+		    $message = 'Total time for sync : ' . gmdate( "H:i:s", microtime( true ) - $this->_start ) . ', Total updated = ' . $this->_countCustomers;
+		    $helper->log( $message );
 		    $message .= $result['message'];
 		    $result['message'] = $message;
 	    }
@@ -58,8 +58,6 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         //skip if the mapping field is missing
         if ( !$helper->getCustomerAddressBook($website))
             return;
-        //reset wishlists
-        $this->_wishlists = array();
         $fileHelper = Mage::helper('connector/file');
         $contactModel = Mage::getModel('email_connector/contact');
         $client = Mage::helper('connector')->getWebsiteApiClient($website);
@@ -77,7 +75,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         foreach ($contacts as $contact) {
             $customerIds[] = $contact->getCustomerId();
 	        //remove contact with customer id set and no customer
-	        if (! Mage::getModel('customer/customer')->load($contact->getCustomerId())->getId())
+	        if ($contact->getCustomerId() && ! Mage::getModel('customer/customer')->load($contact->getCustomerId())->getId())
 		        $contact->delete();
         }
 
@@ -107,7 +105,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
 	        $contactModel = Mage::getModel('email_connector/contact')->loadByCustomerEmail($customer->getEmail(), $website->getId());
 	        //remove contact with customer id set and no customer
             if(!$contactModel->getId()){
-				Mage::helper("connector")->log('clean contact email :'  . $customer->getEmail());
+				Mage::helper("connector")->log('delete contact email :'  . $customer->getEmail());
 	            $contactModel->delete();
 	            continue;
             }
@@ -115,7 +113,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
              * DATA.
              */
             $connectorCustomer =  Mage::getModel('email_connector/apiconnector_customer', $mappedHash);
-            $connectorCustomer->setCustomerData($customer, $website);
+            $connectorCustomer->setCustomerData($customer);
             //count number of customers
             $customers[] = $connectorCustomer;
             foreach ($customAttributes as $data) {
@@ -142,31 +140,13 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             }
 
             $contactModel->save();
-
-            //Send wishlist as transactional data
-            if ($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $website)) {
-                $this->_setCustomerWishList($customer, $website);
-            }
             $updated++;
         }
-        //send wishlist as transactional data
-        if (isset($this->_wishlists[$website->getId()])) {
-            //send wishlists as transactional data
-            $websiteWishlists = $this->_wishlists[$website->getId()];
-            //remove wishlists one by one
-            foreach ($websiteWishlists as $wishlist) {
-                $email = $wishlist->email;
-                $client->deleteContactTransactionalData($email, 'Wishlist');
-            }
-            //import wishlists in bulk
-            $client->postContactsTransactionalDataImport($websiteWishlists, 'Wishlist');
-        }
-
 	    $customerNum = count($customers);
         $helper->log('Website : ' . $website->getName() . ', customers = ' . $customerNum);
         $helper->log('---------------------------- execution time :' . gmdate("H:i:s", microtime(true) - $this->_start));
 
-        if (file_exists($fileHelper->getFilePath($customersFile))) {
+        if (is_file($fileHelper->getFilePath($customersFile))) {
             //import contacts
             if ($updated > 0)
                 $client->postAddressBookContactsImport($customersFile,  $helper->getCustomerAddressBook($website));
@@ -175,33 +155,6 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         }
         $this->_countCustomers += $updated;
         return $customerNum;
-    }
-
-    /**
-     * @param $customer
-     * @param $website
-     */
-    private function _setCustomerWishList($customer, $website){
-        $website = Mage::app()->getWebsite($website);
-        $customerId = $customer->getId();
-        $wishlist = Mage::getModel('wishlist/wishlist')->loadByCustomer($customerId);
-        /** @var  $connectorWishlist */
-        $connectorWishlist = Mage::getModel('email_connector/customer_wishlist', $customer);
-        $connectorWishlist->setId($wishlist->getId());
-        $wishListItemCollection = $wishlist->getItemCollection();
-        if (count($wishListItemCollection)) {
-            foreach ($wishListItemCollection as $item) {
-                /* @var $product Mage_Catalog_Model_Product */
-                $product = $item->getProduct();
-                $wishlistItem = Mage::getModel('email_connector/customer_wishlist_item', $product)
-                    ->setQty($item->getQty())
-                    ->setPrice($product);
-                //store for wishlists
-                $connectorWishlist->setItem($wishlistItem);
-            }
-            //set wishlists for later use
-            $this->_wishlists[$website->getId()][] = $connectorWishlist;
-        }
     }
 
 	/**
@@ -233,8 +186,6 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         //skip if the mapping field is missing
         if(!$helper->getCustomerAddressBook($website))
             return false;
-        //reset wishlists
-        $this->_wishlists = array();
         $fileHelper = Mage::helper('connector/file');
 
         $customerId = $contact->getCustomerId();
@@ -277,7 +228,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
              * DATA.
              */
             $connectorCustomer =  Mage::getModel('email_connector/apiconnector_customer', $mappedHash);
-            $connectorCustomer->setCustomerData($customer, $website);
+            $connectorCustomer->setCustomerData($customer);
             //count number of customers
             $customers[] = $connectorCustomer;
             foreach ($customAttributes as $data) {
@@ -304,30 +255,10 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             }
 
             $contactModel->save();
-
-			Mage::helper("connector")->log($contactModel->getData());
-
-            //Send wishlist as transactional data
-            if ($helper->getWebsiteConfig(Dotdigitalgroup_Email_Helper_Config::XML_PATH_CONNECTOR_SYNC_WISHLIST_ENABLED, $website)) {
-                $this->_setCustomerWishList($customer, $website);
-            }
             $updated++;
         }
 
-        //send wishlist as transactional data
-        if (isset($this->_wishlists[$website->getId()])) {
-            //send wishlists as transactional data
-            $websiteWishlists = $this->_wishlists[$website->getId()];
-            //remove wishlists one by one
-            foreach ($websiteWishlists as $wishlist) {
-                $email = $wishlist->email;
-                $client->deleteContactTransactionalData($email, 'Wishlist');
-            }
-            //import wishlists in bulk
-            $client->postContactsTransactionalDataImport($websiteWishlists, 'Wishlist');
-        }
-
-        if (file_exists($fileHelper->getFilePath($customersFile))) {
+        if (is_file($fileHelper->getFilePath($customersFile))) {
             //import contacts
             if ($updated > 0)
                 $client->postAddressBookContactsImport($customersFile,   $helper->getCustomerAddressBook($website));
@@ -341,11 +272,10 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
     /**
      * get customer collection
      * @param $customerIds
-     * @param $website null
      * @return Mage_Eav_Model_Entity_Collection_Abstract
      * @throws Mage_Core_Exception
      */
-    public function getCollection($customerIds, $website = null)
+    public function getCollection($customerIds)
     {
         $customerCollection = Mage::getResourceModel('customer/customer_collection')
             ->addNameToSelect()
@@ -365,6 +295,7 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
             ->addAttributeToFilter('entity_id', array('in' => $customerIds));
         $customer_log = Mage::getSingleton('core/resource')->getTableName('log_customer');
         $sales_flat_order_grid = Mage::getSingleton('core/resource')->getTableName('sales_flat_order_grid');
+        $sales_flat_quote = Mage::getSingleton('core/resource')->getTableName('sales_flat_quote');
 
         // get the last login date from the log_customer table
         $customerCollection->getSelect()->columns(
@@ -383,7 +314,8 @@ class Dotdigitalgroup_Email_Model_Apiconnector_Contact
         ;
         $customerCollection->getSelect()->columns(array(
                 'last_order_date' => new Zend_Db_Expr("(SELECT created_at FROM $sales_flat_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
-                'last_order_id' => new Zend_Db_Expr("(SELECT entity_id FROM $sales_flat_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)")
+                'last_order_id' => new Zend_Db_Expr("(SELECT entity_id FROM $sales_flat_order_grid WHERE customer_id =e.entity_id ORDER BY created_at DESC LIMIT 1)"),
+                'last_quote_id' => new Zend_Db_Expr("(SELECT entity_id FROM $sales_flat_quote WHERE customer_id = e.entity_id ORDER BY created_at DESC LIMIT 1)")
             )
         );
         $customerCollection->getSelect()

@@ -192,10 +192,17 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
 	/**
 	 * @param $path
 	 *
-	 * @return string
+	 * @return bool
 	 */
-	public function checkPathPermission($path) {
-		clearstatcache(null, $path);
-		return decoct( fileperms($path) & 0777 );
+	public function getPathPermission($path) {
+
+		//check for directory created before looking into permission
+		if (is_dir($path)) {
+			clearstatcache( null, $path );
+
+			return decoct( fileperms( $path ) & 0777 );
+		}
+		//the file is not created and return the passing value
+		return 755;
 	}
 }

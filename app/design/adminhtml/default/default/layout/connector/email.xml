@@ -68,4 +68,11 @@
             </block>
         </reference>
     </adminhtml_email_campaign_edit>
+    <adminhtml_system_config_edit>
+        <reference name="head">
+            <action method="addJs">
+                <script>connector/selector.js</script>
+            </action>
+        </reference>
+    </adminhtml_system_config_edit>
 </config>

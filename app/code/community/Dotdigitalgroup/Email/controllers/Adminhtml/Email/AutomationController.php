@@ -14,12 +14,12 @@ class Dotdigitalgroup_Email_Adminhtml_Email_AutomationController extends Mage_Ad
 
         // authorize or create token.
         $token = $this->generatetokenAction();
-        $loginuserUrl = Dotdigitalgroup_Email_Helper_Config::API_CONNECTOR_URL_LOG_USER  . $token;
+        $loginuserUrl = Dotdigitalgroup_Email_Helper_Config::API_CONNECTOR_URL_LOG_USER  . $token . '?suppressfooter=true';
 
         $block = $this->getLayout()
             ->createBlock('core/text', 'connector_iframe')
             ->setText(
-               "<iframe src=" . $loginuserUrl . " width=100% height=1400 frameborder='0' scrolling='no' style='margin:0;padding: 0;display:block;'></iframe>"
+               "<iframe src=" . $loginuserUrl . " width=100% height=1650 frameborder='0' scrolling='no' style='margin:0;padding: 0;display:block;'></iframe>"
             );
 
         $this->_addContent($block);
@@ -55,7 +55,7 @@ class Dotdigitalgroup_Email_Adminhtml_Email_AutomationController extends Mage_Ad
                 '&grant_type=refresh_token';
 
             $url = Dotdigitalgroup_Email_Helper_Config::API_CONNECTOR_URL_TOKEN;
-            Mage::helper('connector')->log('token  url : ' . $url . ' code : ' . $code);
+            Mage::helper('connector')->log('token code : ' . $code . ', params : ' . $params);
 
             /**
              * Refresh Token request.

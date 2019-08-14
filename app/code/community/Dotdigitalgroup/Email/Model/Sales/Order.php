@@ -14,16 +14,14 @@ class Dotdigitalgroup_Email_Model_Sales_Order
 	 * @var string
 	 */
 	private $_apiPassword;
-    /**
-     * @var array
-     */
-    protected $ordersToDelete = array();
 
 	/**
 	 * Global number of orders
 	 * @var int
 	 */
 	private $_countOrders = 0;
+
+    private $_reviewCollection = array();
 
     /**
      * initial sync the transactional data
@@ -48,22 +46,6 @@ class Dotdigitalgroup_Email_Model_Sales_Order
                 Mage::helper('connector')->log('----------end order sync----------');
             }
             unset($this->accounts[$account->getApiUsername()]);
-        }
-
-        foreach ($this->ordersToDelete as $websiteId => $collection) {
-            if (count($collection)) {
-                $client->setApiUsername(Mage::helper('connector')->getApiUsername($websiteId))
-                    ->setApiPassword(Mage::helper('connector')->getApiPassword($websiteId));
-                foreach($collection as $order) {
-                    $salesOrder = Mage::getModel('sales/order')->load($order->getOrderId());
-                    Mage::helper('connector')->log('--------- Order sync - delete order number ---------- : ' . $salesOrder->getIncrementId());
-                    $response = $client->deleteContactsTransactionalData($salesOrder->getIncrementId(), 'Orders');
-                    if (!isset($response->message))
-                        $order->setEmailImported(null)->save();
-                    Mage::helper('connector')->log('----------end order sync - delete ----------');
-                }
-            }
-            unset($this->ordersToDelete[$websiteId]);
         }
 
         if ($this->_countOrders)
@@ -92,7 +74,6 @@ class Dotdigitalgroup_Email_Model_Sales_Order
                     $this->accounts[$this->_apiUsername] = $account;
                 }
                 $this->accounts[$this->_apiUsername]->setOrders($this->getConnectorOrders($website, $limit));
-                $this->ordersToDelete[$website->getId()] = $this->getConnectorOrdersToDelete($website, $limit);
             }
         }
     }
@@ -113,10 +94,9 @@ class Dotdigitalgroup_Email_Model_Sales_Order
 
         $helper = Mage::helper('connector');
         $orderStatuses = $helper->getConfigSelectedStatus($website);
-        $days = $helper->getOrderDeleteDays($website);
 
         if($orderStatuses)
-            $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses, $days);
+            $orderCollection = $orderModel->getOrdersToImport($storeIds, $limit, $orderStatuses);
         else
             return array();
 
@@ -159,13 +139,11 @@ class Dotdigitalgroup_Email_Model_Sales_Order
 	        //no api credentials or the guest has no been mapped
 	        if (! $client || ! $addressBookId = Mage::helper('connector')->getGuestAddressBook($websiteId))
 		        return false;
-	        //get contact by email address
-            $contactApi = $client->getContactByEmail($email);
-	        //contac was not found let's create new one
-            if (isset($contactApi->message) && $contactApi->message == Dotdigitalgroup_Email_Model_Apiconnector_Client::REST_CONTACT_NOT_FOUND) {
-                $contactApi = $client->postContacts($email);
-            } elseif (isset($contactApi->message)) {
-	            Mage::helper('connector')->getRaygunClient()->Send('Creating guest contact with getContactByEmail message : ' . $contactApi->message);
+	        //check if contact exists, create if not
+	        $contactApi = $client->postContacts($email);
+
+	        //cannot continue error creating contact
+            if (isset($contactApi->message)) {
                 return false;
             }
 
@@ -197,18 +175,149 @@ class Dotdigitalgroup_Email_Model_Sales_Order
         return true;
     }
 
-    public function getConnectorOrdersToDelete($website, $limit)
+    /**
+     * create review campaigns
+     *
+     * @return bool
+     */
+    public function createReviewCampaigns()
     {
-        $storeIds = $website->getStoreIds();
-        $days = Mage::helper('connector')->getOrderDeleteDays($website);
+        $this->searchOrdersForReview();
 
-        if(empty($storeIds))
-            return;
+        foreach($this->_reviewCollection as $websiteId => $collection){
+            $this->registerCampaign($collection, $websiteId);
+        }
+    }
 
-        if(!$days)
-            return;
+    /**
+     * register review campaign
+     *
+     * @param $collection
+     * @param $websiteId
+     *
+     * @throws Exception
+     */
+    private function registerCampaign($collection, $websiteId)
+    {
+        $helper = Mage::helper('connector/review');
+        $campaignId = $helper->getCampaign($websiteId);
 
-        $orderModel = Mage::getModel('email_connector/order');
-        return $orderModel->getAllSentOrders($storeIds, $limit, $days);
+        if($campaignId) {
+            foreach ($collection as $order) {
+                Mage::helper('connector')->log('-- Order Review: ' . $order->getIncrementId() . ' Campaign Id: ' . $campaignId);
+
+                try {
+                    $emailCampaign = Mage::getModel('email_connector/campaign');
+                    $emailCampaign
+                        ->setEmail($order->getCustomerEmail())
+                        ->setStoreId($order->getStoreId())
+                        ->setCampaignId($campaignId)
+                        ->setEventName('Order Review')
+                        ->setCreatedAt(Mage::getSingleton('core/date')->gmtDate())
+                        ->setOrderIncrementId($order->getIncrementId())
+                        ->setQuoteId($order->getQuoteId());
+
+                    if($order->getCustomerId())
+                        $emailCampaign->setCustomerId($order->getCustomerId());
+
+                    $emailCampaign->save();
+                } catch (Exception $e) {
+                    Mage::logException($e);
+                }
+            }
+        }
+    }
+
+    /**
+     * search for orders to review per website
+     */
+    private function searchOrdersForReview()
+    {
+        $helper = Mage::helper('connector/review');
+
+        foreach (Mage::app()->getWebsites(true) as $website){
+            if($helper->isEnabled($website) &&
+                $helper->getOrderStatus($website) &&
+                    $helper->getDelay($website)){
+
+                $storeIds = $website->getStoreIds();
+                if(empty($storeIds))
+                    return;
+
+                $orderStatusFromConfig = $helper->getOrderStatus($website);
+                $delayInDays = $helper->getDelay($website);
+
+                $campaignCollection = Mage::getModel('email_connector/campaign')->getCollection();
+                $campaignCollection
+                    ->addFieldToFilter('event_name', 'Order Review')
+                    ->load();
+
+                $campaignOrderIds = $campaignCollection->getColumnValues('order_increment_id');
+
+                $to = Mage::app()->getLocale()->date()
+                    ->subDay($delayInDays);
+                $from = clone $to;
+                $to = $to->toString('YYYY-MM-dd HH:mm:ss');
+                $from = $from->subHour(2)
+                    ->toString('YYYY-MM-dd HH:mm:ss');
+
+                $created = array( 'from' => $from, 'to' => $to, 'date' => true);
+
+                $collection = Mage::getModel('sales/order')->getCollection();
+                    $collection->addFieldToFilter('status', $orderStatusFromConfig)
+                    ->addFieldToFilter('created_at', $created)
+                    ->addFieldToFilter('store_id', array('in' => $storeIds));
+
+                if(!empty($campaignOrderIds))
+                    $collection->addFieldToFilter('increment_id', array('nin' => $campaignOrderIds));
+
+                $collection->load();
+
+                if($collection->getSize())
+                    $this->_reviewCollection[$website->getId()] = $collection;
+            }
+        }
+    }
+
+    /**
+     * get customer last order id
+     *
+     * @param Mage_Customer_Model_Customer $customer
+     * @return bool|Varien_Object
+     */
+    public function getCustomerLastOrderId(Mage_Customer_Model_Customer $customer)
+    {
+        $storeIds = Mage::app()->getWebsite($customer->getWebsiteId())->getStoreIds();
+        $collection = Mage::getModel('sales/order')->getCollection();
+        $collection->addFieldToFilter('customer_id', $customer->getId())
+            ->addFieldToFilter('store_id', array('in' => $storeIds))
+            ->setPageSize(1)
+            ->setOrder('entity_id');
+
+        if ($collection->count())
+            return $collection->getFirstItem();
+        else
+            return false;
+    }
+
+    /**
+     * get customer last quote id
+     *
+     * @param Mage_Customer_Model_Customer $customer
+     * @return bool|Varien_Object
+     */
+    public function getCustomerLastQuoteId(Mage_Customer_Model_Customer $customer)
+    {
+        $storeIds = Mage::app()->getWebsite($customer->getWebsiteId())->getStoreIds();
+        $collection = Mage::getModel('sales/quote')->getCollection();
+        $collection->addFieldToFilter('customer_id', $customer->getId())
+            ->addFieldToFilter('store_id', array('in' => $storeIds))
+            ->setPageSize(1)
+            ->setOrder('entity_id');
+
+        if ($collection->count())
+            return $collection->getFirstItem();
+        else
+            return false;
     }
 }
