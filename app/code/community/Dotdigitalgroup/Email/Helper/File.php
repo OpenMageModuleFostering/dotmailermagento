@@ -1,7 +1,5 @@
 <?php
-/*
- empty helper to keep admin from breaking
-*/
+
 class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Data
 {
 
@@ -160,13 +158,11 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
      * @param $website
      * @return array
      */
-    public function getCsvHeaderArray($website) {
-
-
+    public function getCsvHeaderArray($website)
+    {
         $website = Mage::app()->getWebsite($website);
         $result = array();
         $result[] = 'Email';
-
         foreach (Mage::helper('connector')->getMappingHash($website) as $header) {
             if($header != "0") $result[] = $header;
         }
@@ -174,6 +170,4 @@ class Dotdigitalgroup_Email_Helper_File extends Dotdigitalgroup_Email_Helper_Dat
 
         return $result;
     }
-
-
 }

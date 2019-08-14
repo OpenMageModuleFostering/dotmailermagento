@@ -15,7 +15,6 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
     private $_store_name;
     private $_created_at;
     private $_customer_group;
-
     // Customer Address Data
     private $_billing_address_1;
     private $_billing_address_2;
@@ -37,15 +36,13 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
     private $_last_order_id;
 
     private $_customer_id;
-
     private $_last_logged_date;
+    private $_mapping_hash;
 
     public function getEmail()
     {
         return $this->_email;
     }
-
-    private $_mapping_hash;
 
 
     // class constructor - takes
@@ -59,15 +56,14 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
         $this->_dob                     = $customer->getDob();
         $this->_gender                  = $this->getCustomerGender($customer->getGender());
         $this->_title                   = $customer->getPrefix();
-
         $this->_website_name            = $this->getWebsiteName($customer->getWebsiteId());
         $this->_store_name              = $this->getStoreName($customer->getStoreId());
         $this->_created_at              = $customer->getCreatedAt();
         $this->_last_logged_date        = $customer->getLastLoggedDate();
         $this->_customer_group          = $this->getCustomerGroup($customer->getGroupId());
+
         $this->_billing_address_1       = $this->getStreet($customer->getBillingStreet(), 1);
         $this->_billing_address_2       = $this->getStreet($customer->getBillingStreet(), 2);
-
         $this->_billing_city            = $customer->getBillingCity();
         $this->_billing_country         = $customer->getBillingCountryCode();
         $this->_billing_postcode        = $customer->getBillingPostcode();
@@ -75,7 +71,6 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
 
         $this->_delivery_address_1      = $this->getStreet($customer->getShippingStreet(), 1);
         $this->_delivery_address_2      = $this->getStreet($customer->getShippingStreet(), 2);
-
         $this->_delivery_city           = $customer->getShippingCity();
         $this->_delivery_country        = $customer->getShippingCountryCode();
         $this->_delivery_postcode       = $customer->getShippingPostcode();
@@ -84,17 +79,14 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
         $this->_number_of_orders        = $customer->getNumberOfOrders();
         $this->_average_order_value     = $customer->getAverageOrderValue();
         $this->_total_spend             = $customer->getTotalSpend();
-
         $this->_last_order_date         = $customer->getLastOrderDate();
         $this->_last_order_id           = $customer->getLastOrderId();
-
         $this->_customer_id             = $customer->getId();
     }
 
-    public function toCSVArray() {
-
+    public function toCSVArray()
+    {
         // no iterating, just create an array()
-
         $result = array();
 
         // Email is the only required field in the CSV upload
@@ -132,11 +124,9 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
         if ($this->_mapping_hash[25]!="0") $result[]    =   $this->_last_order_date;
         if ($this->_mapping_hash[26]!="0") $result[]    =   $this->_last_order_id;
         if ($this->_mapping_hash[27]!="0") $result[]    =   $this->_customer_id;
-
-        $result[] = 'Html';
+        $result[]    =   'Html';
 
         return $result;
-
     }
 
     // returns the object as JSON
@@ -228,6 +218,11 @@ class Dotdigitalgroup_Email_Model_Connector_Customer{
             return $group->getCode();
         }
         return '';
+    }
+
+    public function setMappigHash( $value)
+    {
+        $this->_mapping_hash[] = $value;
     }
 
 }

@@ -6,20 +6,20 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
     protected $verb;
     protected $requestBody;
     protected $requestLength;
-    protected $api_username;
-    protected $api_password;
+    protected $_apiUsername;
+    protected $_apiPassword;
     protected $acceptType;
     protected $responseBody;
     protected $responseInfo;
 
-    public function __construct() // ($url = null, $verb = 'GET', $requestBody = null)
+    public function __construct($website = 0) // ($url = null, $verb = 'GET', $requestBody = null)
     {
         $this->url				= null; //$url;
         $this->verb				= 'GET'; //$verb;
         $this->requestBody		= null; //$requestBody;
         $this->requestLength	= 0;
-        $this->api_username     = (string)Mage::helper('connector')->getApiUsername(Mage::app()->getWebsite()->getId());
-        $this->api_password 	= (string)Mage::helper('connector')->getApiPassword(Mage::app()->getWebsite()->getId());
+        $this->_apiUsername     = (string)Mage::helper('connector')->getApiUsername($website);
+        $this->_apiPassword 	= (string)Mage::helper('connector')->getApiPassword($website);
         $this->acceptType		= 'application/json';
         $this->responseBody		= null;
         $this->responseInfo		= null;
@@ -105,11 +105,14 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
 
     public function flush ()
     {
+        $this->_apiUsername = '';
+        $this->_apiPassword = '';
         $this->requestBody		= null;
         $this->requestLength	= 0;
         $this->verb				= 'GET';
         $this->responseBody		= null;
         $this->responseInfo		= null;
+        return $this;
     }
 
     public function execute()
@@ -210,29 +213,31 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
         $this->doExecute($ch);
     }
 
-    protected function doExecute(&$curlHandle)
+    protected function doExecute(&$ch)
     {
-        $this->setCurlOpts($curlHandle);
-        $this->responseBody = json_decode(curl_exec($curlHandle));
-        $this->responseInfo	= curl_getinfo($curlHandle);
+        $this->setCurlOpts($ch);
+        $this->responseBody = json_decode(curl_exec($ch));
+        $this->responseInfo	= curl_getinfo($ch);
 
-        curl_close($curlHandle);
+        curl_close($ch);
     }
 
-    protected function setCurlOpts(&$curlHandle)
+    protected function setCurlOpts(&$ch)
     {
-        curl_setopt($curlHandle, CURLOPT_TIMEOUT, 10);
-        curl_setopt($curlHandle, CURLOPT_URL, $this->url);
-        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curlHandle, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType ,'Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->acceptType ,'Content-Type: application/json'));
     }
 
-    protected function setAuth(&$curlHandle)
+    protected function setAuth(&$ch)
     {
-        if ($this->api_username !== null && $this->api_password !== null)
+        if ($this->_apiUsername !== null && $this->_apiPassword !== null)
         {
-            curl_setopt($curlHandle, CURLAUTH_BASIC, CURLAUTH_DIGEST);
-            curl_setopt($curlHandle, CURLOPT_USERPWD, $this->api_username . ':' . $this->api_password);
+            curl_setopt($ch, CURLAUTH_BASIC, CURLAUTH_DIGEST);
+            curl_setopt($ch, CURLOPT_USERPWD, $this->_apiUsername . ':' . $this->_apiPassword);
         }
     }
 
@@ -248,12 +253,12 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
 
     public function getApiPassword()
     {
-        return $this->api_password;
+        return $this->_apiPassword;
     }
 
     public function setApiPassword($apiPassword)
     {
-        $this->api_password = $apiPassword;
+        $this->_apiPassword = $apiPassword;
         return $this;
     }
 
@@ -280,12 +285,12 @@ abstract class Dotdigitalgroup_Email_Model_Abstract_Rest
 
     public function getApiUsername()
     {
-        return $this->api_username;
+        return $this->_apiUsername;
     }
 
     public function setApiUsername($apiUsername)
     {
-        $this->api_username = $apiUsername;
+        $this->_apiUsername = $apiUsername;
         return $this;
     }
 

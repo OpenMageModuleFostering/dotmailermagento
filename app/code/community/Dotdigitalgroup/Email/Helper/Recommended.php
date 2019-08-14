@@ -2,148 +2,136 @@
 
 class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
 {
-    const XML_PATH_RELATED_PRODUCTS_TYPE        = 'dynamic_content/products/related_display_type';
-    const XML_PATH_UPSELL_PRODUCTS_TYPE         = 'dynamic_content/products/upsell_display_type';
-    const XML_PATH_CROSSSELL_PRODUCTS_TYPE      = 'dynamic_content/products/crosssell_display_type';
-    const XML_PATH_BESTSELLER_PRODUCT_TYPE      = 'dynamic_content/products/best_display_type';
-    const XML_PATH_MOSTVIEWED_PRODUCT_TYPE      = 'dynamic_content/products/most_viewed_display_type';
-    const XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE  = 'dynamic_content/products/recently_viewed_display_type';
-    const XML_PATH_PRODUCTPUSH_TYPE             = 'dynamic_content/manual_product_search/display_type';
+    const XML_PATH_RELATED_PRODUCTS_TYPE        = 'connector_dynamic_content/products/related_display_type';
+    const XML_PATH_UPSELL_PRODUCTS_TYPE         = 'connector_dynamic_content/products/upsell_display_type';
+    const XML_PATH_CROSSSELL_PRODUCTS_TYPE      = 'connector_dynamic_content/products/crosssell_display_type';
+    const XML_PATH_BESTSELLER_PRODUCT_TYPE      = 'connector_dynamic_content/products/bestsellers_display_type';
+    const XML_PATH_MOSTVIEWED_PRODUCT_TYPE      = 'connector_dynamic_content/products/most_viewed_display_type';
+    const XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE  = 'connector_dynamic_content/products/recently_viewed_display_type';
+    const XML_PATH_PRODUCTPUSH_TYPE             = 'connector_dynamic_content/manual_product_search/display_type';
 
 
-    const XML_PATH_RELATED_PRODUCTS_ITEMS       = 'dynamic_content/products/related_items_to_display';
-    const XML_PATH_UPSELL_PRODUCTS_ITEMS        = 'dynamic_content/products/upsell_items_to_display';
-    const XML_PATH_CROSSSELL_PRODUCTS_ITEMS     = 'dynamic_content/products/crosssell_items_to_display';
-    const XML_PATH_BESTSELLER_PRODUCT_ITEMS     = 'dynamic_content/products/best_items_to_display';
-    const XML_PATH_MOSTVIEWED_PRODUCT_ITEMS     = 'dynamic_content/products/most_viewed_items_to_display';
-    const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS = 'dynamic_content/products/recently_viewed_items_to_display';
-    const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS    = 'dynamic_content/manual_product_search/items_to_display';
+    const XML_PATH_RELATED_PRODUCTS_ITEMS       = 'connector_dynamic_content/products/related_items_to_display';
+    const XML_PATH_UPSELL_PRODUCTS_ITEMS        = 'connector_dynamic_content/products/upsell_items_to_display';
+    const XML_PATH_CROSSSELL_PRODUCTS_ITEMS     = 'connector_dynamic_content/products/crosssell_items_to_display';
+    const XML_PATH_BESTSELLER_PRODUCT_ITEMS     = 'connector_dynamic_content/products/bestsellers_items_to_display';
+    const XML_PATH_MOSTVIEWED_PRODUCT_ITEMS     = 'connector_dynamic_content/products/most_viewed_items_to_display';
+    const XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS = 'connector_dynamic_content/products/recently_viewed_items_to_display';
 
-
-    const XML_PATH_BESTSELLER_TIME_PERIOD   = 'dynamic_content/products/best_time_period';
-    const XML_PATH_MOSTVIEWED_TIME_PERIOD   = 'dynamic_content/products/most_viewed_time_period';
-
-    const XML_PATH_FALLBACK_PRODUCTS_ITEMS  = 'dynamic_content/fallback_products/product_list';
-
-    const XML_PATH_PRODUCTPUSH_ITEMS       = 'dynamic_content/manual_product_search/products_push_list';
+    const XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS    = 'connector_dynamic_content/manual_product_search/items_to_display';
+    const XML_PATH_BESTSELLER_TIME_PERIOD       = 'connector_dynamic_content/products/best_time_period';
+    const XML_PATH_MOSTVIEWED_TIME_PERIOD       = 'connector_dynamic_content/products/most_viewed_time_period';
+    const XML_PATH_PRODUCTPUSH_ITEMS            = 'connector_dynamic_content/manual_product_search/products_push_items';
+    const XML_PATH_FALLBACK_PRODUCTS_ITEMS      = 'connector_dynamic_content/fallback_products/product_list';
 
     public $periods = array('week', 'month', 'year');
 
-
     /**
-     * product recommendation type
-     * @var string
-     */
-
-
-    /**
-     * Dispay mode
+     * Dispay type
      * @return mixed|string grid:list
      */
-    public function getMode()
+    public function getDisplayType()
     {
-        $mode = Mage::app()->getRequest()->getParam('mode');
+        $mode = Mage::app()->getRequest()->getActionName();
         $type = '';
-        if($mode){
-            switch($mode){
-                case 'related':
-                    $type = $this->getRelatedProductsType();
-                    break;
-                case 'upsell':
-                    $type = $this->getUpsellProductsType();
-                    break;
-                case 'crosssell':
-                    $type = $this->getCrosssellProductsType();
-                    break;
-                case 'bestsellers':
-                    $type = $this->getBestSellerProductsType();
-                    break;
-                case 'mostviewed':
-                    $type = $this->getMostViewedProductsType();
-                    break;
-                case 'recentlyviewed':
-                    $type  = $this->getRecentlyviewedProductsType();
-                    break;
-                case 'productpush':
-                    $type = $this->getProductpushProductsType();
-            }
+
+        switch($mode){
+            case 'related':
+                $type = $this->getRelatedProductsType();
+                break;
+            case 'upsell':
+                $type = $this->getUpsellProductsType();
+                break;
+            case 'crosssell':
+                $type = $this->getCrosssellProductsType();
+                break;
+            case 'bestsellers':
+                $type = $this->getBestSellerProductsType();
+                break;
+            case 'mostviewed':
+                $type = $this->getMostViewedProductsType();
+                break;
+            case 'recentlyviewed':
+                $type  = $this->getRecentlyviewedProductsType();
+                break;
+            case 'push':
+                $type = $this->getProductpushProductsType();
         }
 
         return $type;
     }
 
-    public function getRelatedProductsType($storeId = 0)
+    public function getRelatedProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_TYPE);
     }
 
-    public function getUpsellProductsType($storeId = 0)
+    public function getUpsellProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_UPSELL_PRODUCTS_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_UPSELL_PRODUCTS_TYPE);
 
     }
 
-    public function getCrosssellProductsType($storeId = 0)
+    public function getCrosssellProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_CROSSSELL_PRODUCTS_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_CROSSSELL_PRODUCTS_TYPE);
     }
 
-    public function getBestSellerProductsType($storeId = 0)
+    public function getBestSellerProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_BESTSELLER_PRODUCT_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_BESTSELLER_PRODUCT_TYPE);
     }
 
-    public function getMostViewedProductsType($storeId = 0)
+    public function getMostViewedProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_PRODUCT_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_PRODUCT_TYPE);
     }
 
-    public function getRecentlyviewedProductsType($storeId = 0)
+    public function getRecentlyviewedProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_RECENTLYVIEWED_PRODUCT_TYPE);
     }
 
-    public function getProductpushProductsType($storeId = 0)
+    public function getProductpushProductsType()
     {
-        return Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_TYPE, $storeId);
+        return Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_TYPE);
     }
-
 
 
     /**
-     * Limit of products displayed
-         * @return int|mixed
+     * Limit of products displayed.
+     * @param $mode
+     * @return int|mixed
      */
-    public function getLimit()
+    public function getDisplayLimitByMode($mode)
     {
-        $mode = Mage::registry('mode');
-        $limit = 0;
+        $result = 0;
         if($mode){
             switch($mode){
                 case 'related':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_ITEMS);
+                    $result = Mage::getStoreConfig(self::XML_PATH_RELATED_PRODUCTS_ITEMS);
                     break;
                 case 'upsell':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_UPSELL_PRODUCTS_ITEMS);
+                    $result = Mage::getStoreConfig(self::XML_PATH_UPSELL_PRODUCTS_ITEMS);
                     break;
                 case 'crosssell':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_CROSSSELL_PRODUCTS_ITEMS);
+                    $result = Mage::getStoreConfig(self::XML_PATH_CROSSSELL_PRODUCTS_ITEMS);
                     break;
                 case 'bestsellers':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_PRODUCT_ITEMS);
+                    $result = Mage::getStoreConfig(self::XML_PATH_BESTSELLER_PRODUCT_ITEMS);
                     break;
                 case 'mostviewed':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_PRODUCT_ITEMS);
+                    $result = Mage::getStoreConfig(self::XML_PATH_MOSTVIEWED_PRODUCT_ITEMS);
                     break;
                 case 'recentlyviewed':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS);
+                    $result = Mage::getStoreConfig(self::XML_PATH_RECENTLYVIEWED_PRODUCT_ITEMS);
                     break;
-                case 'productpush':
-                    $limit = Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS);
+                case 'push':
+                    $result = Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_DISPLAY_ITEMS);
             }
         }
 
-        return $limit;
+        return $result;
     }
 
     public function getFallbackIds(){
@@ -179,13 +167,11 @@ class Dotdigitalgroup_Email_Helper_Recommended extends Mage_Core_Helper_Abstract
         }
     }
 
-    public function getProductPushIds($storeId = 0)
+    public function getProductPushIds()
     {
-        $productIds = Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_ITEMS, $storeId);
+        $productIds = Mage::getStoreConfig(self::XML_PATH_PRODUCTPUSH_ITEMS);
 
         return explode(',', $productIds);
-
     }
-
 
 }

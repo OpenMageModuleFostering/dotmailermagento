@@ -6,15 +6,32 @@ class Dotdigitalgroup_Email_Model_Connector_Campaign
     public $id;
     public $contacts = array();
     public $emails = array();
-    public $email_send_id = array();
+    public $emailSendId = array();
+    private $_storeId;
 
     /**
-     * @param $email_send_id
+     * @param mixed $storeId
+     */
+    public function setStoreId($storeId)
+    {
+        $this->_storeId = $storeId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStoreId()
+    {
+        return $this->_storeId;
+    }
+
+    /**
+     * @param $emailSendId
      * @return $this
      */
-    public function setEmailSendId($email_send_id)
+    public function setEmailSendId($emailSendId)
     {
-        $this->email_send_id[] = $email_send_id;
+        $this->emailSendId[] = $emailSendId;
         return $this;
     }
 
@@ -23,16 +40,16 @@ class Dotdigitalgroup_Email_Model_Connector_Campaign
      */
     public function getEmailSendId()
     {
-        return $this->email_send_id;
+        return $this->emailSendId;
     }
 
     /**
-     * @param $contacts
+     * @param $contact
      * @return $this
      */
-    public function setContacts($contacts)
+    public function setContactId($contact)
     {
-        $this->contacts[] = $contacts;
+        $this->contacts[] = $contact;
         return $this;
     }
 
@@ -63,11 +80,13 @@ class Dotdigitalgroup_Email_Model_Connector_Campaign
     }
 
     /**
-     * @param mixed $id
+     * @param $id
+     * @return $this
      */
     public function setId($id)
     {
         $this->id = $id;
+        return $this;
     }
 
     /**

@@ -1,37 +1,89 @@
 <?xml version="1.0"?>
 <config>
+    <menu>
+        <newsletter>
+            <children>
+                <email_connector translate="title">
+                    <title>Email Orders</title>
+                    <sort_order>1</sort_order>
+                    <children>
+                        <email_connector_dashboard translate="title">
+                            <title>Dashboard</title>
+                            <sort_order>10</sort_order>
+                            <action>adminhtml/email_dashboard</action>
+                        </email_connector_dashboard>
+                        <email_connector_order translate="title">
+                            <title>Email Connector Orders</title>
+                            <sort_order>40</sort_order>
+                            <action>adminhtml/email_order</action>
+                        </email_connector_order>
+                        <email_connector_campaign translate="title">
+                            <title>Email Campaigns</title>
+                            <sort_order>30</sort_order>
+                            <action>adminhtml/email_campaign</action>
+                        </email_connector_campaign>
+                        <email_connector_contact translate="title">
+                            <title>Email Contacts</title>
+                            <sort_order>20</sort_order>
+                            <action>adminhtml/email_contact</action>
+                        </email_connector_contact>
+                    </children>
+                </email_connector>
+            </children>
+        </newsletter>
+    </menu>
     <acl>
         <resources>
+            <newsetter>
+                <children>
+                    <email_connector>
+                        <childrend>
+                            <email_connector_dashboard translate="title">
+                                <title>Dashboard</title>
+                            </email_connector_dashboard>
+                            <email_connector_order translate="title">
+                                <title>Email Connector Orders</title>
+                            </email_connector_order>
+                            <email_connector_campaign translate="title">
+                                <title>Email Connector Campaigns</title>
+                            </email_connector_campaign>
+                            <email_connector_contact translate="title">
+                                <title>Email Connector Contacts</title>
+                            </email_connector_contact>
+                        </childrend>
+                    </email_connector>
+                </children>
+            </newsetter>
             <admin>
                 <children>
 					<system>
 						<children>
 							<config>
                                 <children>
-                                    <connector_api_settings translate="title">
+                                    <connector_api_credentials translate="title">
                                         <title><![CDATA[API Credentials]]></title>
-                                    </connector_api_settings>
+                                    </connector_api_credentials>
                                     <connector_sync_settings translate="title">
                                         <title><![CDATA[Sync Settings]]></title>
                                     </connector_sync_settings>
-                                    <connector_data_field_settings translate="title">
+                                    <connector_data_mapping translate="title">
                                         <title><![CDATA[Data Field Mapping]]></title>
-                                    </connector_data_field_settings>
-                                    <connector_roi_page_tracking_settings translate="title">
+                                    </connector_data_mapping>
+                                    <connector_roi_tracking translate="title">
                                         <title><![CDATA[ROI & Tracking]]></title>
-                                    </connector_roi_page_tracking_settings>
-                                    <lost_basket_settings translate="title">
+                                    </connector_roi_tracking>
+                                    <connector_lost_baskets translate="title">
                                         <title><![CDATA[Lost Baskets]]></title>
-                                    </lost_basket_settings>
-                                    <sms_section translate="title">
+                                    </connector_lost_baskets>
+                                    <connector_sms translate="title">
                                         <title><![CDATA[SMS Section]]></title>
-                                    </sms_section>
-                                    <dynamic_content translate="title">
+                                    </connector_sms>
+                                    <connector_dynamic_content translate="title">
                                         <title><![CDATA[Dynamic Content]]></title>
-                                    </dynamic_content>
-                                    <transactional_emails translate="title">
+                                    </connector_dynamic_content>
+                                    <connector_transactional_emails translate="title">
                                         <title><![CDATA[Transactional Email]]></title>
-                                    </transactional_emails>
+                                    </connector_transactional_emails>
                                     <connector_advanced_settings translate="title">
                                         <title><![CDATA[Advanced Settings]]></title>
                                     </connector_advanced_settings>

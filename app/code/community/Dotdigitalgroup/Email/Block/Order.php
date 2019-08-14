@@ -2,26 +2,31 @@
 
 class Dotdigitalgroup_Email_Block_Order extends Mage_Core_Block_Template
 {
-    public function getNewOrder()
+
+    protected function _prepareLayout()
     {
-        $params = Mage::app()->getRequest()->getParams();
+        if ($root = $this->getLayout()->getBlock('root')) {
+            $root->setTemplate('page/blank.phtml');
 
-        if(isset($params['id'])){
+        }
+        if ($headBlock = $this->getLayout()->getBlock('head')) {
+            $headBlock->setTitle($this->__('Order # %s', $this->getOrder()->getRealOrderId()));
+        }
+    }
 
-            $orderModel = Mage::getModel('sales/order')->load($params['id']);
-
-            if(! $orderModel->getEntityId()){
-                Mage::helper('connector')->log('Transactional email, no customer found :' . $params['id'], null, 'email');
-                exit;
-            }
-            Mage::register('order_id', $params['id']);
-            Mage::register('current_order', $orderModel);
-            return $orderModel;
-
-        }else{
-            exit;
+    public function getOrder()
+    {
+        $orderId = Mage::registry('order_id');
+        $order = Mage::registry('current_order');
+        if(! $orderId){
+            $orderId = Mage::app()->getRequest()->getParam('order_id');
+            Mage::register('order_id', $orderId);
+        }
+        if(! $order){
+            $order = Mage::getModel('sales/order')->load($orderId);
+            Mage::register('current_order', $order);
         }
 
-
+        return $order;
     }
 }

@@ -7,45 +7,42 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Wrapper extends Mage_A
     {
         $element->setData('onchange', "apiValidation(this.form, this);");
 
-        $url = Mage::helper('adminhtml')->getUrl('*/debug/ajaxvalidation');
+        $url = Mage::helper('adminhtml')->getUrl('*/connector/ajaxvalidation');
 
         $element->setData('after_element_html', "
             <script>
                 document.observe('dom:loaded', function(){
                     apiValidation();
-
-                 });
+                });
                 function apiValidation(form, element) {
-                    var api_user       = $('connector_api_settings_api_credentials_username');
-                    var api_password   = $('connector_api_settings_api_credentials_password');
-
+                    var api_username       = $('connector_api_credentials_api_username');
+                    var api_password   = $('connector_api_credentials_api_password');
                     var reloadurl  = '{$url}';
 
-                    new Ajax.Request(reloadurl, {
-                        method: 'post',
-                        parameters: {'api_username' : api_user.value, 'api_password' : api_password.value},
-                        onComplete: function(transport) {
-                            Element.hide('loadingmask');
-                            if(transport.responseText == '\"Credentials Valid.\"'){
-                                api_user.setStyle({
-                                    fontWeight: 'bold',
-                                    color:  'green' ,
-                                    background: 'transparent url(\"" . $this->getSkinUrl('images/success_msg_icon.gif') . "\") no-repeat right center'
-                                })
-                            }else{
-                                api_user.setStyle({
-                                    fontWeight: 'bold',
-                                    color:  'red',
-                                    background: 'transparent url(\"" . $this->getSkinUrl('images/error_msg_icon.gif') . "\") no-repeat right center'
-                                });
-
+                    if(api_username.value && api_password.value){
+                        new Ajax.Request(reloadurl, {
+                            method: 'post',
+                            parameters: {'api_username' : api_username.value, 'api_password' : api_password.value},
+                            onComplete: function(transport) {
+                                Element.hide('loadingmask');
+                                if(transport.responseText == '\"Credentials Valid.\"'){
+                                    api_username.setStyle({
+                                        fontWeight: 'bold',
+                                        color:  'green' ,
+                                        background: 'transparent url(\"" . $this->getSkinUrl('images/success_msg_icon.gif') . "\") no-repeat right center'
+                                    })
+                                }else{
+                                    api_username.setStyle({
+                                        fontWeight: 'bold',
+                                        color:  'red',
+                                        background: 'transparent url(\"" . $this->getSkinUrl('images/error_msg_icon.gif') . "\") no-repeat right center'
+                                    });
+                                }
                             }
-                        }
-                    });
-
+                        });
+                    }
                     return false;
                 }
-
             </script>
         ");
 

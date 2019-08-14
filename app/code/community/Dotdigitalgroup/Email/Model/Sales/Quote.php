@@ -2,251 +2,159 @@
 
 class Dotdigitalgroup_Email_Model_Sales_Quote
 {
-    //xml path configuration
-    const XML_PATH_LOSTBASKET_1_ENABLED      = 'lostbaskets/customers/enabled_1';
-    const XML_PATH_LOSTBASKET_2_ENABLED      = 'lostbaskets/customers/enabled_2';
-    const XML_PATH_LOSTBASKET_3_ENABLED      = 'lostbaskets/customers/enabled_3';
+    //customer
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_1        = 'connector_lost_baskets/customers/enabled_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_2        = 'connector_lost_baskets/customers/enabled_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_3        = 'connector_lost_baskets/customers/enabled_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_1       = 'connector_lost_baskets/customers/send_after_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_2       = 'connector_lost_baskets/customers/send_after_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_3       = 'connector_lost_baskets/customers/send_after_3';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_1       = 'connector_lost_baskets/customers/campaign_1';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_2       = 'connector_lost_baskets/customers/campaign_2';
+    const XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_3       = 'connector_lost_baskets/customers/campaign_3';
 
-    const XML_PATH_LOSTBASKET_1_INTERVAL     = 'lost_basket_settings/customers/send_after_1';
-    const XML_PATH_LOSTBASKET_2_INTERVAL     = 'lost_basket_settings/customers/send_after_2';
-    const XML_PATH_LOSTBASKET_3_INTERVAL     = 'lost_basket_settings/customers/send_after_3';
-
-    const XML_PATH_TRIGGER_1_CAMPAIGN        = 'lost_basket_settings/customers/campaign_1';
-    const XML_PATH_TRIGGER_2_CAMPAIGN        = 'lost_basket_settings/customers/campaign_2';
-    const XML_PATH_TRIGGER_3_CAMPAIGN        = 'lost_basket_settings/customers/campaign_3';
-
-    const XML_PATH_GUEST_LOSTBASKET_1_ENABLED  = 'lostbaskets/guests/enabled_1';
-    const XML_PATH_GUEST_LOSTBASKET_2_ENABLED  = 'lostbaskets/guests/enabled_2';
-    const XML_PATH_GUEST_LOSTBASKET_3_ENABLED  = 'lostbaskets/guests/enabled_3';
-
-    const XML_PATH_GUEST_LOSTBASKET_1_INTERVAL = 'lost_basket_settings/guests/send_after_1';
-    const XML_PATH_GUEST_LOSTBASKET_2_INTERVAL = 'lost_basket_settings/guests/send_after_2';
-    const XML_PATH_GUEST_LOSTBASKET_3_INTERVAL = 'lost_basket_settings/guests/send_after_3';
-
-    const XML_PATH_GUEST_LOSTBASKET_1_CAMPAIGN = 'lost_basket_settings/guests/campaign_1';
-    const XML_PATH_GUEST_LOSTBASKET_2_CAMPAIGN = 'lost_basket_settings/guests/campaign_2';
-    const XML_PATH_GUEST_LOSTBASKET_3_CAMPAIGN = 'lost_basket_settings/guests/campaign_3';
-
-    const XML_PATH_TEST_LOSTBASKET_EMAIL       = 'lost_basket_settings/test/email';
+    //guest
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_1           = 'connector_lost_baskets/guests/enabled_1';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_2           = 'connector_lost_baskets/guests/enabled_2';
+    const XML_PATH_LOSTBASKET_GUEST_ENABLED_3           = 'connector_lost_baskets/guests/enabled_3';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_1          = 'connector_lost_baskets/guests/send_after_1';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_2          = 'connector_lost_baskets/guests/send_after_2';
+    const XML_PATH_LOSTBASKET_GUEST_INTERVAL_3          = 'connector_lost_baskets/guests/send_after_3';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_1          = 'connector_lost_baskets/guests/campaign_1';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_2          = 'connector_lost_baskets/guests/campaign_2';
+    const XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_3          = 'connector_lost_baskets/guests/campaign_3';
 
 
-    /**
-     * send the lost baskets to campains
-     * @return array
-     */
-    public function proccessCampaigns()
+    public $lostBasketCustomers = array(1, 2, 3);
+    public $lostBasketGuests = array(1, 2, 3);
+
+
+    public function proccessLostBaskets()
     {
-        $helper = Mage::helper('connector');
-
-        $client = Mage::getModel('connector/connector_api_client');
-
+        /**
+         * Save lost baskets to be send in Send table.
+         */
         foreach (Mage::app()->getStores() as $store){
-
-            //skip any action if all lost basket campaings are disabled
-            if(!$store->getConfig(self::XML_PATH_LOSTBASKET_1_ENABLED) && !$store->getConfig(self::XML_PATH_LOSTBASKET_2_ENABLED) &&
-                !$store->getConfig(self::XML_PATH_LOSTBASKET_3_ENABLED) && !$store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_1_ENABLED) &&
-                !$store->getconfig(self::XML_PATH_GUEST_LOSTBASKET_2_ENABLED) && !$store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_3_ENABLED)
-            )continue;
-            // set credentials for every store
             $storeId = $store->getId();
-            $websiteId = $store->getWebsite()->getId();
-
-            $client->setApiUsername($helper->getApiUsername($websiteId));
-            $client->setApiPassword($helper->getApiPassword($websiteId));
-
+            $sendModel = Mage::getModel('email_connector/campaign');
             /**
              * Customers campaings
              */
+            foreach ($this->lostBasketCustomers as $num) {
+                if($this->_getLostBasketCustomerEnabled($num, $storeId)){
 
-            //first campign
-            if($store->getConfig(self::XML_PATH_LOSTBASKET_1_ENABLED)){
-
-                $contacts = array();
-                $from = Zend_Date::now()->subMinute($store->getConfig(self::XML_PATH_LOSTBASKET_1_INTERVAL));
-                $to = clone($from);
-                $from->sub('5', Zend_Date::MINUTE);
-                // lost baskets
-                $quoteCollection = $this->_getStoreQuotes($storeId, $from->toString('YYYY-MM-dd HH:mm:ss'), $to->toString('YYYY-MM-dd HH:mm:ss'));
-
-                if(count($quoteCollection)){
-                    // get collection contacts id
+                    if($num == 1)
+                        $from = Zend_Date::now()->subMinute($this->_getLostBasketCustomerInterval($num, $storeId));
+                    else
+                        $from = Zend_Date::now()->subHour($this->_getLostBasketCustomerInterval($num, $storeId));
+                    $to = clone($from);
+                    $from->sub('5', Zend_Date::MINUTE);
+                    $quoteCollection = $this->_getStoreQuotes($from->toString('YYYY-MM-dd HH:mm'), $to->toString('YYYY-MM-dd HH:mm'), $guest = false, $storeId);
+                    if($quoteCollection->getSize())
+                        Mage::helper('connector')->log('Customer lost baskets : ' . $num  . ', from : ' . $from->toString('YYYY-MM-dd HH:mm') . ':' . $to->toString('YYYY-MM-dd HH:mm'));
+                    $campaignId = $this->_getLostBasketCustomerCampaignId($num, $storeId);
                     foreach ($quoteCollection as $quote) {
-
-                        $email = $quote->getCustomerEmail();
-                        $contactId = $helper->getContactId($email, $websiteId);
-
-                        if($contactId)
-                            $contacts[] = $contactId;
+                        //save lost basket for sending
+                        $sendModel->loadByQuoteId($quote->getId(), $storeId)
+                            ->setEmail($quote->getCustomerEmail())
+                            ->setCustomerId($quote->getCustomerId())
+                            ->setEventName('Lost Basket')
+                            ->setCampaignId($campaignId)
+                            ->setStoreId($storeId)
+                            ->setIsSent(null)->save();
                     }
-
-                    if(!empty($contacts))
-                        $client->postCampaignsSend($store->getConfig(self::XML_PATH_TRIGGER_1_CAMPAIGN), $contacts);
-                }
-            }
-
-            //second campaign
-            if($store->getConfig(self::XML_PATH_LOSTBASKET_2_ENABLED)){
-                $contacts = array();
-                $from = Zend_Date::now()->subHour($store->getConfig(self::XML_PATH_LOSTBASKET_2_INTERVAL));
-                $to = clone($from);
-                $from->sub('5', Zend_Date::MINUTE);
-                // lost baskets
-                $quoteCollection = $this->_getStoreQuotes($storeId, $from->toString('YYYY-MM-dd HH:mm:ss'), $to->toString('YYYY-MM-dd HH:mm:ss'));
-
-                if(count($quoteCollection)){
-                    // get collection contacts id
-                    foreach ($quoteCollection as $quote) {
-
-                        $email = $quote->getCustomerEmail();
-                        $contactId = $helper->getContactId($email, $websiteId);
-
-                        if($contactId)
-                            $contacts[] = $contactId;
-                    }
-
-                    if(!empty($contacts))
-                        $client->postCampaignsSend($store->getConfig(self::XML_PATH_TRIGGER_2_CAMPAIGN), $contacts);
-                }
-            }
-
-            //third campign
-            if($store->getConfig(self::XML_PATH_LOSTBASKET_3_ENABLED)){
-                $contacts = array();
-                $from = Zend_Date::now()->subHour($store->getConfig(self::XML_PATH_LOSTBASKET_3_INTERVAL));
-                $to = clone($from);
-                $from->sub('5', Zend_Date::MINUTE);
-                // lost baskets
-                $quoteCollection = $this->_getStoreQuotes($storeId, $from->toString('YYYY-MM-dd HH:mm:ss'), $to->toString('YYYY-MM-dd HH:mm:ss'));
-                if(count($quoteCollection)){
-                    // get collection contacts id
-                    foreach ($quoteCollection as $quote) {
-
-                        $email = $quote->getCustomerEmail();
-                        $contactId = $helper->getContactId($email, $websiteId);
-
-                        if($contactId)
-                            $contacts[] = $contactId;
-                    }
-
-                    if(!empty($contacts))
-                        $client->postCampaignsSend($store->getConfig(self::XML_PATH_TRIGGER_3_CAMPAIGN), $contacts);
                 }
 
             }
             /**
-             * Guests campaings
+             * Guests campaigns
              */
-            //first guest campaign
-            if($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_1_ENABLED))
-            {
-                $contacts = array();
-                $from = Zend_Date::now()->subMinute($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_1_INTERVAL));
-                $to = clone($from);
-                $from->sub('5', Zend_Date::MINUTE);
-                $quoteCollection = $this->_getStoreQuotes($storeId, $from->toString('YYYY-MM-dd HH:mm:ss'), $to->toString('YYYY-MM-dd HH:mm:ss'), true);
-
-                if(count($quoteCollection)){
-                    // get collection contacts id
+            foreach ($this->lostBasketGuests as $num) {
+                if($this->_getLostBasketGuestEnabled($num, $storeId)){
+                    if($num == 1)
+                        $from = Zend_Date::now()->subMinute($this->_getLostBasketGuestIterval($num, $storeId));
+                    else
+                        $from = Zend_Date::now()->subHour($this->_getLostBasketGuestIterval($num, $storeId));
+                    $to = clone($from);
+                    $from->sub('5', Zend_Date::MINUTE);
+                    $quoteCollection = $this->_getStoreQuotes($from->toString('YYYY-MM-dd HH:mm'), $to->toString('YYYY-MM-dd HH:mm'), $guest = true, $storeId);
+                    if($quoteCollection->getSize())
+                        Mage::helper('connector')->log('Guest lost baskets : ' . $num  . ', from : ' . $from->toString('YYYY-MM-dd HH:mm') . ':' . $to->toString('YYYY-MM-dd HH:mm'));
+                    $guestCampaignId = $this->_getLostBasketGuestCampaignId($num, $storeId);
                     foreach ($quoteCollection as $quote) {
-                        $email = $quote->getCustomerEmail();
-                        //check if the customer exists
-                        $response = $client->getContactByEmail($email);
-
-                        if(isset($response->message) && $response->message == Dotdigitalgroup_Email_Model_Connector_Api_Client::REST_CONTACT_NOT_FOUND){
-                            //create new contact before sending campaign
-                            $contactAPI = $client->postContacts($email);
-                            if(!isset($contactAPI->message))
-                                $response = $client->postAddressBookContacts($helper->getGuestAddressBook($websiteId), $contactAPI);
-                        }
-                        $contacts[] = $response->id;
+                        //save lost basket for sending
+                        $sendModel->loadByQuoteId($quote->getId(), $storeId)
+                            ->setEmail($quote->getCustomerEmail())
+                            ->setEventName('Lost Basket')
+                            ->setCheckoutMethod('Guest')
+                            ->setCampaignId($guestCampaignId)
+                            ->setStoreId($storeId)
+                            ->setIsSent(null)->save();
                     }
-                    if(!empty($contacts))
-                        $client->postCampaignsSend($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_1_CAMPAIGN), $contacts);
                 }
             }
-            // second guest campaign
-            if($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_2_ENABLED))
-            {
-                $contacts = array();
-                $from = Zend_Date::now()->subHour($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_2_INTERVAL));
-                $to = clone($from);
-                $from->sub('5', Zend_Date::MINUTE);
-                // lost baskets
-                $quoteCollection = $this->_getStoreQuotes($storeId, $from->toString('YYYY-MM-dd HH:mm:ss'), $to->toString('YYYY-MM-dd HH:mm:ss'), true);
-                if(count($quoteCollection)){
-                    // get collection contacts id
-                    foreach ($quoteCollection as $quote) {
-                        $email = $quote->getCustomerEmail();
-                        //check if the customer exists
-                        $response = $client->getContactByEmail($email);
 
-                        if(isset($response->message) && $response->message == Dotdigitalgroup_Email_Model_Connector_Api_Client::REST_CONTACT_NOT_FOUND){
-                            //create new contact before sending campaign
-                            $contactAPI = $client->postContacts($email);
-                            if(!isset($contactAPI->message))
-                                $response = $client->postAddressBookContacts($helper->getGuestAddressBook($websiteId), $contactAPI);
-                        }
-                        $contacts[] = $response->id;
-                    }
-                    if(!empty($contacts))
-                        $client->postCampaignsSend($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_2_CAMPAIGN), $contacts);
-                }
-            }
-            //third guest campaign
-            if($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_3_ENABLED)){
-                $contacts = array();
-                $from = Zend_Date::now()->subHour($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_3_INTERVAL));
-                $to = clone($from);
-                $from->sub('5', Zend_Date::MINUTE);
-                // lost baskets
-                $quoteCollection = $this->_getStoreQuotes($storeId, $from->toString('YYYY-MM-dd HH:mm:ss'), $to->toString('YYYY-MM-dd HH:mm:ss'), true);
-                if(count($quoteCollection)){
-                    // get collection contacts id
-                    foreach ($quoteCollection as $quote) {
-                        $email = $quote->getCustomerEmail();
-                        //check if the customer exists
-                        $response = $client->getContactByEmail($email);
-
-                        if(isset($response->message) && $response->message == Dotdigitalgroup_Email_Model_Connector_Api_Client::REST_CONTACT_NOT_FOUND){
-                            //create new contact before sending campaign
-                            $contactAPI = $client->postContacts($email);
-                            if(!isset($contactAPI->message))
-                                $response = $client->postAddressBookContacts($helper->getGuestAddressBook($websiteId), $contactAPI);
-                        }
-                        $contacts[] = $response->id;
-                    }
-                    if(!empty($contacts))
-                        $client->postCampaignsSend($store->getConfig(self::XML_PATH_GUEST_LOSTBASKET_3_CAMPAIGN), $contacts);
-                }
-            }
         }
-        return;
     }
 
+    private function _getLostBasketCustomerCampaignId($num, $storeId){
+        $store = Mage::app()->getStore($storeId);
+        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_CAMPAIGN_' . $num));
+    }
+    private function _getLostBasketGuestCampaignId($num, $storeId){
+        $store = Mage::app()->getStore($storeId);
+        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_CAMPAIGN_'. $num));
+    }
+
+    private function _getLostBasketCustomerInterval($num, $storeId){
+
+        $store = Mage::app()->getstore($storeId);
+        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_INTERVAL_' . $num));
+    }
+
+    private function _getLostBasketGuestIterval($num, $storeId){
+        $store = Mage::app()->getStore($storeId);
+        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_INTERVAL_' . $num));
+    }
+
+
+    public function _getLostBasketCustomerEnabled($num, $storeId)
+    {
+        $store = Mage::app()->getStore($storeId);
+        $enabled = $store->getConfig(constant('self::XML_PATH_LOSTBASKET_CUSTOMER_ENABLED_' . $num));
+        return $enabled;
+
+    }
+
+    public function _getLostBasketGuestEnabled($num, $storeId)
+    {
+        $store = Mage::app()->getStore($storeId);
+        return $store->getConfig(constant('self::XML_PATH_LOSTBASKET_GUEST_ENABLED_' . $num));
+    }
+
+
     /**
-     * @param $storeId
-     * @param null $from
-     * @param null $to
+     * @param string $from
+     * @param string $to
      * @param bool $guest
-     * @return Varien_Data_Collection_Db
+     * @param int $storeId
+     * @return Mage_Eav_Model_Entity_Collection_Abstract
      */
-    private function _getStoreQuotes($storeId, $from = null, $to = null, $guest = false){
+    private function _getStoreQuotes($from = null, $to = null, $guest = false, $storeId = 0){
+
+        $updated = array(
+            'from' => $from,
+            'to' => $to,
+            'date' => true);
 
         $salesCollection = Mage::getResourceModel('sales/quote_collection')
-            ->addFieldToFilter('is_active',1)
+            ->addFieldToFilter('is_active', 1)
             ->addFieldToFilter('items_count', array('gt' => 0))
             ->addFieldToFilter('customer_email', array('neq' => ''))
             ->addFieldToFilter('store_id', $storeId)
-            ->addFieldToFilter('updated_at',array(
-                    'from' => $from,
-                    'to' => $to,
-                    'date' => true)
-            );
-
+            ->addFieldToFilter('updated_at', $updated);
         if($guest)
             $salesCollection->addFieldToFilter('checkout_method' , Mage_Checkout_Model_Type_Onepage::METHOD_GUEST);
-
-        return $salesCollection->load();
+        return $salesCollection;
     }
-
 }

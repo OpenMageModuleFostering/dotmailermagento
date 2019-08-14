@@ -2,19 +2,73 @@
 
 class Dotdigitalgroup_Email_Model_Connector_Order
 {
+    /**
+     * Order Increment ID
+     * @var string
+     */
     public  $id;
-    public  $connector_id;
+    /**
+     * Email
+     * @var string
+     */
+    public  $email;
+    /**
+     * @var int
+     */
     public  $quote_id;
-    protected $store_name;
-    protected $purchase_date;
-    protected $delivery_address;
-    protected $billing_address;
-    protected $products = array();
-    protected $order_subtotal;
-    protected $discount_ammount;
-    protected $order_total;
-    protected $categories;
-
+    /**
+     * @var string
+     */
+    public  $store_name;
+    /**
+     * @var string
+     */
+    public  $purchase_date;
+    /**
+     * @var string
+     */
+    public  $delivery_address;
+    /**
+     * @var string
+     */
+    public  $billing_address;
+    /**
+     * @var array
+     */
+    public  $products = array();
+    /**
+     * @var float
+     */
+    public  $order_subtotal;
+    /**
+     * @var float
+     */
+    public  $discount_ammount;
+    /**
+     * @var float
+     */
+    public  $order_total;
+    /**
+     * @var array
+     */
+    public  $categories;
+    /**
+     * Payment name
+     * @var string
+     */
+    public  $payment;
+    /**
+     * @var string
+     */
+    public  $delivery_method;
+    /**
+     * @var float
+     */
+    public  $delivery_total;
+    /**
+     * @var string
+     */
+    public  $currency;
 
     /**
      * set the order information
@@ -22,43 +76,53 @@ class Dotdigitalgroup_Email_Model_Connector_Order
      */
     public function __construct(Mage_Sales_Model_Order $orderData)
     {
-        $this->id           = $orderData->getIncrementId();
-        $this->store_name   = $orderData->getStoreName();
-
-        $created_at = new Zend_Date($orderData->getCreatedAt(), Zend_Date::ISO_8601);
-        $this->purchase_date = $created_at->toString(Zend_Date::ISO_8601);
-
         $customerModel = Mage::getModel('customer/customer');
         $customerModel->load($orderData->getCustomerId());
+
+        $this->id           = $orderData->getIncrementId();
         $this->quote_id     = $orderData->getQuoteId();
+        $this->email        = $orderData->getCustomerEmail();
+        $this->store_name   = $orderData->getStoreName();
+        $created_at = new Zend_Date($orderData->getCreatedAt(), Zend_Date::ISO_8601);
+        $this->purchase_date = $created_at->toString(Zend_Date::ISO_8601);
+        $this->delivery_method = $orderData->getShippingDescription();
+        $this->delivery_total = $orderData->getShippingAmount();
+        $this->currency = $orderData->getStoreCurrencyCode();
+        $this->payment = $orderData->getPayment()->getMethodInstance()->getTitle();
 
         /**
-         *  billing and shipping address
+         * Billing address.
          */
-        //check if order has shipping data virtual/downloadable
+        if($orderData->getBillingAddress()){
+            $billingData  = $orderData->getBillingAddress()->getData();
+            $this->billing_address = array(
+                'billing_address_1' => $this->getStreet($billingData['street'], 1),
+                'billing_address_2' => $this->getStreet($billingData['street'], 2),
+                'billing_city'      => $billingData['city'],
+                'billing_region'    => $billingData['region'],
+                'billing_country'   => $billingData['country_id'],
+                'billing_postcode'  => $billingData['postcode'],
+            );
+        }
+        /**
+         * Shipping address.
+         */
         if($orderData->getShippingAddress()){
-            $deliveryData = $orderData->getShippingAddress()->getData();
+            $shippingData = $orderData->getShippingAddress()->getData();
+
             $this->delivery_address = array(
-                'delivery_address_1' => $this->getStreet($deliveryData['street'], 1),
-                'delivery_address_2' => $this->getStreet($deliveryData['street'], 2),
-                'delivery_city'      => $deliveryData['city'],
-                'delivery_region'    => $deliveryData['region'],
-                'delivery_country'   => $deliveryData['country_id'],
-                'delivery_postcode'  => $deliveryData['postcode']
+                'delivery_address_1' => $this->getStreet($shippingData['street'], 1),
+                'delivery_address_2' => $this->getStreet($shippingData['street'], 2),
+                'delivery_city'      => $shippingData['city'],
+                'delivery_region'    => $shippingData['region'],
+                'delivery_country'   => $shippingData['country_id'],
+                'delivery_postcode'  => $shippingData['postcode']
             );
         }
 
-        $billingData  = $orderData->getBillingAddress()->getData();
-        $this->billing_address = array(
-            'billing_address_1' => $this->getStreet($billingData['street'], 1),
-            'billing_address_2' => $this->getStreet($billingData['street'], 2),
-            'billing_city'      => $billingData['city'],
-            'billing_region'    => $billingData['region'],
-            'billing_country'   => $billingData['country_id'],
-            'billing_postcode'  => $billingData['postcode'],
-        );
-
-        //Order items
+        /**
+         * Order items.
+         */
         foreach ($orderData->getAllItems() as $productItem) {
             $product = $productItem->getProduct();
             if($product){
@@ -86,6 +150,7 @@ class Dotdigitalgroup_Email_Model_Connector_Order
         $orderTotal = abs($orderData->getData('grand_total') - $orderData->getTotalRefunded());
         $this->order_total      = (float)number_format($orderTotal, 2);
 
+        return true;
     }
     /**
      * get the street name by line number

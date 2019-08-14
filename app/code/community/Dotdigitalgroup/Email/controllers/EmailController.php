@@ -9,40 +9,6 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
         $this->renderLayout();
     }
 
-
-
-    /**
-     * Params
-     * code - security check
-     * order - order id
-     * products type :
-     *  1.related
-     *  2.upsell
-     *  3.cross sell
-     *  4.best sellers
-     *  5.most viewed
-     *  6.recently viewed
-     *
-     */
-    public function productsAction()
-    {
-        //get all params
-        $params = $this->getRequest()->getParams();
-
-        if(!isset($params['code']) || !isset($params['mode'])){
-
-            exit();
-        }
-        //authenticate before proceed
-        Mage::helper('connector')->auth($params['code']);
-        Mage::register('mode', $params['mode']);
-        if(isset($params['customer']))
-            Mage::register('customer', $params['customer']);
-        $this->loadLayout();
-        $this->renderLayout();
-
-    }
-
     public function couponAction()
     {
         $this->loadLayout();
@@ -50,7 +16,15 @@ class Dotdigitalgroup_Email_EmailController extends Mage_Core_Controller_Front_A
     }
     public function basketAction()
     {
+        Mage::helper('connector')->auth($this->getRequest()->getParam('code'));
         $this->loadLayout();
+        if ($root = $this->getLayout()->getBlock('root')) {
+            $root->setTemplate('page/blank.phtml');
+        }
+        $basket = $this->getLayout()->createBlock('email_connector/basket', 'connector_basket', array(
+            'template' => 'connector/basket.phtml'
+        ));
+        $this->getLayout()->getBlock('content')->append($basket);
         $this->renderLayout();
     }
 

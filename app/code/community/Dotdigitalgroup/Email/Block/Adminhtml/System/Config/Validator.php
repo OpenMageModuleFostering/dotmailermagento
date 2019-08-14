@@ -16,8 +16,8 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
 
         $html .=$jquery;
 
-        $javaScript = "
-            <script type=\"text/javascript\">
+        $javaScript =
+            "<script type=\"text/javascript\">
 
                 jQuery.noConflict();
 
@@ -25,10 +25,11 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
                     // Handler for .ready() called.
 
                     // Hide our validation block
-                    jQuery('#row_connector_data_field_settings_customer_data_validator').hide();
+                    jQuery('#row_connector_data_mapping_customer_data_validator').hide();
 
                     // Add listener for changing select box
-                    jQuery('#connector_data_field_settings_customer_data select').on('change', function() {
+
+                    jQuery('#connector_data_mapping_customer_data select').on('change', function() {
 
                         var currentSelection = jQuery(this).val();
                         var currentDropdownId = jQuery(this).attr('id');
@@ -54,16 +55,10 @@ class Dotdigitalgroup_Email_Block_Adminhtml_System_Config_Validator extends Mage
                                         break;
                                 break;
                                 }
-
                             }
-
                         });
-
                     });
-
                 });
-
-
             </script>";
 
         $html .= $javaScript;

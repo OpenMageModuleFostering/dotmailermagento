@@ -17,6 +17,10 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $customer = Mage::getModel('customer/customer');
         $customer->setWebsiteId(Mage::app()->getWebsite()->getId())->loadByEmail($email);
 
+        if(! $customer->getId()){
+            Mage::helper('connector')->log('Lost basket : customer not found : ' . $email);
+            exit();
+        }
         //last active  guest  basket
         $quoteModel = Mage::getResourceModel('sales/quote_collection')
             ->addFieldToFilter('is_active', 1)
@@ -32,7 +36,7 @@ class Dotdigitalgroup_Email_Block_Basket extends Mage_Core_Block_Template
         $store_id = $quoteModel->getStoreId();
         Mage::app()->setCurrentStore($store_id);
 
-        return $quoteModel->getAllItems();;
+        return $quoteModel->getAllItems();
     }
 
     public function getGrandTotal()

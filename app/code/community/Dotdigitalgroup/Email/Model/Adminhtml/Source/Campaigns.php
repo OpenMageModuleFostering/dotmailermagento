@@ -1,0 +1,38 @@
+<?php
+
+class Dotdigitalgroup_Email_Model_Adminhtml_Source_Campaigns
+{
+
+    // Returns the account's datafields
+    public function toOptionArray()
+    {
+        $fields = array();
+        $websiteName = Mage::app()->getRequest()->getParam('website', false);
+        //admin
+        $website = 0;
+        if($websiteName){
+            $website = Mage::app()->getWebsite($websiteName);
+        }
+        $client = Mage::helper('connector')->getWebsiteApiClient($website);
+
+
+        $savedCampaigns = Mage::registry('savedcampigns');
+
+        if($savedCampaigns){
+            $campaigns = $savedCampaigns;
+        }else{
+            $campaigns = $client->getCampaigns();
+            Mage::register('savedcampigns', $campaigns);
+        }
+
+        $fields[] = array('value' => '0', 'label' => Mage::helper('connector')->__('-- Please Select --'));
+
+        foreach ($campaigns as $one){
+            if(isset($one->id))
+                $fields[] = array('value' => $one->id, 'label' => Mage::helper('connector')->__($one->name));
+        }
+
+        return $fields;
+    }
+
+}

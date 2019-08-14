@@ -61,6 +61,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
 
     /**
      * @param $product
+     * @return $this
      */
     public function setPrice($product)
     {
@@ -68,6 +69,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
         $total = $this->price * $this->qty;
 
         $this->total_value_of_product = number_format($total, 2);
+        return $this;
     }
 
     /**
@@ -88,8 +90,6 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
         return $this;
     }
 
-
-
     /**
      * @return mixed
      */
@@ -97,9 +97,12 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist_Item
     {
         return $this->sku;
     }
-    public function expose() {
 
+    /**
+     * @return array
+     */
+    public function expose()
+    {
         return get_object_vars($this);
-
     }
 }

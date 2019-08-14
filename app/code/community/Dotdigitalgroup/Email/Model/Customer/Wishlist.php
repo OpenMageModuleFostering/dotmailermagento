@@ -4,7 +4,7 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
 {
     public  $id;
     public  $customer_id;
-    public  $connector_id;
+    public $email;
 
     public $items = array();
 
@@ -13,24 +13,8 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
     public function __construct(Mage_Customer_Model_Customer $customer){
 
         $this->setCustomerId($customer->getId());
+        $this->email = $customer->getEmail();
     }
-
-    /**
-     * @param mixed $connector_id
-     */
-    public function setConnectorId($connector_id)
-    {
-        $this->connector_id = $connector_id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getConnectorId()
-    {
-        return $this->connector_id;
-    }
-
 
     /**
      * @param mixed $customer_id
@@ -80,7 +64,4 @@ class Dotdigitalgroup_Email_Model_Customer_Wishlist
         return get_object_vars($this);
 
     }
-
-
-
 }

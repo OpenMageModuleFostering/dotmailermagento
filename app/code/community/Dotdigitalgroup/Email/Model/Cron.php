@@ -1,4 +1,5 @@
 <?php
+
 class Dotdigitalgroup_Email_Model_Cron
 {
     /**
@@ -6,14 +7,9 @@ class Dotdigitalgroup_Email_Model_Cron
      */
     public function contactSync()
     {
-        if(Mage::helper('connector')->getContactSyncEnabled()){
-
             // send customers
-            Mage::getModel('connector/customer_contact')->sync();
-        }
-        return;
+        Mage::getModel('email_connector/apiconnector_contact')->sync();
     }
-
 
     /**
      * CRON FOR LOST BASKET
@@ -21,10 +17,7 @@ class Dotdigitalgroup_Email_Model_Cron
     public function lostBaskets()
     {
         // send lost basket
-        //Mage::getModel('connector/email_send')->sendLostBasketsEmail();
-
-        Mage::getModel('connector/sales_quote')->proccessCampaigns();
-
+        Mage::getModel('email_connector/sales_quote')->proccessLostBaskets();
 
     }
 
@@ -33,39 +26,31 @@ class Dotdigitalgroup_Email_Model_Cron
      */
     public function orderSync()
     {
-        if(Mage::helper('connector')->getOrderSyncEnabled()){
-
-            // send order
-            Mage::getModel('connector/sales_order')->sync();
-        }
+        // send order
+        Mage::getModel('email_connector/sales_order')->sync();
     }
 
     /**
-     * CRON FOR SUBSCRIBERS AND SUPRESSED CONTACTS
+     * CRON FOR SUBSCRIBERS AND GUEST CONTACTS
      */
-    public function subscribersAndSuppressedSync()
+    public function subscribersAndGuestSync()
     {
-        $helper = Mage::helper('connector');
-        if($helper->getSubscriberSyncEnabled()){
-            $helper->log('start subscribers and suppresssed sync..');
-            //sync subscribers
-            Mage::getModel('connector/newsletter_subscriber')
-                ->sync()
-                ->unsubscribe();
-            //sync guests
-            Mage::getModel('connector/customer_guest')->sync();
-            $helper->log('end subscribers and suppresssed sync.');
-        }
+        //sync subscribers
+        Mage::getModel('email_connector/newsletter_subscriber')
+            ->sync()
+            ->unsubscribe();
+        //sync guests
+        Mage::getModel('email_connector/customer_guest')->sync();
     }
 
-    public function sendMail()
+    /**
+     * CRON FOR EMAILS SENDING
+     */
+    public function sendMappedEmails()
     {
-        $helper = Mage::helper('connector');
-        $helper->log('Sending mail cron..');
-        $emailModel = Mage::getModel('connector/email_send')->send();
+        Mage::getModel('email_connector/campaign')->sendCampaigns();
 
-
-        $helper->log('email send end');
+        return $this;
     }
 
     /**
