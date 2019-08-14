@@ -13,7 +13,6 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
 	 */
 	public function handleNewsletterSubscriberSave(Varien_Event_Observer $observer)
 	{
-		$helper = Mage::helper('ddg');
 		$subscriber = $observer->getEvent()->getSubscriber();
 		$email              = $subscriber->getEmail();
 		$storeId            = $subscriber->getStoreId();
@@ -27,23 +26,27 @@ class Dotdigitalgroup_Email_Model_Newsletter_Observer
 
 			$contactEmail = Mage::getModel('ddg_automation/contact')->loadByCustomerEmail($email, $websiteId);
 
-			// only for subsribers
+			// only for subscribers
 			if ($subscriberStatus == Mage_Newsletter_Model_Subscriber::STATUS_SUBSCRIBED) {
-				//set contact as subscribed
-				$contactEmail->setSubscriberStatus( $subscriberStatus )
+				//Set contact as subscribed
+				$contactEmail->setSubscriberStatus($subscriberStatus)
 					->setIsSubscriber('1');
 
-				Mage::getModel('ddg_automation/importer')->registerQueue(
-					Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
-					array('email' => $email),
-					Dotdigitalgroup_Email_Model_Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
-					$websiteId
-				);
-				// reset the subscriber as suppressed
-				$contactEmail->setSuppressed(null);
+				//Subscriber subscribed when it is suppressed in table then re-subscribe
+				if($contactEmail->getSuppressed()){
+					Mage::getModel('ddg_automation/importer')->registerQueue(
+						Dotdigitalgroup_Email_Model_Importer::IMPORT_TYPE_SUBSCRIBER_RESUBSCRIBED,
+						array('email' => $email),
+						Dotdigitalgroup_Email_Model_Importer::MODE_SUBSCRIBER_RESUBSCRIBED,
+						$websiteId
+					);
+					//Set to subscriber imported and reset the subscriber as suppressed
+					$contactEmail->setSubscriberImported(1)
+						->setSuppressed(null);
+				}
 
 				//not subscribed
-			} else {
+			}else {
 				//skip if contact is suppressed
 				if ($contactEmail->getSuppressed())
 					return $this;
